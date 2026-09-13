@@ -25,9 +25,14 @@ public sealed class CoreInventoryService
 
     public static IReadOnlyList<CoreComparison> Compare(PocketDrive pocket, IReadOnlyList<AvailableCore> available)
     {
-        var availableById = available.ToDictionary(core => core.Identifier, StringComparer.OrdinalIgnoreCase);
+        // The inventory can contain multiple releases/entries for one identifier.
+        // Compare against the newest entry instead of allowing duplicate keys to crash the page.
+        var availableById = available
+            .GroupBy(core => core.Identifier, StringComparer.OrdinalIgnoreCase)
+            .Select(group => group.OrderByDescending(core => ParseVersion(core.Version)).First())
+            .ToDictionary(core => core.Identifier, StringComparer.OrdinalIgnoreCase);
         var installedIds = pocket.InstalledCoreNames.ToHashSet(StringComparer.OrdinalIgnoreCase);
-        var result = available.Select(core => new CoreComparison(
+        var result = availableById.Values.Select(core => new CoreComparison(
             core.Identifier, core.Name, core.Category, core.Version,
             installedIds.Contains(core.Identifier), true,
             installedIds.Contains(core.Identifier) ? "Installed" : "Available"));
@@ -37,6 +42,12 @@ public sealed class CoreInventoryService
             .Select(identifier => new CoreComparison(identifier, identifier, "Unknown", "—", true, false, "Unknown"));
 
         return result.Concat(missingFromInventory).OrderBy(core => core.FriendlyName).ToArray();
+    }
+
+    private static Version ParseVersion(string value)
+    {
+        string numeric = value.Trim().TrimStart('v').Split('-', 2)[0];
+        return Version.TryParse(numeric, out Version? version) ? version : new Version(0, 0);
     }
 
     private sealed class InventoryResponse
