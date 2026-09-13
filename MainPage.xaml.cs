@@ -48,11 +48,17 @@ public partial class MainPage : ContentPage
 
         if (pocket is null)
         {
+            StatusTitle.Text = "No Pocket connected";
+            StatusDetail.Text = "Connect an SD card or USB Pocket to begin.";
+            ReadyBadgeText.Text = "Ready";
             await DisplayAlert("No Pocket found", "Connect an SD card or Pocket over USB, then scan again.", "Got it");
             return;
         }
 
-        string folders = pocket.FoundFolders.Count == 0 ? "No Pocket folders recognized yet." : string.Join(", ", pocket.FoundFolders);
-        await DisplayAlert("Pocket found", $"{pocket.Name} ({pocket.RootPath})\n{pocket.CapacitySummary}\n\nRecognized: {folders}", "Continue");
+        StatusTitle.Text = pocket.Name;
+        StatusDetail.Text = $"{pocket.RootPath} · {pocket.CapacitySummary}";
+        ReadyBadgeText.Text = "Connected";
+        ScanButton.Text = "Rescan";
+        await DisplayAlert("Pocket found", $"{pocket.Name} ({pocket.RootPath})\n{pocket.CapacitySummary}\n\nRecognized: {string.Join(", ", pocket.FoundFolders)}\nCores: {pocket.CoreCount}", "Continue");
     }
 }

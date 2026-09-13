@@ -17,9 +17,11 @@ public sealed class PocketScanner
                 var foundFolders = PocketFolders.Where(folder => Directory.Exists(Path.Combine(drive.RootDirectory.FullName, folder))).ToArray();
                 if (drive.DriveType == DriveType.Removable || foundFolders.Length >= 2)
                 {
+                    string coresPath = Path.Combine(drive.RootDirectory.FullName, "Cores");
+                    int coreCount = Directory.Exists(coresPath) ? Directory.EnumerateDirectories(coresPath).Count() : 0;
                     results.Add(new PocketDrive(drive.RootDirectory.FullName,
                         string.IsNullOrWhiteSpace(drive.VolumeLabel) ? "Removable drive" : drive.VolumeLabel,
-                        drive.DriveType, drive.TotalSize, drive.AvailableFreeSpace, foundFolders.Length, foundFolders));
+                        drive.DriveType, drive.TotalSize, drive.AvailableFreeSpace, foundFolders.Length, foundFolders, coreCount));
                 }
             }
             catch (IOException) { }

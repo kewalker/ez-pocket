@@ -7,7 +7,8 @@ public sealed record PocketDrive(
     long TotalBytes,
     long FreeBytes,
     int PocketFolderCount,
-    IReadOnlyList<string> FoundFolders)
+    IReadOnlyList<string> FoundFolders,
+    int CoreCount)
 {
     public bool LooksLikePocket => PocketFolderCount >= 2;
     public string CapacitySummary => $"{FormatBytes(FreeBytes)} free of {FormatBytes(TotalBytes)}";

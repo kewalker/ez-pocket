@@ -14,15 +14,15 @@
                 <Border Grid.Column="1" BackgroundColor="#E4F7EF" StrokeThickness="0" Padding="12,8" StrokeShape="RoundRectangle 16">
                     <HorizontalStackLayout Spacing="6">
                         <BoxView Color="#2EB67D" WidthRequest="8" HeightRequest="8" CornerRadius="4" VerticalOptions="Center" />
-                        <Label Text="Ready" FontSize="13" FontAttributes="Bold" TextColor="#19734E" />
+                        <Label x:Name="ReadyBadgeText" Text="Ready" FontSize="13" FontAttributes="Bold" TextColor="#19734E" />
                     </HorizontalStackLayout>
                 </Border>
             </Grid>
             <Border BackgroundColor="#14213D" StrokeThickness="0" Padding="22" StrokeShape="RoundRectangle 22">
                 <Grid RowDefinitions="Auto,Auto,Auto" ColumnDefinitions="*,Auto" RowSpacing="16">
                     <Label Text="Pocket status" TextColor="#AEBBD4" FontSize="13" />
-                    <Label Grid.Row="1" Text="No Pocket connected" TextColor="White" FontSize="24" FontAttributes="Bold" />
-                    <Label Grid.Row="2" Text="Connect an SD card or USB Pocket to begin." TextColor="#C8D2E4" FontSize="14" />
+                    <Label x:Name="StatusTitle" Grid.Row="1" Text="No Pocket connected" TextColor="White" FontSize="24" FontAttributes="Bold" />
+                    <Label x:Name="StatusDetail" Grid.Row="2" Text="Connect an SD card or USB Pocket to begin." TextColor="#C8D2E4" FontSize="14" />
                     <Button x:Name="ScanButton" Grid.Column="1" Grid.RowSpan="3" Text="Scan" Clicked="OnScanClicked" Pressed="OnScanPressed" Released="OnScanReleased" FontAttributes="Bold" CornerRadius="14" Padding="22,0" VerticalOptions="Center">
                         <Button.GestureRecognizers>
                             <PointerGestureRecognizer PointerEntered="OnScanPointerEntered" PointerExited="OnScanPointerExited" />
