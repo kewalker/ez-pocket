@@ -23,7 +23,36 @@
                     <Label Text="Pocket status" TextColor="#AEBBD4" FontSize="13" />
                     <Label Grid.Row="1" Text="No Pocket connected" TextColor="White" FontSize="24" FontAttributes="Bold" />
                     <Label Grid.Row="2" Text="Connect an SD card or USB Pocket to begin." TextColor="#C8D2E4" FontSize="14" />
-                    <Button Grid.Column="1" Grid.RowSpan="3" Text="Scan" Clicked="OnScanClicked" BackgroundColor="#FCA311" TextColor="#14213D" FontAttributes="Bold" CornerRadius="14" Padding="22,0" VerticalOptions="Center" />
+                    <Button Grid.Column="1" Grid.RowSpan="3" Text="Scan" Clicked="OnScanClicked" BackgroundColor="#FCA311" TextColor="#14213D" FontAttributes="Bold" CornerRadius="14" Padding="22,0" VerticalOptions="Center">
+                        <VisualStateManager.VisualStateGroups>
+                            <VisualStateGroup Name="CommonStates">
+                                <VisualState Name="Normal" />
+                                <VisualState Name="PointerOver">
+                                    <VisualState.Setters>
+                                        <Setter Property="BackgroundColor" Value="#FFB52E" />
+                                        <Setter Property="Scale" Value="1.03" />
+                                    </VisualState.Setters>
+                                </VisualState>
+                                <VisualState Name="Pressed">
+                                    <VisualState.Setters>
+                                        <Setter Property="BackgroundColor" Value="#D98200" />
+                                        <Setter Property="Scale" Value="0.97" />
+                                    </VisualState.Setters>
+                                </VisualState>
+                                <VisualState Name="Focused">
+                                    <VisualState.Setters>
+                                        <Setter Property="BorderColor" Value="#FFFFFF" />
+                                        <Setter Property="BorderWidth" Value="2" />
+                                    </VisualState.Setters>
+                                </VisualState>
+                                <VisualState Name="Disabled">
+                                    <VisualState.Setters>
+                                        <Setter Property="Opacity" Value="0.5" />
+                                    </VisualState.Setters>
+                                </VisualState>
+                            </VisualStateGroup>
+                        </VisualStateManager.VisualStateGroups>
+                    </Button>
                 </Grid>
             </Border>
             <Label Text="Update overview" FontSize="20" FontAttributes="Bold" TextColor="#14213D" />
