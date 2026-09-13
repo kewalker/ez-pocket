@@ -17,6 +17,7 @@ public static class MauiProgram
             });
 
         builder.Services.AddSingleton<PocketScanner>();
+        builder.Services.AddSingleton<CoreInventoryService>();
 
 #if DEBUG
         builder.Logging.AddDebug();
