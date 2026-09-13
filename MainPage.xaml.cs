@@ -76,4 +76,9 @@ public partial class MainPage : ContentPage
         if (pocket.InstalledCoreNames.Count > 8) installedPreview += ", …";
         await DisplayAlert("Pocket found", $"{pocket.Name} ({pocket.RootPath})\n{pocket.CapacitySummary}\n\nInstalled: {pocket.CoreCount} of {available.Count} available\n\nInstalled cores: {installedPreview}\n\nRecognized folders: {string.Join(", ", pocket.FoundFolders)}", "Continue");
     }
+
+    private async void OnManageCoresClicked(object? sender, EventArgs e)
+    {
+        await Shell.Current.GoToAsync("CorePage");
+    }
 }

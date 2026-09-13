@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:models="clr-namespace:EzPocket.Models"
+             x:Class="EzPocket.CorePage"
+             BackgroundColor="#F5F7FB"
+             Title="Core Manager">
+    <Grid Padding="28,24" RowDefinitions="Auto,Auto,*" RowSpacing="18">
+        <VerticalStackLayout Spacing="4">
+            <Label Text="Core Manager" FontSize="30" FontAttributes="Bold" TextColor="#14213D" />
+            <Label x:Name="Subtitle" Text="Scan a Pocket to compare installed and available cores." FontSize="14" TextColor="#63708A" />
+        </VerticalStackLayout>
+        <Grid Grid.Row="1" ColumnDefinitions="*,Auto">
+            <Label x:Name="Summary" Text="—" FontSize="16" FontAttributes="Bold" TextColor="#14213D" VerticalOptions="Center" />
+            <Button Grid.Column="1" Text="Refresh" Clicked="OnRefreshClicked" />
+        </Grid>
+        <CollectionView x:Name="CoreList" Grid.Row="2" SelectionMode="None">
+            <CollectionView.EmptyView>
+                <Label Text="No cores found yet." TextColor="#63708A" HorizontalOptions="Center" VerticalOptions="Center" />
+            </CollectionView.EmptyView>
+            <CollectionView.ItemTemplate>
+                <DataTemplate x:DataType="models:CoreComparison">
+                    <Border BackgroundColor="White" Stroke="#E2E7F0" StrokeShape="RoundRectangle 14" Padding="16" Margin="0,0,0,10">
+                        <Grid ColumnDefinitions="*,Auto" RowDefinitions="Auto,Auto" RowSpacing="4">
+                            <Label Text="{Binding FriendlyName}" FontSize="16" FontAttributes="Bold" TextColor="#14213D" />
+                            <Label Grid.Row="1" Text="{Binding Identifier}" FontSize="12" TextColor="#63708A" />
+                            <VerticalStackLayout Grid.Column="1" Grid.RowSpan="2" HorizontalOptions="End" Spacing="3">
+                                <Label Text="{Binding StatusLabel}" FontSize="13" FontAttributes="Bold" TextColor="#19734E" HorizontalTextAlignment="End" />
+                                <Label Text="{Binding AvailableVersion}" FontSize="12" TextColor="#63708A" HorizontalTextAlignment="End" />
+                            </VerticalStackLayout>
+                        </Grid>
+                    </Border>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+    </Grid>
+</ContentPage>

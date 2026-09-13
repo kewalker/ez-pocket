@@ -23,6 +23,22 @@ public sealed class CoreInventoryService
             .ToArray() ?? [];
     }
 
+    public static IReadOnlyList<CoreComparison> Compare(PocketDrive pocket, IReadOnlyList<AvailableCore> available)
+    {
+        var availableById = available.ToDictionary(core => core.Identifier, StringComparer.OrdinalIgnoreCase);
+        var installedIds = pocket.InstalledCoreNames.ToHashSet(StringComparer.OrdinalIgnoreCase);
+        var result = available.Select(core => new CoreComparison(
+            core.Identifier, core.Name, core.Category, core.Version,
+            installedIds.Contains(core.Identifier), true,
+            installedIds.Contains(core.Identifier) ? "Installed" : "Available"));
+
+        var missingFromInventory = pocket.InstalledCoreNames
+            .Where(identifier => !availableById.ContainsKey(identifier))
+            .Select(identifier => new CoreComparison(identifier, identifier, "Unknown", "—", true, false, "Unknown"));
+
+        return result.Concat(missingFromInventory).OrderBy(core => core.FriendlyName).ToArray();
+    }
+
     private sealed class InventoryResponse
     {
         [JsonPropertyName("data")]
