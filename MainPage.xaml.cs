@@ -5,13 +5,11 @@ namespace EzPocket;
 public partial class MainPage : ContentPage
 {
     private readonly PocketScanner scanner;
-    private readonly CoreInventoryService inventory;
 
     public MainPage()
     {
         InitializeComponent();
         scanner = IPlatformApplication.Current?.Services.GetService<PocketScanner>() ?? new PocketScanner();
-        inventory = IPlatformApplication.Current?.Services.GetService<CoreInventoryService>() ?? new CoreInventoryService();
     }
 
     private void OnScanPointerEntered(object? sender, PointerEventArgs e)
@@ -61,24 +59,11 @@ public partial class MainPage : ContentPage
         StatusDetail.Text = $"{pocket.RootPath} · {pocket.CapacitySummary}";
         ReadyBadgeText.Text = "Connected";
         ScanButton.Text = "Rescan";
-        IReadOnlyList<Models.AvailableCore> available;
-        try
-        {
-            available = await inventory.GetAvailableAsync();
-        }
-        catch (HttpRequestException)
-        {
-            await DisplayAlert("Pocket found", $"{pocket.Name} ({pocket.RootPath})\n{pocket.CapacitySummary}\n\nCores installed: {pocket.CoreCount}\n\nThe live core inventory could not be reached.", "Continue");
-            return;
-        }
-
-        var installedPreview = pocket.InstalledCoreNames.Count == 0 ? "None" : string.Join(", ", pocket.InstalledCoreNames.Take(8));
-        if (pocket.InstalledCoreNames.Count > 8) installedPreview += ", …";
-        await DisplayAlert("Pocket found", $"{pocket.Name} ({pocket.RootPath})\n{pocket.CapacitySummary}\n\nInstalled: {pocket.CoreCount} of {available.Count} available\n\nInstalled cores: {installedPreview}\n\nRecognized folders: {string.Join(", ", pocket.FoundFolders)}", "Continue");
+        // The Core Manager owns the detailed installed/available comparison.
     }
 
     private async void OnManageCoresClicked(object? sender, EventArgs e)
     {
-        await Shell.Current.GoToAsync("CorePage");
+        await Shell.Current.GoToAsync("///CorePage");
     }
 }
