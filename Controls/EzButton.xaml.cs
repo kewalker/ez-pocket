@@ -3,6 +3,7 @@ namespace EzPocket.Controls;
 public partial class EzButton : ContentView
 {
     public static readonly BindableProperty TextProperty = BindableProperty.Create(nameof(Text), typeof(string), typeof(EzButton), string.Empty);
+    public static readonly BindableProperty FontSizeProperty = BindableProperty.Create(nameof(FontSize), typeof(double), typeof(EzButton), 14d);
     public static readonly BindableProperty FontAttributesProperty = BindableProperty.Create(nameof(FontAttributes), typeof(FontAttributes), typeof(EzButton), FontAttributes.None);
     public static readonly BindableProperty CornerRadiusProperty = BindableProperty.Create(nameof(CornerRadius), typeof(int), typeof(EzButton), 6);
     public static readonly BindableProperty ButtonPaddingProperty = BindableProperty.Create(nameof(ButtonPadding), typeof(Thickness), typeof(EzButton), new Thickness(18, 10));
@@ -13,6 +14,12 @@ public partial class EzButton : ContentView
     {
         get => (string)GetValue(TextProperty);
         set => SetValue(TextProperty, value);
+    }
+
+    public double FontSize
+    {
+        get => (double)GetValue(FontSizeProperty);
+        set => SetValue(FontSizeProperty, value);
     }
 
     public FontAttributes FontAttributes

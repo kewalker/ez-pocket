@@ -7,6 +7,7 @@
              x:Class="EzPocket.Controls.EzButton">
     <Button x:Name="NativeButton"
             Text="{Binding Text, Source={x:Reference Root}}"
+            FontSize="{Binding FontSize, Source={x:Reference Root}}"
             FontAttributes="{Binding FontAttributes, Source={x:Reference Root}}"
             CornerRadius="{Binding CornerRadius, Source={x:Reference Root}}"
             Padding="{Binding ButtonPadding, Source={x:Reference Root}}"
