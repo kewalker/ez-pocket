@@ -7,6 +7,7 @@ public partial class CorePage : ContentPage
 {
     private readonly PocketScanner scanner;
     private readonly CoreInventoryService inventory;
+    private IReadOnlyList<CoreComparison> allCores = [];
 
     public CorePage()
     {
@@ -23,6 +24,20 @@ public partial class CorePage : ContentPage
 
     private async void OnRefreshClicked(object? sender, EventArgs e) => await RefreshAsync();
 
+    private void OnFilterChanged(object? sender, EventArgs e)
+    {
+        string query = Search.Text?.Trim() ?? string.Empty;
+        string filter = StatusFilter.SelectedItem?.ToString() ?? "All cores";
+        IEnumerable<CoreComparison> filtered = allCores;
+
+        if (!string.IsNullOrWhiteSpace(query))
+            filtered = filtered.Where(core => core.FriendlyName.Contains(query, StringComparison.OrdinalIgnoreCase) || core.Identifier.Contains(query, StringComparison.OrdinalIgnoreCase));
+        if (filter == "Updates") filtered = filtered.Where(core => core.Status == "Update");
+        if (filter == "Installed") filtered = filtered.Where(core => core.IsInstalled);
+        if (filter == "Available") filtered = filtered.Where(core => core.Status == "Available");
+        CoreList.ItemsSource = filtered.ToArray();
+    }
+
     private async Task RefreshAsync()
     {
         var pocket = scanner.Scan().FirstOrDefault(drive => drive.LooksLikePocket);
@@ -38,15 +53,18 @@ public partial class CorePage : ContentPage
         {
             var available = await inventory.GetAvailableAsync();
             var comparison = CoreInventoryService.Compare(pocket, available);
+            allCores = comparison;
+            StatusFilter.SelectedIndex = 0;
             Subtitle.Text = $"{pocket.Name} · friendly names come from the live inventory";
             Summary.Text = $"{pocket.CoreCount} installed · {available.Count} available";
-            CoreList.ItemsSource = comparison;
+            OnFilterChanged(this, EventArgs.Empty);
         }
         catch (HttpRequestException)
         {
             Subtitle.Text = "The Pocket was found, but the live inventory could not be reached.";
             Summary.Text = $"{pocket.CoreCount} installed";
-            CoreList.ItemsSource = pocket.InstalledCoreNames.Select(identifier => new CoreComparison(identifier, identifier, "Unknown", "Unknown", "—", true, false, "Unknown")).ToArray();
+            allCores = pocket.InstalledCoreNames.Select(identifier => new CoreComparison(identifier, identifier, "Unknown", "Unknown", "-", true, false, "Unknown")).ToArray();
+            OnFilterChanged(this, EventArgs.Empty);
         }
     }
 }

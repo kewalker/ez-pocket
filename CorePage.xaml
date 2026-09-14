@@ -5,7 +5,7 @@
              x:Class="EzPocket.CorePage"
              BackgroundColor="#F5F7FB"
              Title="Core Manager">
-    <Grid Padding="28,24" RowDefinitions="Auto,Auto,*" RowSpacing="18">
+    <Grid Padding="28,24" RowDefinitions="Auto,Auto,Auto,*" RowSpacing="14">
         <VerticalStackLayout Spacing="4">
             <Label Text="Core Manager" FontSize="30" FontAttributes="Bold" TextColor="#14213D" />
             <Label x:Name="Subtitle" Text="Scan a Pocket to compare installed and available cores." FontSize="14" TextColor="#63708A" />
@@ -14,7 +14,18 @@
             <Label x:Name="Summary" Text="—" FontSize="16" FontAttributes="Bold" TextColor="#14213D" VerticalOptions="Center" />
             <Button Grid.Column="1" Text="Refresh" Clicked="OnRefreshClicked" />
         </Grid>
-        <CollectionView x:Name="CoreList" Grid.Row="2" SelectionMode="None">
+        <Grid Grid.Row="2" ColumnDefinitions="*,180" ColumnSpacing="12">
+            <SearchBar x:Name="Search" Placeholder="Search cores" TextChanged="OnFilterChanged" />
+            <Picker x:Name="StatusFilter" Grid.Column="1" Title="Filter status" SelectedIndexChanged="OnFilterChanged">
+                <Picker.Items>
+                    <x:String>All cores</x:String>
+                    <x:String>Updates</x:String>
+                    <x:String>Installed</x:String>
+                    <x:String>Available</x:String>
+                </Picker.Items>
+            </Picker>
+        </Grid>
+        <CollectionView x:Name="CoreList" Grid.Row="3" SelectionMode="None">
             <CollectionView.EmptyView>
                 <Label Text="No cores found yet." TextColor="#63708A" HorizontalOptions="Center" VerticalOptions="Center" />
             </CollectionView.EmptyView>
