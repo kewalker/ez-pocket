@@ -26,13 +26,17 @@
             <Label x:Name="Summary" Text="-" FontSize="16" FontAttributes="Bold" TextColor="#14213D" VerticalOptions="Center" />
             <controls:EzButton Grid.Column="1" Text="Refresh" Clicked="OnRefreshClicked" />
         </Grid>
-        <Grid Grid.Row="3" ColumnDefinitions="*,180" ColumnSpacing="12">
-            <SearchBar x:Name="Search" Placeholder="Search cores" TextChanged="OnFilterChanged" />
-            <Picker x:Name="StatusFilter" Grid.Column="1" Title="Filter status" SelectedIndexChanged="OnFilterChanged">
-                <Picker.Items>
-                    <x:String>All cores</x:String><x:String>Updates</x:String><x:String>Installed</x:String><x:String>Available</x:String>
-                </Picker.Items>
-            </Picker>
+        <Grid Grid.Row="3" ColumnDefinitions="*,220" ColumnSpacing="12">
+            <Border BackgroundColor="White" Stroke="#B8C4D6" StrokeThickness="1" StrokeShape="RoundRectangle 8" Padding="4,0">
+                <SearchBar x:Name="Search" Placeholder="Search cores" PlaceholderColor="#718096" TextColor="#14213D" BackgroundColor="Transparent" HeightRequest="46" TextChanged="OnFilterChanged" />
+            </Border>
+            <Border Grid.Column="1" BackgroundColor="White" Stroke="#B8C4D6" StrokeThickness="1" StrokeShape="RoundRectangle 8" Padding="10,0">
+                <Picker x:Name="StatusFilter" Title="Filter status" TitleColor="#718096" TextColor="#14213D" BackgroundColor="Transparent" SelectedIndexChanged="OnFilterChanged">
+                    <Picker.Items>
+                        <x:String>All cores</x:String><x:String>Updates</x:String><x:String>Installed</x:String><x:String>Available</x:String>
+                    </Picker.Items>
+                </Picker>
+            </Border>
         </Grid>
         <CollectionView x:Name="CoreList" Grid.Row="4" SelectionMode="None">
             <CollectionView.EmptyView><Label Text="No cores found yet." TextColor="#63708A" HorizontalOptions="Center" VerticalOptions="Center" /></CollectionView.EmptyView>
