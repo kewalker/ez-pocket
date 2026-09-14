@@ -7,10 +7,16 @@
              BackgroundColor="#F5F7FB"
              Title="Core Manager">
     <Grid Padding="28,24" RowDefinitions="Auto,Auto,Auto,Auto,*" RowSpacing="14">
-        <Grid ColumnDefinitions="Auto,Auto,Auto" ColumnSpacing="6">
-            <controls:EzButton Text="Back" Clicked="OnBackClicked" Padding="12,6" />
+        <Grid ColumnDefinitions="Auto,Auto,Auto,Auto" ColumnSpacing="6">
+            <Label Text="ez-pocket" TextDecorations="Underline" TextColor="#2563EB" FontSize="14" VerticalOptions="Center">
+                <Label.GestureRecognizers>
+                    <TapGestureRecognizer Tapped="OnBackClicked" />
+                    <PointerGestureRecognizer PointerEntered="OnBreadcrumbPointerEntered" PointerExited="OnBreadcrumbPointerExited" />
+                </Label.GestureRecognizers>
+            </Label>
             <Label Grid.Column="1" Text="/" FontSize="14" TextColor="#AAB3C4" VerticalOptions="Center" />
-            <controls:EzButton Grid.Column="2" Text="ez-pocket" Clicked="OnBackClicked" Padding="6,6" />
+            <Label Grid.Column="2" Text="Manage cores" FontSize="14" TextColor="#63708A" VerticalOptions="Center" />
+            <controls:EzButton Grid.Column="3" Text="Back" Clicked="OnBackClicked" ButtonPadding="12,10" />
         </Grid>
         <VerticalStackLayout Grid.Row="1" Spacing="4">
             <Label Text="Core Manager" FontSize="30" FontAttributes="Bold" TextColor="#14213D" />

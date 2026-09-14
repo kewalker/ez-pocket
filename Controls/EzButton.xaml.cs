@@ -5,6 +5,7 @@ public partial class EzButton : ContentView
     public static readonly BindableProperty TextProperty = BindableProperty.Create(nameof(Text), typeof(string), typeof(EzButton), string.Empty);
     public static readonly BindableProperty FontAttributesProperty = BindableProperty.Create(nameof(FontAttributes), typeof(FontAttributes), typeof(EzButton), FontAttributes.None);
     public static readonly BindableProperty CornerRadiusProperty = BindableProperty.Create(nameof(CornerRadius), typeof(int), typeof(EzButton), 6);
+    public static readonly BindableProperty ButtonPaddingProperty = BindableProperty.Create(nameof(ButtonPadding), typeof(Thickness), typeof(EzButton), new Thickness(18, 10));
 
     public event EventHandler? Clicked;
 
@@ -26,6 +27,12 @@ public partial class EzButton : ContentView
         set => SetValue(CornerRadiusProperty, value);
     }
 
+    public Thickness ButtonPadding
+    {
+        get => (Thickness)GetValue(ButtonPaddingProperty);
+        set => SetValue(ButtonPaddingProperty, value);
+    }
+
     public EzButton()
     {
         InitializeComponent();
@@ -33,13 +40,13 @@ public partial class EzButton : ContentView
 
     private void OnNativeClicked(object? sender, EventArgs e) => Clicked?.Invoke(this, e);
 
-    private void OnPointerEntered(object? sender, PointerEventArgs e) => SetFeedback(1.02, 0.9);
+    private void OnPointerEntered(object? sender, PointerEventArgs e) => SetFeedback(1.02, 1);
 
     private void OnPointerExited(object? sender, PointerEventArgs e) => SetFeedback(1, 1);
 
     private void OnNativePressed(object? sender, EventArgs e) => SetFeedback(0.96, 0.75);
 
-    private void OnNativeReleased(object? sender, EventArgs e) => SetFeedback(1.02, 0.9);
+    private void OnNativeReleased(object? sender, EventArgs e) => SetFeedback(1.02, 1);
 
     private void OnNativeFocused(object? sender, FocusEventArgs e)
     {

@@ -29,6 +29,16 @@ public partial class CorePage : ContentPage
         await Shell.Current.GoToAsync("..");
     }
 
+    private void OnBreadcrumbPointerEntered(object? sender, PointerEventArgs e)
+    {
+        if (sender is Label label) label.TextColor = Color.FromArgb("#1D4ED8");
+    }
+
+    private void OnBreadcrumbPointerExited(object? sender, PointerEventArgs e)
+    {
+        if (sender is Label label) label.TextColor = Color.FromArgb("#2563EB");
+    }
+
     private void OnFilterChanged(object? sender, EventArgs e)
     {
         string query = Search.Text?.Trim() ?? string.Empty;

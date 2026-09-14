@@ -9,7 +9,7 @@
             Text="{Binding Text, Source={x:Reference Root}}"
             FontAttributes="{Binding FontAttributes, Source={x:Reference Root}}"
             CornerRadius="{Binding CornerRadius, Source={x:Reference Root}}"
-            Padding="{Binding Padding, Source={x:Reference Root}}"
+            Padding="{Binding ButtonPadding, Source={x:Reference Root}}"
             Clicked="OnNativeClicked"
             Pressed="OnNativePressed"
             Released="OnNativeReleased"
