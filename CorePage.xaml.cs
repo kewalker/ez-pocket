@@ -46,7 +46,7 @@ public partial class CorePage : ContentPage
         {
             Subtitle.Text = "The Pocket was found, but the live inventory could not be reached.";
             Summary.Text = $"{pocket.CoreCount} installed";
-            CoreList.ItemsSource = pocket.InstalledCoreNames.Select(identifier => new CoreComparison(identifier, identifier, "Unknown", "—", true, false, "Unknown")).ToArray();
+            CoreList.ItemsSource = pocket.InstalledCoreNames.Select(identifier => new CoreComparison(identifier, identifier, "Unknown", "Unknown", "—", true, false, "Unknown")).ToArray();
         }
     }
 }

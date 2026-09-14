@@ -26,7 +26,7 @@
                             <Label Grid.Row="1" Text="{Binding Identifier}" FontSize="12" TextColor="#63708A" />
                             <VerticalStackLayout Grid.Column="1" Grid.RowSpan="2" HorizontalOptions="End" Spacing="3">
                                 <Label Text="{Binding StatusLabel}" FontSize="13" FontAttributes="Bold" TextColor="#19734E" HorizontalTextAlignment="End" />
-                                <Label Text="{Binding AvailableVersion}" FontSize="12" TextColor="#63708A" HorizontalTextAlignment="End" />
+                                <Label Text="{Binding VersionLabel}" FontSize="12" TextColor="#63708A" HorizontalTextAlignment="End" />
                             </VerticalStackLayout>
                         </Grid>
                     </Border>

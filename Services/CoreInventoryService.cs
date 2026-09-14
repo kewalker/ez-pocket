@@ -1,4 +1,5 @@
 using System.Net.Http.Json;
+using System.Text.Json;
 using System.Text.Json.Serialization;
 using EzPocket.Models;
 
@@ -14,35 +15,47 @@ public sealed class CoreInventoryService
         InventoryResponse? response = await Client.GetFromJsonAsync<InventoryResponse>(InventoryUrl, cancellationToken);
         return response?.Data?
             .Where(core => !string.IsNullOrWhiteSpace(core.Identifier))
-            .Select(core => new AvailableCore(
-                core.Identifier!,
-                core.Version ?? "Unknown",
-                core.Platform?.Name ?? core.Identifier!,
-                core.Platform?.Category ?? "Other"))
+            .Select(core => new AvailableCore(core.Identifier!, core.Version ?? "Unknown", core.Platform?.Name ?? core.Identifier!, core.Platform?.Category ?? "Other"))
             .OrderBy(core => core.Name)
             .ToArray() ?? [];
     }
 
     public static IReadOnlyList<CoreComparison> Compare(PocketDrive pocket, IReadOnlyList<AvailableCore> available)
     {
-        // The inventory can contain multiple releases/entries for one identifier.
-        // Compare against the newest entry instead of allowing duplicate keys to crash the page.
         var availableById = available
             .GroupBy(core => core.Identifier, StringComparer.OrdinalIgnoreCase)
             .Select(group => group.OrderByDescending(core => ParseVersion(core.Version)).First())
             .ToDictionary(core => core.Identifier, StringComparer.OrdinalIgnoreCase);
         var installedIds = pocket.InstalledCoreNames.ToHashSet(StringComparer.OrdinalIgnoreCase);
-        var result = availableById.Values.Select(core => new CoreComparison(
-            core.Identifier, core.Name, core.Category, core.Version,
-            installedIds.Contains(core.Identifier), true,
-            installedIds.Contains(core.Identifier) ? "Installed" : "Available"));
+        var result = availableById.Values.Select(core =>
+        {
+            string installedVersion = GetInstalledVersion(pocket, core.Identifier) ?? "-";
+            string status = !installedIds.Contains(core.Identifier)
+                ? "Available"
+                : IsOlder(installedVersion, core.Version) ? "Update" : "Installed";
+            return new CoreComparison(core.Identifier, core.Name, core.Category, installedVersion, core.Version, installedIds.Contains(core.Identifier), true, status);
+        });
 
         var missingFromInventory = pocket.InstalledCoreNames
             .Where(identifier => !availableById.ContainsKey(identifier))
-            .Select(identifier => new CoreComparison(identifier, identifier, "Unknown", "—", true, false, "Unknown"));
-
+            .Select(identifier => new CoreComparison(identifier, identifier, "Unknown", GetInstalledVersion(pocket, identifier) ?? "Unknown", "-", true, false, "Unknown"));
         return result.Concat(missingFromInventory).OrderBy(core => core.FriendlyName).ToArray();
     }
+
+    private static string? GetInstalledVersion(PocketDrive pocket, string identifier)
+    {
+        string file = Path.Combine(pocket.RootPath, "Cores", identifier, "core.json");
+        if (!File.Exists(file)) return null;
+        try
+        {
+            using JsonDocument document = JsonDocument.Parse(File.ReadAllText(file));
+            return document.RootElement.GetProperty("core").GetProperty("metadata").GetProperty("version").GetString();
+        }
+        catch (JsonException) { return null; }
+        catch (InvalidOperationException) { return null; }
+    }
+
+    private static bool IsOlder(string installed, string available) => ParseVersion(installed).CompareTo(ParseVersion(available)) < 0;
 
     private static Version ParseVersion(string value)
     {
@@ -52,28 +65,19 @@ public sealed class CoreInventoryService
 
     private sealed class InventoryResponse
     {
-        [JsonPropertyName("data")]
-        public List<InventoryCore>? Data { get; set; }
+        [JsonPropertyName("data")] public List<InventoryCore>? Data { get; set; }
     }
 
     private sealed class InventoryCore
     {
-        [JsonPropertyName("identifier")]
-        public string? Identifier { get; set; }
-
-        [JsonPropertyName("version")]
-        public string? Version { get; set; }
-
-        [JsonPropertyName("platform")]
-        public InventoryPlatform? Platform { get; set; }
+        [JsonPropertyName("identifier")] public string? Identifier { get; set; }
+        [JsonPropertyName("version")] public string? Version { get; set; }
+        [JsonPropertyName("platform")] public InventoryPlatform? Platform { get; set; }
     }
 
     private sealed class InventoryPlatform
     {
-        [JsonPropertyName("name")]
-        public string? Name { get; set; }
-
-        [JsonPropertyName("category")]
-        public string? Category { get; set; }
+        [JsonPropertyName("name")] public string? Name { get; set; }
+        [JsonPropertyName("category")] public string? Category { get; set; }
     }
 }
