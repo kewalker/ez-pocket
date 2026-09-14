@@ -5,16 +5,20 @@
              x:Class="EzPocket.CorePage"
              BackgroundColor="#F5F7FB"
              Title="Core Manager">
-    <Grid Padding="28,24" RowDefinitions="Auto,Auto,Auto,*" RowSpacing="14">
-        <VerticalStackLayout Spacing="4">
+    <Grid Padding="28,24" RowDefinitions="Auto,Auto,Auto,Auto,*" RowSpacing="14">
+        <Grid ColumnDefinitions="Auto,*" ColumnSpacing="12">
+            <Button Text="‹  Back" Clicked="OnBackClicked" Padding="12,6" />
+            <Label Grid.Column="1" Text="ez-pocket  /  Manage cores" FontSize="14" TextColor="#63708A" VerticalOptions="Center" />
+        </Grid>
+        <VerticalStackLayout Grid.Row="1" Spacing="4">
             <Label Text="Core Manager" FontSize="30" FontAttributes="Bold" TextColor="#14213D" />
             <Label x:Name="Subtitle" Text="Scan a Pocket to compare installed and available cores." FontSize="14" TextColor="#63708A" />
         </VerticalStackLayout>
-        <Grid Grid.Row="1" ColumnDefinitions="*,Auto">
+        <Grid Grid.Row="2" ColumnDefinitions="*,Auto">
             <Label x:Name="Summary" Text="—" FontSize="16" FontAttributes="Bold" TextColor="#14213D" VerticalOptions="Center" />
             <Button Grid.Column="1" Text="Refresh" Clicked="OnRefreshClicked" />
         </Grid>
-        <Grid Grid.Row="2" ColumnDefinitions="*,180" ColumnSpacing="12">
+        <Grid Grid.Row="3" ColumnDefinitions="*,180" ColumnSpacing="12">
             <SearchBar x:Name="Search" Placeholder="Search cores" TextChanged="OnFilterChanged" />
             <Picker x:Name="StatusFilter" Grid.Column="1" Title="Filter status" SelectedIndexChanged="OnFilterChanged">
                 <Picker.Items>
@@ -25,7 +29,7 @@
                 </Picker.Items>
             </Picker>
         </Grid>
-        <CollectionView x:Name="CoreList" Grid.Row="3" SelectionMode="None">
+        <CollectionView x:Name="CoreList" Grid.Row="4" SelectionMode="None">
             <CollectionView.EmptyView>
                 <Label Text="No cores found yet." TextColor="#63708A" HorizontalOptions="Center" VerticalOptions="Center" />
             </CollectionView.EmptyView>

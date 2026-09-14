@@ -24,6 +24,11 @@ public partial class CorePage : ContentPage
 
     private async void OnRefreshClicked(object? sender, EventArgs e) => await RefreshAsync();
 
+    private async void OnBackClicked(object? sender, EventArgs e)
+    {
+        await Shell.Current.GoToAsync("..");
+    }
+
     private void OnFilterChanged(object? sender, EventArgs e)
     {
         string query = Search.Text?.Trim() ?? string.Empty;
