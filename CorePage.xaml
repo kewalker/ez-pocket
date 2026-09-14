@@ -6,33 +6,35 @@
              BackgroundColor="#F5F7FB"
              Title="Core Manager">
     <Grid Padding="28,24" RowDefinitions="Auto,Auto,Auto,Auto,*" RowSpacing="14">
-        <Grid ColumnDefinitions="Auto,*" ColumnSpacing="12">
-            <Button Text="‹  Back" Clicked="OnBackClicked" Padding="12,6" />
-            <Label Grid.Column="1" Text="ez-pocket  /  Manage cores" FontSize="14" TextColor="#63708A" VerticalOptions="Center" />
+        <Grid ColumnDefinitions="Auto,Auto,Auto" ColumnSpacing="6">
+            <Button x:Name="BackButton" Text="Back" Clicked="OnBackClicked" Pressed="OnButtonPressed" Released="OnButtonReleased" Focused="OnButtonFocused" Unfocused="OnButtonUnfocused" Padding="12,6">
+                <Button.GestureRecognizers><PointerGestureRecognizer PointerEntered="OnButtonPointerEntered" PointerExited="OnButtonPointerExited" /></Button.GestureRecognizers>
+            </Button>
+            <Label Grid.Column="1" Text="/" FontSize="14" TextColor="#AAB3C4" VerticalOptions="Center" />
+            <Button x:Name="BreadcrumbHomeButton" Grid.Column="2" Text="ez-pocket" Clicked="OnBackClicked" Pressed="OnButtonPressed" Released="OnButtonReleased" Focused="OnButtonFocused" Unfocused="OnButtonUnfocused" Padding="6,6">
+                <Button.GestureRecognizers><PointerGestureRecognizer PointerEntered="OnButtonPointerEntered" PointerExited="OnButtonPointerExited" /></Button.GestureRecognizers>
+            </Button>
         </Grid>
         <VerticalStackLayout Grid.Row="1" Spacing="4">
             <Label Text="Core Manager" FontSize="30" FontAttributes="Bold" TextColor="#14213D" />
             <Label x:Name="Subtitle" Text="Scan a Pocket to compare installed and available cores." FontSize="14" TextColor="#63708A" />
         </VerticalStackLayout>
         <Grid Grid.Row="2" ColumnDefinitions="*,Auto">
-            <Label x:Name="Summary" Text="—" FontSize="16" FontAttributes="Bold" TextColor="#14213D" VerticalOptions="Center" />
-            <Button Grid.Column="1" Text="Refresh" Clicked="OnRefreshClicked" />
+            <Label x:Name="Summary" Text="-" FontSize="16" FontAttributes="Bold" TextColor="#14213D" VerticalOptions="Center" />
+            <Button x:Name="RefreshButton" Grid.Column="1" Text="Refresh" Clicked="OnRefreshClicked" Pressed="OnButtonPressed" Released="OnButtonReleased" Focused="OnButtonFocused" Unfocused="OnButtonUnfocused">
+                <Button.GestureRecognizers><PointerGestureRecognizer PointerEntered="OnButtonPointerEntered" PointerExited="OnButtonPointerExited" /></Button.GestureRecognizers>
+            </Button>
         </Grid>
         <Grid Grid.Row="3" ColumnDefinitions="*,180" ColumnSpacing="12">
             <SearchBar x:Name="Search" Placeholder="Search cores" TextChanged="OnFilterChanged" />
             <Picker x:Name="StatusFilter" Grid.Column="1" Title="Filter status" SelectedIndexChanged="OnFilterChanged">
                 <Picker.Items>
-                    <x:String>All cores</x:String>
-                    <x:String>Updates</x:String>
-                    <x:String>Installed</x:String>
-                    <x:String>Available</x:String>
+                    <x:String>All cores</x:String><x:String>Updates</x:String><x:String>Installed</x:String><x:String>Available</x:String>
                 </Picker.Items>
             </Picker>
         </Grid>
         <CollectionView x:Name="CoreList" Grid.Row="4" SelectionMode="None">
-            <CollectionView.EmptyView>
-                <Label Text="No cores found yet." TextColor="#63708A" HorizontalOptions="Center" VerticalOptions="Center" />
-            </CollectionView.EmptyView>
+            <CollectionView.EmptyView><Label Text="No cores found yet." TextColor="#63708A" HorizontalOptions="Center" VerticalOptions="Center" /></CollectionView.EmptyView>
             <CollectionView.ItemTemplate>
                 <DataTemplate x:DataType="models:CoreComparison">
                     <Border BackgroundColor="White" Stroke="#E2E7F0" StrokeShape="RoundRectangle 14" Padding="16" Margin="0,0,0,10">
