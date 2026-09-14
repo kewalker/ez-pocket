@@ -4,7 +4,7 @@
 
 - ez-pocket is a modern .NET MAUI desktop app for managing Analogue Pocket cores, firmware, assets, saves, and syncing.
 - Prioritize Windows and macOS. Linux is not a first-release target.
-- Prefer friendly core names from the live openFPGA inventory. Show technical identifiers as secondary diagnostic text.
+- Prefer friendly core names. Show technical identifiers as secondary diagnostic text.
 - Scan and preview before writing to a Pocket. Never make a device change without an explicit user action.
 
 ## UI conventions

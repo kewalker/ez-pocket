@@ -70,7 +70,7 @@ public partial class CorePage : ContentPage
             var comparison = CoreInventoryService.Compare(pocket, available);
             allCores = comparison;
             StatusFilter.SelectedIndex = 0;
-            Subtitle.Text = $"{pocket.Name} · friendly names come from the live inventory";
+            Subtitle.Text = pocket.Name;
             Summary.Text = $"{pocket.CoreCount} installed · {available.Count} available";
             OnFilterChanged(this, EventArgs.Empty);
         }
