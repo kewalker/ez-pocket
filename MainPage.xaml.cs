@@ -64,6 +64,6 @@ public partial class MainPage : ContentPage
 
     private async void OnManageCoresClicked(object? sender, EventArgs e)
     {
-        await Shell.Current.GoToAsync("///CorePage");
+        await Shell.Current.GoToAsync("CorePage");
     }
 }
