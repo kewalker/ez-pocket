@@ -2,18 +2,15 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:models="clr-namespace:EzPocket.Models"
+             xmlns:controls="clr-namespace:EzPocket.Controls"
              x:Class="EzPocket.CorePage"
              BackgroundColor="#F5F7FB"
              Title="Core Manager">
     <Grid Padding="28,24" RowDefinitions="Auto,Auto,Auto,Auto,*" RowSpacing="14">
         <Grid ColumnDefinitions="Auto,Auto,Auto" ColumnSpacing="6">
-            <Button x:Name="BackButton" Text="Back" Clicked="OnBackClicked" Pressed="OnButtonPressed" Released="OnButtonReleased" Focused="OnButtonFocused" Unfocused="OnButtonUnfocused" Padding="12,6">
-                <Button.GestureRecognizers><PointerGestureRecognizer PointerEntered="OnButtonPointerEntered" PointerExited="OnButtonPointerExited" /></Button.GestureRecognizers>
-            </Button>
+            <controls:EzButton Text="Back" Clicked="OnBackClicked" Padding="12,6" />
             <Label Grid.Column="1" Text="/" FontSize="14" TextColor="#AAB3C4" VerticalOptions="Center" />
-            <Button x:Name="BreadcrumbHomeButton" Grid.Column="2" Text="ez-pocket" Clicked="OnBackClicked" Pressed="OnButtonPressed" Released="OnButtonReleased" Focused="OnButtonFocused" Unfocused="OnButtonUnfocused" Padding="6,6">
-                <Button.GestureRecognizers><PointerGestureRecognizer PointerEntered="OnButtonPointerEntered" PointerExited="OnButtonPointerExited" /></Button.GestureRecognizers>
-            </Button>
+            <controls:EzButton Grid.Column="2" Text="ez-pocket" Clicked="OnBackClicked" Padding="6,6" />
         </Grid>
         <VerticalStackLayout Grid.Row="1" Spacing="4">
             <Label Text="Core Manager" FontSize="30" FontAttributes="Bold" TextColor="#14213D" />
@@ -21,9 +18,7 @@
         </VerticalStackLayout>
         <Grid Grid.Row="2" ColumnDefinitions="*,Auto">
             <Label x:Name="Summary" Text="-" FontSize="16" FontAttributes="Bold" TextColor="#14213D" VerticalOptions="Center" />
-            <Button x:Name="RefreshButton" Grid.Column="1" Text="Refresh" Clicked="OnRefreshClicked" Pressed="OnButtonPressed" Released="OnButtonReleased" Focused="OnButtonFocused" Unfocused="OnButtonUnfocused">
-                <Button.GestureRecognizers><PointerGestureRecognizer PointerEntered="OnButtonPointerEntered" PointerExited="OnButtonPointerExited" /></Button.GestureRecognizers>
-            </Button>
+            <controls:EzButton Grid.Column="1" Text="Refresh" Clicked="OnRefreshClicked" />
         </Grid>
         <Grid Grid.Row="3" ColumnDefinitions="*,180" ColumnSpacing="12">
             <SearchBar x:Name="Search" Placeholder="Search cores" TextChanged="OnFilterChanged" />

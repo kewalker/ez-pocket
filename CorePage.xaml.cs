@@ -29,29 +29,6 @@ public partial class CorePage : ContentPage
         await Shell.Current.GoToAsync("..");
     }
 
-    private void OnButtonPointerEntered(object? sender, PointerEventArgs e) => SetButtonFeedback(sender as Button, 1.02, 0.9);
-
-    private void OnButtonPointerExited(object? sender, PointerEventArgs e) => SetButtonFeedback(sender as Button, 1, 1);
-
-    private void OnButtonPressed(object? sender, EventArgs e) => SetButtonFeedback(sender as Button, 0.96, 0.75);
-
-    private void OnButtonReleased(object? sender, EventArgs e) => SetButtonFeedback(sender as Button, 1.02, 0.9);
-
-    private void OnButtonFocused(object? sender, FocusEventArgs e)
-    {
-        if (sender is Button button) { button.BorderColor = Colors.Gray; button.BorderWidth = 2; }
-    }
-
-    private void OnButtonUnfocused(object? sender, FocusEventArgs e)
-    {
-        if (sender is Button button) { button.BorderColor = Colors.Transparent; button.BorderWidth = 0; }
-    }
-
-    private static void SetButtonFeedback(Button? button, double scale, double opacity)
-    {
-        if (button is not null) { button.Scale = scale; button.Opacity = opacity; }
-    }
-
     private void OnFilterChanged(object? sender, EventArgs e)
     {
         string query = Search.Text?.Trim() ?? string.Empty;

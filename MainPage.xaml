@@ -1,6 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:controls="clr-namespace:EzPocket.Controls"
              x:Class="EzPocket.MainPage"
              BackgroundColor="#F5F7FB"
              Title="Dashboard">
@@ -23,15 +24,11 @@
                     <Label Text="Pocket status" TextColor="#AEBBD4" FontSize="13" />
                     <Label x:Name="StatusTitle" Grid.Row="1" Text="No Pocket connected" TextColor="White" FontSize="24" FontAttributes="Bold" />
                     <Label x:Name="StatusDetail" Grid.Row="2" Text="Connect an SD card or USB Pocket to begin." TextColor="#C8D2E4" FontSize="14" />
-                    <Button x:Name="ScanButton" Grid.Column="1" Grid.RowSpan="3" Text="Scan" Clicked="OnScanClicked" Pressed="OnScanPressed" Released="OnScanReleased" FontAttributes="Bold" CornerRadius="14" Padding="22,0" VerticalOptions="Center">
-                        <Button.GestureRecognizers>
-                            <PointerGestureRecognizer PointerEntered="OnScanPointerEntered" PointerExited="OnScanPointerExited" />
-                        </Button.GestureRecognizers>
-                    </Button>
+                    <controls:EzButton x:Name="ScanButton" Grid.Column="1" Grid.RowSpan="3" Text="Scan" Clicked="OnScanClicked" FontAttributes="Bold" CornerRadius="14" Padding="22,0" VerticalOptions="Center" />
                 </Grid>
             </Border>
             <Label Text="Update overview" FontSize="20" FontAttributes="Bold" TextColor="#14213D" />
-            <Button Text="Manage cores" Clicked="OnManageCoresClicked" HorizontalOptions="Start" />
+            <controls:EzButton Text="Manage cores" Clicked="OnManageCoresClicked" HorizontalOptions="Start" />
             <Grid ColumnDefinitions="*,*,*" ColumnSpacing="12">
                 <Border BackgroundColor="White" Stroke="#E2E7F0" StrokeShape="RoundRectangle 16" Padding="16"><VerticalStackLayout Spacing="6"><Label Text="Cores" TextColor="#63708A" FontSize="13" /><Label Text="—" FontSize="26" FontAttributes="Bold" TextColor="#14213D" /><Label Text="Not scanned" TextColor="#63708A" FontSize="12" /></VerticalStackLayout></Border>
                 <Border Grid.Column="1" BackgroundColor="White" Stroke="#E2E7F0" StrokeShape="RoundRectangle 16" Padding="16"><VerticalStackLayout Spacing="6"><Label Text="Updates" TextColor="#63708A" FontSize="13" /><Label Text="—" FontSize="26" FontAttributes="Bold" TextColor="#14213D" /><Label Text="Ready to check" TextColor="#63708A" FontSize="12" /></VerticalStackLayout></Border>
