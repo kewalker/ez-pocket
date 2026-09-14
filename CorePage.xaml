@@ -30,12 +30,15 @@
             <Border BackgroundColor="White" Stroke="#B8C4D6" StrokeThickness="1" StrokeShape="RoundRectangle 8" Padding="4,0">
                 <SearchBar x:Name="Search" Placeholder="Search cores" PlaceholderColor="#718096" TextColor="#14213D" BackgroundColor="Transparent" HeightRequest="46" TextChanged="OnFilterChanged" />
             </Border>
-            <Border Grid.Column="1" BackgroundColor="White" Stroke="#B8C4D6" StrokeThickness="1" StrokeShape="RoundRectangle 8" Padding="10,0">
-                <Picker x:Name="StatusFilter" Title="Filter status" TitleColor="#718096" TextColor="#14213D" BackgroundColor="Transparent" SelectedIndexChanged="OnFilterChanged">
-                    <Picker.Items>
-                        <x:String>All cores</x:String><x:String>Updates</x:String><x:String>Installed</x:String><x:String>Available</x:String>
-                    </Picker.Items>
-                </Picker>
+            <Border Grid.Column="1" BackgroundColor="White" Stroke="#B8C4D6" StrokeThickness="1" StrokeShape="RoundRectangle 8" Padding="10,0,6,0">
+                <Grid ColumnDefinitions="*,Auto">
+                    <Picker x:Name="StatusFilter" Title="Status" TitleColor="#718096" TextColor="#14213D" BackgroundColor="Transparent" FontSize="14" HorizontalOptions="Fill" SelectedIndexChanged="OnFilterChanged">
+                        <Picker.Items>
+                            <x:String>All cores</x:String><x:String>Updates</x:String><x:String>Installed</x:String><x:String>Available</x:String>
+                        </Picker.Items>
+                    </Picker>
+                    <Label Grid.Column="1" Text="&#x25BE;" FontSize="14" TextColor="#52627A" VerticalOptions="Center" InputTransparent="True" />
+                </Grid>
             </Border>
         </Grid>
         <CollectionView x:Name="CoreList" Grid.Row="4" SelectionMode="None">
