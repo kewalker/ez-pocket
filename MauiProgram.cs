@@ -21,6 +21,7 @@ public static class MauiProgram
         builder.Services.AddSingleton<PocketInitializationService>();
         builder.Services.AddSingleton<CoreInventoryService>();
         builder.Services.AddSingleton<CoreSelectionService>();
+        builder.Services.AddSingleton<CoreSyncService>();
 #if WINDOWS
         builder.Services.AddSingleton<IFolderPickerService, WindowsFolderPickerService>();
 #else

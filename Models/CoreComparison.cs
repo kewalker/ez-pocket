@@ -10,7 +10,9 @@ public sealed record CoreComparison(
     string AvailableVersion,
     bool IsInstalled,
     bool IsAvailable,
-    string Status) : INotifyPropertyChanged
+    string Status,
+    string? DownloadUrl = null,
+    bool RequiresLicense = false) : INotifyPropertyChanged
 {
     private bool isSelected;
 

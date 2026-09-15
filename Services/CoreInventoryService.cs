@@ -15,7 +15,7 @@ public sealed class CoreInventoryService
         InventoryResponse? response = await Client.GetFromJsonAsync<InventoryResponse>(InventoryUrl, cancellationToken);
         return response?.Data?
             .Where(core => !string.IsNullOrWhiteSpace(core.Identifier))
-            .Select(core => new AvailableCore(core.Identifier!, core.Version ?? "Unknown", core.Platform?.Name ?? core.Identifier!, core.Platform?.Category ?? "Other"))
+            .Select(core => new AvailableCore(core.Identifier!, core.Version ?? "Unknown", core.Platform?.Name ?? core.Identifier!, core.Platform?.Category ?? "Other", core.DownloadUrl, core.RequiresLicense))
             .OrderBy(core => core.Name)
             .ToArray() ?? [];
     }
@@ -33,7 +33,7 @@ public sealed class CoreInventoryService
             string status = !installedIds.Contains(core.Identifier)
                 ? "Available"
                 : IsOlder(installedVersion, core.Version) ? "Update" : "Installed";
-            return new CoreComparison(core.Identifier, core.Name, core.Category, installedVersion, core.Version, installedIds.Contains(core.Identifier), true, status);
+            return new CoreComparison(core.Identifier, core.Name, core.Category, installedVersion, core.Version, installedIds.Contains(core.Identifier), true, status, core.DownloadUrl, core.RequiresLicense);
         });
 
         var missingFromInventory = pocket.InstalledCoreNames
@@ -72,6 +72,8 @@ public sealed class CoreInventoryService
     {
         [JsonPropertyName("identifier")] public string? Identifier { get; set; }
         [JsonPropertyName("version")] public string? Version { get; set; }
+        [JsonPropertyName("download_url")] public string? DownloadUrl { get; set; }
+        [JsonPropertyName("requires_license")] public bool RequiresLicense { get; set; }
         [JsonPropertyName("platform")] public InventoryPlatform? Platform { get; set; }
     }
 

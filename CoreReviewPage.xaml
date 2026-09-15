@@ -5,8 +5,8 @@
              xmlns:controls="clr-namespace:EzPocket.Controls"
              x:Class="EzPocket.CoreReviewPage"
              BackgroundColor="#F5F7FB"
-             Title="Review changes">
-    <Grid Padding="28,24,28,40" RowDefinitions="Auto,Auto,Auto,*" RowSpacing="16">
+             Title="Sync cores">
+    <Grid Padding="28,24,28,40" RowDefinitions="Auto,Auto,Auto,Auto,*" RowSpacing="16">
         <Grid ColumnDefinitions="Auto,Auto,Auto,Auto,Auto,Auto" ColumnSpacing="6">
             <controls:EzButton Text="&#x2190;" FontSize="22" Clicked="OnBackClicked" ButtonPadding="14,5" SemanticProperties.Description="Back" />
             <Label Grid.Column="1" Text="ez-pocket" TextDecorations="Underline" TextColor="#2563EB" FontSize="14" VerticalOptions="Center">
@@ -17,19 +17,26 @@
                 <Label.GestureRecognizers><TapGestureRecognizer Tapped="OnManageCoresClicked" /></Label.GestureRecognizers>
             </Label>
             <Label Grid.Column="4" Text="/" FontSize="14" TextColor="#AAB3C4" VerticalOptions="Center" />
-            <Label Grid.Column="5" Text="Review changes" FontSize="14" TextColor="#63708A" VerticalOptions="Center" />
+            <Label Grid.Column="5" Text="Sync cores" FontSize="14" TextColor="#63708A" VerticalOptions="Center" />
         </Grid>
         <VerticalStackLayout Grid.Row="1" Spacing="5">
-            <Label Text="Review changes" FontSize="30" FontAttributes="Bold" TextColor="#14213D" />
-            <Label Text="Confirm what should be included in the next core sync." FontSize="14" TextColor="#63708A" />
+            <Label Text="Sync selected cores" FontSize="30" FontAttributes="Bold" TextColor="#14213D" />
+            <Label Text="Download packages, inspect their files, then explicitly sync them to the selected Pocket." FontSize="14" TextColor="#63708A" />
         </VerticalStackLayout>
         <Border Grid.Row="2" BackgroundColor="#FFF7E6" Stroke="#F8D99A" StrokeShape="RoundRectangle 16" Padding="18">
             <VerticalStackLayout Spacing="5">
-                <Label Text="No files have been changed" FontSize="16" FontAttributes="Bold" TextColor="#7B4D00" />
-                <Label Text="This review is read-only. The eventual sync will show files to add or replace, storage impact, and backup details before confirmation." FontSize="14" TextColor="#8A620F" />
+                <Label Text="Nothing has been written to the Pocket" FontSize="16" FontAttributes="Bold" TextColor="#7B4D00" />
+                <Label Text="Preparing downloads is read-only. Sync creates backups before replacing a package file. The inventory does not publish checksums, so package provenance is shown by its HTTPS release URL." FontSize="14" TextColor="#8A620F" />
             </VerticalStackLayout>
         </Border>
-        <CollectionView Grid.Row="3" x:Name="SelectedCoreList" SelectionMode="None">
+        <Grid Grid.Row="3" ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12">
+            <controls:EzButton x:Name="PrepareButton" Text="Prepare sync" Clicked="OnPrepareClicked" />
+            <ActivityIndicator x:Name="PreparingIndicator" Grid.Column="1" IsVisible="False" IsRunning="False" Color="#2563EB" HorizontalOptions="Start" VerticalOptions="Center" />
+            <controls:EzButton x:Name="SyncButton" Grid.Column="2" Text="Sync to Pocket" IsVisible="False" Clicked="OnSyncClicked" />
+        </Grid>
+        <VerticalStackLayout Grid.Row="4" Spacing="10">
+            <Label x:Name="SyncStatus" Text="Select Prepare sync to download and inspect the selected packages." TextColor="#63708A" />
+            <CollectionView x:Name="SelectedCoreList" SelectionMode="None" HeightRequest="150">
             <CollectionView.ItemTemplate>
                 <DataTemplate x:DataType="models:CoreComparison">
                     <Border BackgroundColor="White" Stroke="#E2E7F0" StrokeShape="RoundRectangle 14" Padding="16" Margin="0,0,0,10">
@@ -41,6 +48,18 @@
                     </Border>
                 </DataTemplate>
             </CollectionView.ItemTemplate>
-        </CollectionView>
+            </CollectionView>
+            <CollectionView x:Name="ChangeList" SelectionMode="None" IsVisible="False">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate x:DataType="models:CoreSyncFileChange">
+                        <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="10">
+                            <Label Text="{Binding Action}" TextColor="#2563EB" FontAttributes="Bold" />
+                            <Label Grid.Column="1" Text="{Binding RelativePath}" TextColor="#14213D" LineBreakMode="TailTruncation" />
+                            <Label Grid.Column="2" Text="{Binding SizeLabel}" TextColor="#63708A" />
+                        </Grid>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+        </VerticalStackLayout>
     </Grid>
 </ContentPage>

@@ -50,7 +50,7 @@
         </Grid>
         <Grid Grid.Row="4" ColumnDefinitions="*,Auto" IsVisible="False" x:Name="SelectionBar" BackgroundColor="#E8F0FF" Padding="14,10" ColumnSpacing="14">
             <Label x:Name="SelectionSummary" TextColor="#1E3A8A" VerticalOptions="Center" />
-            <controls:EzButton x:Name="ReviewButton" Grid.Column="1" Text="Review changes" Clicked="OnReviewClicked" />
+            <controls:EzButton x:Name="ReviewButton" Grid.Column="1" Text="Prepare sync" Clicked="OnReviewClicked" />
         </Grid>
         <Grid Grid.Row="5">
             <CollectionView x:Name="CoreList" SelectionMode="None">

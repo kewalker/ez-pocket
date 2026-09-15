@@ -4,4 +4,6 @@ public sealed record AvailableCore(
     string Identifier,
     string Version,
     string Name,
-    string Category);
+    string Category,
+    string? DownloadUrl,
+    bool RequiresLicense);
