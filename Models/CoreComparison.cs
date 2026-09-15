@@ -1,3 +1,5 @@
+using System.ComponentModel;
+
 namespace EzPocket.Models;
 
 public sealed record CoreComparison(
@@ -8,8 +10,23 @@ public sealed record CoreComparison(
     string AvailableVersion,
     bool IsInstalled,
     bool IsAvailable,
-    string Status)
+    string Status) : INotifyPropertyChanged
 {
+    private bool isSelected;
+
+    public bool IsSelected
+    {
+        get => isSelected;
+        set
+        {
+            if (isSelected == value) return;
+            isSelected = value;
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(IsSelected)));
+        }
+    }
+
+    public event PropertyChangedEventHandler? PropertyChanged;
+
     public string StatusLabel => Status switch
     {
         "Update" => "Update available",

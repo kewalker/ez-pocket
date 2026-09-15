@@ -13,6 +13,7 @@ public sealed class CoreSelectionService
 
     public void SetSelected(CoreComparison core, bool isSelected)
     {
+        core.IsSelected = isSelected;
         if (isSelected) selectedCores[core.Identifier] = core;
         else selectedCores.Remove(core.Identifier);
     }
