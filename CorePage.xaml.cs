@@ -70,7 +70,12 @@ public partial class CorePage : ContentPage
             var comparison = CoreInventoryService.Compare(pocket, available);
             allCores = comparison;
             StatusFilter.SelectedIndex = 0;
-            StatusFilter.SelectedItem = "All cores";
+            StatusFilter.SelectedItem = StatusFilter.Items[0];
+            Dispatcher.Dispatch(() =>
+            {
+                StatusFilter.SelectedIndex = 0;
+                StatusFilter.SelectedItem = StatusFilter.Items[0];
+            });
             Subtitle.Text = pocket.Name;
             Summary.Text = $"{pocket.CoreCount} installed · {available.Count} available";
             OnFilterChanged(this, EventArgs.Empty);
