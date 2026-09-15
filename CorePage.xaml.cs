@@ -48,6 +48,28 @@ public partial class CorePage : ContentPage
         }
     }
 
+    private void OnCoreSelectionChanged(object? sender, CheckedChangedEventArgs e)
+    {
+        if (sender is CheckBox { BindingContext: CoreComparison core })
+        {
+            coreSelection.SetSelected(core, e.Value);
+            UpdateSelectionBar();
+        }
+    }
+
+    private async void OnReviewClicked(object? sender, EventArgs e)
+    {
+        if (coreSelection.SelectedCores.Count > 0)
+            await Shell.Current.GoToAsync("CoreReviewPage");
+    }
+
+    private void UpdateSelectionBar()
+    {
+        int count = coreSelection.SelectedCores.Count;
+        SelectionBar.IsVisible = count > 0;
+        SelectionSummary.Text = count == 1 ? "1 core selected" : $"{count} cores selected";
+    }
+
     private void OnBreadcrumbPointerEntered(object? sender, PointerEventArgs e)
     {
         if (sender is Label label) label.TextColor = Color.FromArgb("#1D4ED8");

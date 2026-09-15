@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:models="clr-namespace:EzPocket.Models"
+             xmlns:controls="clr-namespace:EzPocket.Controls"
+             x:Class="EzPocket.CoreReviewPage"
+             BackgroundColor="#F5F7FB"
+             Title="Review changes">
+    <Grid Padding="28,24,28,40" RowDefinitions="Auto,Auto,Auto,*" RowSpacing="16">
+        <Grid ColumnDefinitions="Auto,Auto,Auto,Auto" ColumnSpacing="6">
+            <controls:EzButton Text="&#x2190;" FontSize="22" Clicked="OnBackClicked" ButtonPadding="14,5" SemanticProperties.Description="Back" />
+            <Label Grid.Column="1" Text="ez-pocket" TextDecorations="Underline" TextColor="#2563EB" FontSize="14" VerticalOptions="Center" />
+            <Label Grid.Column="2" Text="/" FontSize="14" TextColor="#AAB3C4" VerticalOptions="Center" />
+            <Label Grid.Column="3" Text="Review changes" FontSize="14" TextColor="#63708A" VerticalOptions="Center" />
+        </Grid>
+        <VerticalStackLayout Grid.Row="1" Spacing="5">
+            <Label Text="Review changes" FontSize="30" FontAttributes="Bold" TextColor="#14213D" />
+            <Label Text="Confirm what should be included in the next core sync." FontSize="14" TextColor="#63708A" />
+        </VerticalStackLayout>
+        <Border Grid.Row="2" BackgroundColor="#FFF7E6" Stroke="#F8D99A" StrokeShape="RoundRectangle 16" Padding="18">
+            <VerticalStackLayout Spacing="5">
+                <Label Text="No files have been changed" FontSize="16" FontAttributes="Bold" TextColor="#7B4D00" />
+                <Label Text="This review is read-only. The eventual sync will show files to add or replace, storage impact, and backup details before confirmation." FontSize="14" TextColor="#8A620F" />
+            </VerticalStackLayout>
+        </Border>
+        <CollectionView Grid.Row="3" x:Name="SelectedCoreList" SelectionMode="None">
+            <CollectionView.ItemTemplate>
+                <DataTemplate x:DataType="models:CoreComparison">
+                    <Border BackgroundColor="White" Stroke="#E2E7F0" StrokeShape="RoundRectangle 14" Padding="16" Margin="0,0,0,10">
+                        <Grid ColumnDefinitions="*,Auto" RowDefinitions="Auto,Auto" RowSpacing="4">
+                            <Label Text="{Binding FriendlyName}" FontSize="16" FontAttributes="Bold" TextColor="#14213D" />
+                            <Label Grid.Row="1" Text="{Binding Identifier}" FontSize="12" TextColor="#63708A" />
+                            <Label Grid.Column="1" Grid.RowSpan="2" Text="{Binding StatusLabel}" FontSize="13" FontAttributes="Bold" TextColor="#19734E" VerticalOptions="Center" />
+                        </Grid>
+                    </Border>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+    </Grid>
+</ContentPage>

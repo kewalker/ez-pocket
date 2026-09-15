@@ -6,7 +6,7 @@
              x:Class="EzPocket.CorePage"
              BackgroundColor="#F5F7FB"
              Title="Core Manager">
-    <Grid Padding="28,24" RowDefinitions="Auto,Auto,Auto,Auto,*" RowSpacing="14">
+    <Grid Padding="28,24" RowDefinitions="Auto,Auto,Auto,Auto,Auto,*" RowSpacing="14">
         <Grid ColumnDefinitions="Auto,Auto,Auto,Auto" ColumnSpacing="6">
             <controls:EzButton Text="&#x2190;" FontSize="22" Clicked="OnBackClicked" ButtonPadding="14,5" SemanticProperties.Description="Back" />
             <Label Grid.Column="1" Text="ez-pocket" TextDecorations="Underline" TextColor="#2563EB" FontSize="14" VerticalOptions="Center">
@@ -40,7 +40,7 @@
                     <Grid ColumnDefinitions="*,Auto">
                         <Label x:Name="StatusValue" Text="All cores" FontSize="14" TextColor="#14213D" VerticalOptions="Center" InputTransparent="True" />
                         <Label Grid.Column="1" Text="⌄" FontSize="20" TextColor="#52627A" VerticalOptions="Center" InputTransparent="True" />
-                        <Picker Grid.ColumnSpan="2" x:Name="StatusFilter" TextColor="Transparent" BackgroundColor="Transparent" FontSize="14" HeightRequest="46" HorizontalOptions="Fill" SelectedIndex="0" SelectedIndexChanged="OnFilterChanged" SemanticProperties.Description="Status filter dropdown">
+                        <Picker Grid.ColumnSpan="2" x:Name="StatusFilter" TextColor="#14213D" BackgroundColor="Transparent" FontSize="14" HeightRequest="46" HorizontalOptions="Fill" SelectedIndex="0" SelectedIndexChanged="OnFilterChanged" SemanticProperties.Description="Status filter dropdown">
                             <Picker.Items>
                                 <x:String>All cores</x:String><x:String>Updates</x:String><x:String>Installed</x:String><x:String>Available</x:String>
                             </Picker.Items>
@@ -49,7 +49,11 @@
                 </Border>
             </VerticalStackLayout>
         </Grid>
-        <Grid Grid.Row="4">
+        <Grid Grid.Row="4" ColumnDefinitions="*,Auto" IsVisible="False" x:Name="SelectionBar" BackgroundColor="#E8F0FF" Padding="14,10" ColumnSpacing="14">
+            <Label x:Name="SelectionSummary" TextColor="#1E3A8A" VerticalOptions="Center" />
+            <controls:EzButton x:Name="ReviewButton" Grid.Column="1" Text="Review changes" Clicked="OnReviewClicked" />
+        </Grid>
+        <Grid Grid.Row="5">
             <CollectionView x:Name="CoreList" SelectionMode="None">
             <CollectionView.EmptyView><Label Text="No cores found yet." TextColor="#63708A" HorizontalOptions="Center" VerticalOptions="Center" /></CollectionView.EmptyView>
             <CollectionView.ItemTemplate>
@@ -58,10 +62,11 @@
                         <Border.GestureRecognizers>
                             <TapGestureRecognizer Tapped="OnCoreTapped" />
                         </Border.GestureRecognizers>
-                        <Grid ColumnDefinitions="*,Auto" RowDefinitions="Auto,Auto" RowSpacing="4">
+                        <Grid ColumnDefinitions="Auto,*,Auto" RowDefinitions="Auto,Auto" RowSpacing="4" ColumnSpacing="12">
+                            <CheckBox Grid.RowSpan="2" VerticalOptions="Center" Color="#2563EB" CheckedChanged="OnCoreSelectionChanged" />
                             <Label Text="{Binding FriendlyName}" FontSize="16" FontAttributes="Bold" TextColor="#14213D" />
-                            <Label Grid.Row="1" Text="{Binding Identifier}" FontSize="12" TextColor="#63708A" />
-                            <VerticalStackLayout Grid.Column="1" Grid.RowSpan="2" HorizontalOptions="End" Spacing="3">
+                            <Label Grid.Row="1" Grid.Column="1" Text="{Binding Identifier}" FontSize="12" TextColor="#63708A" />
+                            <VerticalStackLayout Grid.Column="2" Grid.RowSpan="2" HorizontalOptions="End" Spacing="3">
                                 <Label Text="{Binding StatusLabel}" FontSize="13" FontAttributes="Bold" TextColor="#19734E" HorizontalTextAlignment="End" />
                                 <Label Text="{Binding VersionLabel}" FontSize="12" TextColor="#63708A" HorizontalTextAlignment="End" />
                             </VerticalStackLayout>
