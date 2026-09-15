@@ -13,7 +13,9 @@ public sealed record PocketDrive(
 {
     public bool LooksLikePocket => PocketFolderCount >= 2;
     public string DisplayName => $"{Name} ({RootPath})";
-    public string CapacitySummary => $"{FormatBytes(FreeBytes)} free of {FormatBytes(TotalBytes)}";
+    public string CapacitySummary => TotalBytes > 0
+        ? $"{FormatBytes(FreeBytes)} free of {FormatBytes(TotalBytes)}"
+        : "Capacity unavailable";
 
     private static string FormatBytes(long bytes)
     {

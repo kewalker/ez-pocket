@@ -26,7 +26,6 @@
                     <Label x:Name="StatusDetail" Grid.Row="2" Text="Connect an SD card or USB Pocket to begin." TextColor="#C8D2E4" FontSize="14" />
                     <controls:EzButton x:Name="ScanButton" Grid.Column="1" Grid.RowSpan="3" Text="Scan" Clicked="OnScanClicked" FontAttributes="Bold" CornerRadius="14" ButtonPadding="22,10" VerticalOptions="Center" />
                     <controls:EzButton Grid.Column="2" Grid.RowSpan="3" Text="Choose folder" Clicked="OnChooseFolderClicked" FontAttributes="Bold" CornerRadius="14" ButtonPadding="16,10" VerticalOptions="Center" />
-                    <controls:EzButton x:Name="InitializeButton" Grid.Column="3" Grid.RowSpan="3" Text="Initialize" Clicked="OnInitializeClicked" FontAttributes="Bold" CornerRadius="14" ButtonPadding="16,10" IsVisible="False" VerticalOptions="Center" />
                 </Grid>
             </Border>
             <Label Text="Update overview" FontSize="20" FontAttributes="Bold" TextColor="#14213D" />

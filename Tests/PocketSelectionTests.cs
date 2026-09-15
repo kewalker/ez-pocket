@@ -40,4 +40,12 @@ public sealed class PocketSelectionTests
         Directory.CreateDirectory(path);
         return path;
     }
+
+    [Fact]
+    public void UnknownCapacityDoesNotRenderAsZeroOfZero()
+    {
+        var pocket = new PocketDrive("C:\\Pocket", "Pocket", DriveType.Unknown, 0, 0, 0, [], 0, []);
+
+        Assert.Equal("Capacity unavailable", pocket.CapacitySummary);
+    }
 }

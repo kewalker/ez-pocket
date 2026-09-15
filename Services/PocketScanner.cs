@@ -47,7 +47,10 @@ public sealed class PocketScanner
             string[] installedCoreNames = Directory.Exists(coresPath)
                 ? Directory.EnumerateDirectories(coresPath).Select(Path.GetFileName).Where(name => name is not null).Cast<string>().OrderBy(name => name).ToArray()
                 : [];
-            DriveInfo? drive = DriveInfo.GetDrives().FirstOrDefault(candidate => string.Equals(candidate.RootDirectory.FullName, rootPath, StringComparison.OrdinalIgnoreCase));
+            DriveInfo? drive = DriveInfo.GetDrives()
+                .Where(candidate => rootPath.StartsWith(candidate.RootDirectory.FullName, StringComparison.OrdinalIgnoreCase))
+                .OrderByDescending(candidate => candidate.RootDirectory.FullName.Length)
+                .FirstOrDefault();
 
             return new PocketDrive(rootPath, directory.Name, drive?.DriveType ?? DriveType.Unknown,
                 drive?.TotalSize ?? 0, drive?.AvailableFreeSpace ?? 0, foundFolders.Length,

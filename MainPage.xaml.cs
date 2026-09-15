@@ -7,7 +7,6 @@ public partial class MainPage : ContentPage
 {
     private readonly PocketScanner scanner;
     private readonly PocketSelectionService selection;
-    private readonly PocketInitializationService initializer;
     private readonly IFolderPickerService folderPicker;
     private List<PocketDrive> candidates = [];
 
@@ -16,7 +15,6 @@ public partial class MainPage : ContentPage
         InitializeComponent();
         scanner = IPlatformApplication.Current?.Services.GetService<PocketScanner>() ?? new PocketScanner();
         selection = IPlatformApplication.Current?.Services.GetService<PocketSelectionService>() ?? new PocketSelectionService();
-        initializer = IPlatformApplication.Current?.Services.GetService<PocketInitializationService>() ?? new PocketInitializationService();
         folderPicker = IPlatformApplication.Current?.Services.GetService<IFolderPickerService>() ?? new UnsupportedFolderPickerService();
     }
 
@@ -65,7 +63,7 @@ public partial class MainPage : ContentPage
         {
             bool useAsNewPocket = await DisplayAlert(
                 "Use as a new Pocket",
-                $"{pocket.RootPath} does not look like an existing Pocket. Use it as a blank Pocket target? It will not be changed until you explicitly initialize or install content.",
+                $"{pocket.RootPath} does not look like an existing Pocket. Use it as a blank Pocket target? It will not be changed until you sync content.",
                 "Use folder", "Cancel");
             if (!useAsNewPocket) return;
         }
@@ -80,50 +78,10 @@ public partial class MainPage : ContentPage
         StatusTitle.Text = pocket.LooksLikePocket ? pocket.Name : "New Pocket target";
         StatusDetail.Text = pocket.LooksLikePocket
             ? $"{pocket.RootPath} · {pocket.CapacitySummary}"
-            : $"{pocket.RootPath} · Blank folder, ready to initialize";
+            : $"{pocket.RootPath} | Blank folder target | {pocket.CapacitySummary}";
         ReadyBadgeText.Text = pocket.LooksLikePocket ? "Connected" : "New target";
-        InitializeButton.IsVisible = !pocket.LooksLikePocket;
         ScanButton.Text = "Rescan";
         // The Core Manager owns the detailed installed/available comparison.
-    }
-
-    private async void OnInitializeClicked(object? sender, EventArgs e)
-    {
-        PocketDrive? pocket = selection.SelectedPocket;
-        if (pocket is null) return;
-
-        PocketInitializationPreview preview = initializer.Preview(pocket);
-        if (!preview.IsRequired) return;
-
-        bool confirmed = await DisplayAlert("Initialize Pocket folder",
-            $"Create these folders in {preview.RootPath}?\n\n{string.Join("\n", preview.MissingFolders)}",
-            "Initialize", "Cancel");
-        if (!confirmed) return;
-
-        try
-        {
-            PocketInitializationPreview remaining = initializer.Initialize(pocket);
-            if (remaining.IsRequired)
-            {
-                await DisplayAlert("Initialization incomplete", "Some Pocket folders could not be created.", "Got it");
-                return;
-            }
-
-            PocketDrive? refreshed = scanner.ScanFolder(pocket.RootPath);
-            if (refreshed is not null)
-            {
-                selection.Select(refreshed);
-                ShowPocket(refreshed);
-            }
-        }
-        catch (IOException)
-        {
-            await DisplayAlert("Initialization failed", "The Pocket folders could not be created. Check that the folder is writable.", "Got it");
-        }
-        catch (UnauthorizedAccessException)
-        {
-            await DisplayAlert("Initialization failed", "The selected folder is not writable.", "Got it");
-        }
     }
 
     private async void OnManageCoresClicked(object? sender, EventArgs e)
