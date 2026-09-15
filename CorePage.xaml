@@ -36,11 +36,14 @@
             <VerticalStackLayout Grid.Column="1" Spacing="4">
                 <Label Text="Status" FontSize="12" FontAttributes="Bold" TextColor="#52627A" />
                 <Border BackgroundColor="White" Stroke="#B8C4D6" StrokeThickness="1" StrokeShape="RoundRectangle 8" Padding="10,0">
-                    <Picker x:Name="StatusFilter" TextColor="#14213D" BackgroundColor="Transparent" FontSize="14" HeightRequest="46" HorizontalOptions="Fill" SelectedIndex="0" SelectedIndexChanged="OnFilterChanged">
-                        <Picker.Items>
-                            <x:String>All cores</x:String><x:String>Updates</x:String><x:String>Installed</x:String><x:String>Available</x:String>
-                        </Picker.Items>
-                    </Picker>
+                    <Grid>
+                        <Label x:Name="StatusValue" Text="All cores" FontSize="14" TextColor="#14213D" VerticalOptions="Center" InputTransparent="True" />
+                        <Picker x:Name="StatusFilter" TextColor="Transparent" BackgroundColor="Transparent" FontSize="14" HeightRequest="46" HorizontalOptions="Fill" SelectedIndex="0" SelectedIndexChanged="OnFilterChanged">
+                            <Picker.Items>
+                                <x:String>All cores</x:String><x:String>Updates</x:String><x:String>Installed</x:String><x:String>Available</x:String>
+                            </Picker.Items>
+                        </Picker>
+                    </Grid>
                 </Border>
             </VerticalStackLayout>
         </Grid>

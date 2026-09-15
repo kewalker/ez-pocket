@@ -41,6 +41,7 @@ public partial class CorePage : ContentPage
 
     private void OnFilterChanged(object? sender, EventArgs e)
     {
+        StatusValue.Text = StatusFilter.SelectedItem?.ToString() ?? "All cores";
         string query = Search.Text?.Trim() ?? string.Empty;
         string filter = StatusFilter.SelectedItem?.ToString() ?? "All cores";
         IEnumerable<CoreComparison> filtered = allCores;
