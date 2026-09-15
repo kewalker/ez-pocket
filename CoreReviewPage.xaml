@@ -7,11 +7,17 @@
              BackgroundColor="#F5F7FB"
              Title="Review changes">
     <Grid Padding="28,24,28,40" RowDefinitions="Auto,Auto,Auto,*" RowSpacing="16">
-        <Grid ColumnDefinitions="Auto,Auto,Auto,Auto" ColumnSpacing="6">
+        <Grid ColumnDefinitions="Auto,Auto,Auto,Auto,Auto,Auto" ColumnSpacing="6">
             <controls:EzButton Text="&#x2190;" FontSize="22" Clicked="OnBackClicked" ButtonPadding="14,5" SemanticProperties.Description="Back" />
-            <Label Grid.Column="1" Text="ez-pocket" TextDecorations="Underline" TextColor="#2563EB" FontSize="14" VerticalOptions="Center" />
+            <Label Grid.Column="1" Text="ez-pocket" TextDecorations="Underline" TextColor="#2563EB" FontSize="14" VerticalOptions="Center">
+                <Label.GestureRecognizers><TapGestureRecognizer Tapped="OnHomeClicked" /></Label.GestureRecognizers>
+            </Label>
             <Label Grid.Column="2" Text="/" FontSize="14" TextColor="#AAB3C4" VerticalOptions="Center" />
-            <Label Grid.Column="3" Text="Review changes" FontSize="14" TextColor="#63708A" VerticalOptions="Center" />
+            <Label Grid.Column="3" Text="Manage cores" TextDecorations="Underline" TextColor="#2563EB" FontSize="14" VerticalOptions="Center">
+                <Label.GestureRecognizers><TapGestureRecognizer Tapped="OnManageCoresClicked" /></Label.GestureRecognizers>
+            </Label>
+            <Label Grid.Column="4" Text="/" FontSize="14" TextColor="#AAB3C4" VerticalOptions="Center" />
+            <Label Grid.Column="5" Text="Review changes" FontSize="14" TextColor="#63708A" VerticalOptions="Center" />
         </Grid>
         <VerticalStackLayout Grid.Row="1" Spacing="5">
             <Label Text="Review changes" FontSize="30" FontAttributes="Bold" TextColor="#14213D" />

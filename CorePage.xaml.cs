@@ -39,7 +39,17 @@ public partial class CorePage : ContentPage
         await Shell.Current.GoToAsync("..");
     }
 
-    private async void OnCoreTapped(object? sender, TappedEventArgs e)
+    private void OnCoreRowTapped(object? sender, TappedEventArgs e)
+    {
+        if (sender is BindableObject { BindingContext: CoreComparison core })
+        {
+            bool isSelected = coreSelection.SelectedCores.Any(selected => string.Equals(selected.Identifier, core.Identifier, StringComparison.OrdinalIgnoreCase));
+            coreSelection.SetSelected(core, !isSelected);
+            UpdateSelectionBar();
+        }
+    }
+
+    private async void OnDetailsClicked(object? sender, EventArgs e)
     {
         if (sender is BindableObject { BindingContext: CoreComparison core })
         {
@@ -82,7 +92,6 @@ public partial class CorePage : ContentPage
 
     private void OnFilterChanged(object? sender, EventArgs e)
     {
-        StatusValue.Text = StatusFilter.SelectedItem?.ToString() ?? "All cores";
         string query = Search.Text?.Trim() ?? string.Empty;
         string filter = StatusFilter.SelectedItem?.ToString() ?? "All cores";
         IEnumerable<CoreComparison> filtered = allCores;

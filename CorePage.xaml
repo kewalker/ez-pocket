@@ -38,7 +38,6 @@
                 <Label Text="Status" FontSize="12" FontAttributes="Bold" TextColor="#52627A" />
                 <Border BackgroundColor="White" Stroke="#B8C4D6" StrokeThickness="1" StrokeShape="RoundRectangle 8" Padding="10,0">
                     <Grid ColumnDefinitions="*,Auto">
-                        <Label x:Name="StatusValue" Text="All cores" FontSize="14" TextColor="#14213D" VerticalOptions="Center" InputTransparent="True" />
                         <Label Grid.Column="1" Text="⌄" FontSize="20" TextColor="#52627A" VerticalOptions="Center" InputTransparent="True" />
                         <Picker Grid.ColumnSpan="2" x:Name="StatusFilter" TextColor="#14213D" BackgroundColor="Transparent" FontSize="14" HeightRequest="46" HorizontalOptions="Fill" SelectedIndex="0" SelectedIndexChanged="OnFilterChanged" SemanticProperties.Description="Status filter dropdown">
                             <Picker.Items>
@@ -60,15 +59,16 @@
                 <DataTemplate x:DataType="models:CoreComparison">
                     <Border BackgroundColor="White" Stroke="#E2E7F0" StrokeShape="RoundRectangle 14" Padding="16" Margin="0,0,0,10">
                         <Border.GestureRecognizers>
-                            <TapGestureRecognizer Tapped="OnCoreTapped" />
+                            <TapGestureRecognizer Tapped="OnCoreRowTapped" />
                         </Border.GestureRecognizers>
                         <Grid ColumnDefinitions="Auto,*,Auto" RowDefinitions="Auto,Auto" RowSpacing="4" ColumnSpacing="12">
                             <CheckBox Grid.RowSpan="2" VerticalOptions="Center" Color="#2563EB" CheckedChanged="OnCoreSelectionChanged" />
-                            <Label Text="{Binding FriendlyName}" FontSize="16" FontAttributes="Bold" TextColor="#14213D" />
+                            <Label Grid.Column="1" Text="{Binding FriendlyName}" FontSize="16" FontAttributes="Bold" TextColor="#14213D" />
                             <Label Grid.Row="1" Grid.Column="1" Text="{Binding Identifier}" FontSize="12" TextColor="#63708A" />
                             <VerticalStackLayout Grid.Column="2" Grid.RowSpan="2" HorizontalOptions="End" Spacing="3">
                                 <Label Text="{Binding StatusLabel}" FontSize="13" FontAttributes="Bold" TextColor="#19734E" HorizontalTextAlignment="End" />
                                 <Label Text="{Binding VersionLabel}" FontSize="12" TextColor="#63708A" HorizontalTextAlignment="End" />
+                                <controls:EzButton Text="Details" FontSize="12" ButtonPadding="10,3" Clicked="OnDetailsClicked" />
                             </VerticalStackLayout>
                         </Grid>
                     </Border>

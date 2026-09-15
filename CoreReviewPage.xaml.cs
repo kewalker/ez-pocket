@@ -22,4 +22,14 @@ public partial class CoreReviewPage : ContentPage
     {
         await Shell.Current.GoToAsync("..");
     }
+
+    private async void OnManageCoresClicked(object? sender, EventArgs e)
+    {
+        await Shell.Current.GoToAsync("..");
+    }
+
+    private async void OnHomeClicked(object? sender, EventArgs e)
+    {
+        await Shell.Current.GoToAsync("//MainPage");
+    }
 }
