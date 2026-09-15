@@ -7,6 +7,7 @@ public partial class CorePage : ContentPage
 {
     private readonly PocketSelectionService selection;
     private readonly CoreInventoryService inventory;
+    private readonly CoreSelectionService coreSelection;
     private IReadOnlyList<CoreComparison> allCores = [];
     private CancellationTokenSource? refreshCancellation;
     private bool refreshInProgress;
@@ -16,6 +17,7 @@ public partial class CorePage : ContentPage
         InitializeComponent();
         selection = IPlatformApplication.Current?.Services.GetService<PocketSelectionService>() ?? new PocketSelectionService();
         inventory = IPlatformApplication.Current?.Services.GetService<CoreInventoryService>() ?? new CoreInventoryService();
+        coreSelection = IPlatformApplication.Current?.Services.GetService<CoreSelectionService>() ?? new CoreSelectionService();
     }
 
     protected override async void OnAppearing()
@@ -35,6 +37,15 @@ public partial class CorePage : ContentPage
     private async void OnBackClicked(object? sender, EventArgs e)
     {
         await Shell.Current.GoToAsync("..");
+    }
+
+    private async void OnCoreTapped(object? sender, TappedEventArgs e)
+    {
+        if (sender is BindableObject { BindingContext: CoreComparison core })
+        {
+            coreSelection.Select(core);
+            await Shell.Current.GoToAsync("CoreDetailsPage");
+        }
     }
 
     private void OnBreadcrumbPointerEntered(object? sender, PointerEventArgs e)

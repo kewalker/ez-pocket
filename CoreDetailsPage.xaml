@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="EzPocket.CoreDetailsPage"
+             BackgroundColor="#F5F7FB"
+             Title="Core details">
+    <ScrollView>
+        <VerticalStackLayout Padding="28,24,28,40" Spacing="18">
+            <Grid ColumnDefinitions="Auto,Auto,Auto,Auto" ColumnSpacing="6">
+                <controls:EzButton xmlns:controls="clr-namespace:EzPocket.Controls" Text="&#x2190;" FontSize="22" Clicked="OnBackClicked" ButtonPadding="14,5" SemanticProperties.Description="Back" />
+                <Label Grid.Column="1" Text="ez-pocket" TextDecorations="Underline" TextColor="#2563EB" FontSize="14" VerticalOptions="Center">
+                    <Label.GestureRecognizers><TapGestureRecognizer Tapped="OnBackClicked" /></Label.GestureRecognizers>
+                </Label>
+                <Label Grid.Column="2" Text="/" FontSize="14" TextColor="#AAB3C4" VerticalOptions="Center" />
+                <Label Grid.Column="3" Text="Core details" FontSize="14" TextColor="#63708A" VerticalOptions="Center" />
+            </Grid>
+            <VerticalStackLayout Spacing="5">
+                <Label x:Name="FriendlyName" Text="Core details" FontSize="30" FontAttributes="Bold" TextColor="#14213D" />
+                <Label x:Name="Identifier" Text="-" FontSize="13" TextColor="#63708A" />
+            </VerticalStackLayout>
+            <Border BackgroundColor="White" Stroke="#E2E7F0" StrokeShape="RoundRectangle 16" Padding="18">
+                <Grid RowDefinitions="Auto,Auto,Auto,Auto" ColumnDefinitions="*,*" RowSpacing="16" ColumnSpacing="20">
+                    <Label Text="Status" FontSize="12" TextColor="#63708A" />
+                    <Label x:Name="Status" Grid.Column="1" FontSize="16" FontAttributes="Bold" TextColor="#19734E" HorizontalTextAlignment="End" />
+                    <Label Grid.Row="1" Text="Category" FontSize="12" TextColor="#63708A" />
+                    <Label x:Name="Category" Grid.Row="1" Grid.Column="1" FontSize="16" TextColor="#14213D" HorizontalTextAlignment="End" />
+                    <Label Grid.Row="2" Text="Installed version" FontSize="12" TextColor="#63708A" />
+                    <Label x:Name="InstalledVersion" Grid.Row="2" Grid.Column="1" FontSize="16" TextColor="#14213D" HorizontalTextAlignment="End" />
+                    <Label Grid.Row="3" Text="Available version" FontSize="12" TextColor="#63708A" />
+                    <Label x:Name="AvailableVersion" Grid.Row="3" Grid.Column="1" FontSize="16" TextColor="#14213D" HorizontalTextAlignment="End" />
+                </Grid>
+            </Border>
+            <Border BackgroundColor="#FFF7E6" Stroke="#F8D99A" StrokeShape="RoundRectangle 16" Padding="18">
+                <VerticalStackLayout Spacing="5">
+                    <Label Text="Safe update preview" FontSize="16" FontAttributes="Bold" TextColor="#7B4D00" />
+                    <Label Text="Update and install actions will first show the files and storage changes before anything is written." FontSize="14" TextColor="#8A620F" />
+                </VerticalStackLayout>
+            </Border>
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>
