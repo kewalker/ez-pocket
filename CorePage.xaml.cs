@@ -5,14 +5,16 @@ namespace EzPocket;
 
 public partial class CorePage : ContentPage
 {
-    private readonly PocketScanner scanner;
+    private readonly PocketSelectionService selection;
     private readonly CoreInventoryService inventory;
     private IReadOnlyList<CoreComparison> allCores = [];
+    private CancellationTokenSource? refreshCancellation;
+    private bool refreshInProgress;
 
     public CorePage()
     {
         InitializeComponent();
-        scanner = IPlatformApplication.Current?.Services.GetService<PocketScanner>() ?? new PocketScanner();
+        selection = IPlatformApplication.Current?.Services.GetService<PocketSelectionService>() ?? new PocketSelectionService();
         inventory = IPlatformApplication.Current?.Services.GetService<CoreInventoryService>() ?? new CoreInventoryService();
     }
 
@@ -20,6 +22,12 @@ public partial class CorePage : ContentPage
     {
         base.OnAppearing();
         await RefreshAsync();
+    }
+
+    protected override void OnDisappearing()
+    {
+        refreshCancellation?.Cancel();
+        base.OnDisappearing();
     }
 
     private async void OnRefreshClicked(object? sender, EventArgs e) => await RefreshAsync();
@@ -56,18 +64,32 @@ public partial class CorePage : ContentPage
 
     private async Task RefreshAsync()
     {
-        var pocket = scanner.Scan().FirstOrDefault(drive => drive.LooksLikePocket);
+        if (refreshInProgress) return;
+
+        var pocket = selection.SelectedPocket;
         if (pocket is null)
         {
-            Subtitle.Text = "Connect a Pocket SD card or USB Pocket to compare cores.";
-            Summary.Text = "No Pocket connected";
+            Subtitle.Text = "Select a Pocket on the dashboard before comparing cores.";
+            Summary.Text = "No Pocket selected";
             CoreList.ItemsSource = null;
+            InventoryState.Text = string.Empty;
+            OfflineState.IsVisible = false;
             return;
         }
 
+        refreshInProgress = true;
+        refreshCancellation?.Cancel();
+        refreshCancellation?.Dispose();
+        var cancellation = new CancellationTokenSource();
+        refreshCancellation = cancellation;
+        RefreshButton.IsEnabled = false;
+        LoadingState.IsVisible = true;
+        OfflineState.IsVisible = false;
+        InventoryState.Text = "Checking live inventory…";
+
         try
         {
-            var available = await inventory.GetAvailableAsync();
+            var available = await inventory.GetAvailableAsync(cancellation.Token);
             var comparison = CoreInventoryService.Compare(pocket, available);
             allCores = comparison;
             StatusFilter.SelectedIndex = 0;
@@ -78,6 +100,7 @@ public partial class CorePage : ContentPage
                 StatusFilter.SelectedItem = StatusFilter.Items[0];
             });
             Subtitle.Text = pocket.Name;
+            InventoryState.Text = "Live inventory updated";
             Summary.Text = $"{pocket.CoreCount} installed · {available.Count} available";
             OnFilterChanged(this, EventArgs.Empty);
         }
@@ -85,8 +108,33 @@ public partial class CorePage : ContentPage
         {
             Subtitle.Text = "The Pocket was found, but the live inventory could not be reached.";
             Summary.Text = $"{pocket.CoreCount} installed";
+            InventoryState.Text = "Offline";
+            OfflineState.IsVisible = true;
             allCores = pocket.InstalledCoreNames.Select(identifier => new CoreComparison(identifier, identifier, "Unknown", "Unknown", "-", true, false, "Unknown")).ToArray();
             OnFilterChanged(this, EventArgs.Empty);
+        }
+        catch (OperationCanceledException) when (cancellation.IsCancellationRequested)
+        {
+            return;
+        }
+        catch (OperationCanceledException)
+        {
+            Subtitle.Text = "The Pocket was found, but the live inventory could not be reached.";
+            Summary.Text = $"{pocket.CoreCount} installed";
+            InventoryState.Text = "Offline";
+            OfflineState.IsVisible = true;
+            allCores = pocket.InstalledCoreNames.Select(identifier => new CoreComparison(identifier, identifier, "Unknown", "Unknown", "-", true, false, "Unknown")).ToArray();
+            OnFilterChanged(this, EventArgs.Empty);
+        }
+        finally
+        {
+            if (ReferenceEquals(refreshCancellation, cancellation))
+            {
+                LoadingState.IsVisible = false;
+                RefreshButton.IsEnabled = true;
+                refreshInProgress = false;
+                refreshCancellation = null;
+            }
         }
     }
 }

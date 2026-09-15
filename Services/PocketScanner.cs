@@ -15,7 +15,7 @@ public sealed class PocketScanner
             {
                 if (!drive.IsReady) continue;
                 var foundFolders = PocketFolders.Where(folder => Directory.Exists(Path.Combine(drive.RootDirectory.FullName, folder))).ToArray();
-                if (drive.DriveType == DriveType.Removable || foundFolders.Length >= 2)
+                if (foundFolders.Length >= 2)
                 {
                     string coresPath = Path.Combine(drive.RootDirectory.FullName, "Cores");
                     string[] installedCoreNames = Directory.Exists(coresPath)
@@ -31,5 +31,30 @@ public sealed class PocketScanner
             catch (UnauthorizedAccessException) { }
         }
         return results;
+    }
+
+    public PocketDrive? ScanFolder(string folderPath)
+    {
+        try
+        {
+            string rootPath = Path.GetFullPath(folderPath.Trim());
+            if (!Directory.Exists(rootPath)) return null;
+
+            var directory = new DirectoryInfo(rootPath);
+            var foundFolders = PocketFolders.Where(folder => Directory.Exists(Path.Combine(rootPath, folder))).ToArray();
+
+            string coresPath = Path.Combine(rootPath, "Cores");
+            string[] installedCoreNames = Directory.Exists(coresPath)
+                ? Directory.EnumerateDirectories(coresPath).Select(Path.GetFileName).Where(name => name is not null).Cast<string>().OrderBy(name => name).ToArray()
+                : [];
+            DriveInfo? drive = DriveInfo.GetDrives().FirstOrDefault(candidate => string.Equals(candidate.RootDirectory.FullName, rootPath, StringComparison.OrdinalIgnoreCase));
+
+            return new PocketDrive(rootPath, directory.Name, drive?.DriveType ?? DriveType.Unknown,
+                drive?.TotalSize ?? 0, drive?.AvailableFreeSpace ?? 0, foundFolders.Length,
+                foundFolders, installedCoreNames.Length, installedCoreNames);
+        }
+        catch (IOException) { return null; }
+        catch (UnauthorizedAccessException) { return null; }
+        catch (ArgumentException) { return null; }
     }
 }

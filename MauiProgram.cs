@@ -17,7 +17,14 @@ public static class MauiProgram
             });
 
         builder.Services.AddSingleton<PocketScanner>();
+        builder.Services.AddSingleton<PocketSelectionService>();
+        builder.Services.AddSingleton<PocketInitializationService>();
         builder.Services.AddSingleton<CoreInventoryService>();
+#if WINDOWS
+        builder.Services.AddSingleton<IFolderPickerService, WindowsFolderPickerService>();
+#else
+        builder.Services.AddSingleton<IFolderPickerService, UnsupportedFolderPickerService>();
+#endif
 
 #if DEBUG
         builder.Logging.AddDebug();

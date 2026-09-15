@@ -19,5 +19,4 @@
 
 - Keep platform-specific filesystem/device code behind services so macOS support remains possible.
 - Build the Windows target after changes: `dotnet build EzPocket.sln -f net9.0-windows10.0.19041.0 --no-restore`.
-- If the running app locks normal build output, build into temporary `verify-bin` and `verify-obj` directories and remove them afterward.
 - Make focused local commits as stages are completed. Do not configure or use a remote unless explicitly requested.

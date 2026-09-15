@@ -22,9 +22,10 @@
             <Label Text="Core Manager" FontSize="30" FontAttributes="Bold" TextColor="#14213D" />
             <Label x:Name="Subtitle" Text="Scan a Pocket to compare installed and available cores." FontSize="14" TextColor="#63708A" />
         </VerticalStackLayout>
-        <Grid Grid.Row="2" ColumnDefinitions="*,Auto">
+        <Grid Grid.Row="2" ColumnDefinitions="*,Auto,Auto" ColumnSpacing="10">
             <Label x:Name="Summary" Text="-" FontSize="16" FontAttributes="Bold" TextColor="#14213D" VerticalOptions="Center" />
-            <controls:EzButton Grid.Column="1" Text="Refresh" Clicked="OnRefreshClicked" />
+            <Label x:Name="InventoryState" Grid.Column="1" Text="" FontSize="13" TextColor="#63708A" VerticalOptions="Center" />
+            <controls:EzButton x:Name="RefreshButton" Grid.Column="2" Text="Refresh" Clicked="OnRefreshClicked" />
         </Grid>
         <Grid Grid.Row="3" ColumnDefinitions="*,220" ColumnSpacing="12">
             <VerticalStackLayout Spacing="4">
@@ -47,7 +48,8 @@
                 </Border>
             </VerticalStackLayout>
         </Grid>
-        <CollectionView x:Name="CoreList" Grid.Row="4" SelectionMode="None">
+        <Grid Grid.Row="4">
+            <CollectionView x:Name="CoreList" SelectionMode="None">
             <CollectionView.EmptyView><Label Text="No cores found yet." TextColor="#63708A" HorizontalOptions="Center" VerticalOptions="Center" /></CollectionView.EmptyView>
             <CollectionView.ItemTemplate>
                 <DataTemplate x:DataType="models:CoreComparison">
@@ -63,6 +65,16 @@
                     </Border>
                 </DataTemplate>
             </CollectionView.ItemTemplate>
-        </CollectionView>
+            </CollectionView>
+            <VerticalStackLayout x:Name="LoadingState" IsVisible="False" Spacing="10" HorizontalOptions="Center" VerticalOptions="Center">
+                <ActivityIndicator IsRunning="True" Color="#2563EB" />
+                <Label Text="Loading core inventory…" TextColor="#63708A" />
+            </VerticalStackLayout>
+            <VerticalStackLayout x:Name="OfflineState" IsVisible="False" Spacing="10" HorizontalOptions="Center" VerticalOptions="Center">
+                <Label Text="Live inventory is unavailable." FontSize="16" FontAttributes="Bold" TextColor="#14213D" HorizontalTextAlignment="Center" />
+                <Label Text="Showing installed cores. Check your connection and try again." TextColor="#63708A" HorizontalTextAlignment="Center" />
+                <controls:EzButton Text="Retry" Clicked="OnRefreshClicked" HorizontalOptions="Center" />
+            </VerticalStackLayout>
+        </Grid>
     </Grid>
 </ContentPage>

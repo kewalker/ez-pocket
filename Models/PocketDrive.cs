@@ -12,6 +12,7 @@ public sealed record PocketDrive(
     IReadOnlyList<string> InstalledCoreNames)
 {
     public bool LooksLikePocket => PocketFolderCount >= 2;
+    public string DisplayName => $"{Name} ({RootPath})";
     public string CapacitySummary => $"{FormatBytes(FreeBytes)} free of {FormatBytes(TotalBytes)}";
 
     private static string FormatBytes(long bytes)
