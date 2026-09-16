@@ -8,14 +8,19 @@ namespace EzPocket.Services;
 public sealed class CoreInventoryService
 {
     private const string InventoryUrl = "https://openfpga-cores-inventory.github.io/analogue-pocket/api/v2/cores.json";
-    private static readonly HttpClient Client = new() { Timeout = TimeSpan.FromSeconds(20) };
+    private readonly HttpClient client;
+
+    public CoreInventoryService(HttpClient? client = null)
+    {
+        this.client = client ?? new HttpClient { Timeout = TimeSpan.FromSeconds(20) };
+    }
 
     public async Task<IReadOnlyList<AvailableCore>> GetAvailableAsync(CancellationToken cancellationToken = default)
     {
-        InventoryResponse? response = await Client.GetFromJsonAsync<InventoryResponse>(InventoryUrl, cancellationToken);
+        InventoryResponse? response = await client.GetFromJsonAsync<InventoryResponse>(InventoryUrl, cancellationToken);
         return response?.Data?
             .Where(core => !string.IsNullOrWhiteSpace(core.Identifier))
-            .Select(core => new AvailableCore(core.Identifier!, core.Version ?? "Unknown", core.Platform?.Name ?? core.Identifier!, core.Platform?.Category ?? "Other", core.DownloadUrl, core.RequiresLicense))
+            .Select(core => new AvailableCore(core.Identifier!, core.Version ?? "Unknown", core.Platform?.Name ?? core.Identifier!, core.Platform?.Category ?? "Other", core.DownloadUrl, core.RequiresLicense ?? false))
             .OrderBy(core => core.Name)
             .ToArray() ?? [];
     }
@@ -73,7 +78,7 @@ public sealed class CoreInventoryService
         [JsonPropertyName("identifier")] public string? Identifier { get; set; }
         [JsonPropertyName("version")] public string? Version { get; set; }
         [JsonPropertyName("download_url")] public string? DownloadUrl { get; set; }
-        [JsonPropertyName("requires_license")] public bool RequiresLicense { get; set; }
+        [JsonPropertyName("requires_license")] public bool? RequiresLicense { get; set; }
         [JsonPropertyName("platform")] public InventoryPlatform? Platform { get; set; }
     }
 
