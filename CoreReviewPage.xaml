@@ -31,25 +31,9 @@
             <controls:EzButton x:Name="SyncButton" Grid.Column="1" Text="Apply changes" IsVisible="False" Clicked="OnSyncClicked" ButtonPadding="14,8" />
             <ActivityIndicator x:Name="PreparingIndicator" Grid.Column="2" IsVisible="False" IsRunning="False" Color="#2563EB" HorizontalOptions="Start" VerticalOptions="Center" />
         </Grid>
-        <Grid Grid.Row="4" RowDefinitions="Auto,110,Auto,*" RowSpacing="10">
+        <Grid Grid.Row="4" RowDefinitions="Auto,Auto,*" RowSpacing="10">
             <Label x:Name="SyncStatus" Text="Prepare selected packages to inspect the files that will be added or replaced." TextColor="#63708A" />
-            <CollectionView Grid.Row="1" x:Name="SelectedCoreList" SelectionMode="None">
-            <CollectionView.EmptyView>
-                <Label Text="No cores selected." TextColor="#63708A" VerticalOptions="Center" HorizontalTextAlignment="Center" />
-            </CollectionView.EmptyView>
-            <CollectionView.ItemTemplate>
-                <DataTemplate x:DataType="models:CoreComparison">
-                    <Border BackgroundColor="White" Stroke="#E2E7F0" StrokeShape="RoundRectangle 14" Padding="16" Margin="0,0,0,10">
-                        <Grid ColumnDefinitions="*,Auto" RowDefinitions="Auto,Auto" RowSpacing="4">
-                            <Label Text="{Binding FriendlyName}" FontSize="16" FontAttributes="Bold" TextColor="#14213D" />
-                            <Label Grid.Row="1" Text="{Binding Identifier}" FontSize="12" TextColor="#63708A" />
-                            <Label Grid.Column="1" Grid.RowSpan="2" Text="{Binding StatusLabel}" FontSize="13" FontAttributes="Bold" TextColor="#19734E" VerticalOptions="Center" />
-                        </Grid>
-                    </Border>
-                </DataTemplate>
-            </CollectionView.ItemTemplate>
-            </CollectionView>
-            <Grid Grid.Row="2" ColumnDefinitions="*,*" ColumnSpacing="10">
+            <Grid Grid.Row="1" ColumnDefinitions="*,*" ColumnSpacing="10">
                 <Border BackgroundColor="#E8F7EE" Stroke="#B8E0C5" StrokeShape="RoundRectangle 10" Padding="10,7">
                     <Label x:Name="AddSummary" Text="0 cores · 0 files to add or replace" TextColor="#19734E" FontSize="12" FontAttributes="Bold" />
                 </Border>
@@ -57,7 +41,7 @@
                     <Label x:Name="RemoveSummary" Text="0 cores · 0 files to remove" TextColor="#B42318" FontSize="12" FontAttributes="Bold" />
                 </Border>
             </Grid>
-            <Grid Grid.Row="3" ColumnDefinitions="*,*" ColumnSpacing="14">
+            <Grid Grid.Row="2" ColumnDefinitions="*,*" ColumnSpacing="14">
                 <Grid RowDefinitions="Auto,*" RowSpacing="6">
                     <Label Text="Add or replace" TextColor="#19734E" FontAttributes="Bold" />
                     <CollectionView Grid.Row="1" x:Name="ChangeList" SelectionMode="None" IsVisible="False">

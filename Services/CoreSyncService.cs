@@ -66,8 +66,13 @@ public sealed class CoreSyncService
                 {
                     string relativePath = Path.GetRelativePath(extractPath, file);
                     if (!IsAllowedPackageFile(relativePath)) continue;
-                    if (!sources.TryAdd(relativePath, file))
-                        blockers.Add($"More than one selected package contains {relativePath}.");
+                    if (sources.TryGetValue(relativePath, out string? existingFile))
+                    {
+                        if (!FilesMatch(existingFile, file))
+                            blockers.Add($"Selected packages contain different versions of {relativePath}.");
+                        continue;
+                    }
+                    sources.Add(relativePath, file);
                 }
             }
             catch (Exception exception) when (exception is HttpRequestException or IOException or InvalidDataException)
@@ -189,6 +194,17 @@ public sealed class CoreSyncService
     private static long GetDirectorySize(DirectoryInfo directory) => directory
         .EnumerateFiles("*", SearchOption.AllDirectories)
         .Sum(file => file.Length);
+
+    private static bool FilesMatch(string firstPath, string secondPath)
+    {
+        var first = new FileInfo(firstPath);
+        var second = new FileInfo(secondPath);
+        if (first.Length != second.Length) return false;
+
+        using FileStream firstStream = File.OpenRead(firstPath);
+        using FileStream secondStream = File.OpenRead(secondPath);
+        return CryptographicOperations.FixedTimeEquals(SHA256.HashData(firstStream), SHA256.HashData(secondStream));
+    }
 
     private static void ExtractArchive(string archivePath, string extractPath)
     {

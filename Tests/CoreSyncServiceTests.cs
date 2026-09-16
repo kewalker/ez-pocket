@@ -134,6 +134,37 @@ public sealed class CoreSyncServiceTests
         }
     }
 
+    [Fact]
+    public async Task PrepareDeduplicatesIdenticalFilesSharedBySelectedPackages()
+    {
+        string root = CreateTempFolder();
+        try
+        {
+            byte[] firstArchive = CreateArchive([("Cores/First/core.json", "first"), ("Assets/shared/image.bin", "same-image")]);
+            byte[] secondArchive = CreateArchive([("Cores/Second/core.json", "second"), ("Assets/shared/image.bin", "same-image")]);
+            var client = new HttpClient(new ArchiveMapHandler(new Dictionary<string, byte[]>
+            {
+                ["https://packages.example/first.zip"] = firstArchive,
+                ["https://packages.example/second.zip"] = secondArchive
+            }));
+            var service = new CoreSyncService(client, Path.Combine(root, "staging"), Path.Combine(root, "backups"));
+            var pocket = new PocketDrive(Path.Combine(root, "Pocket"), "Pocket", DriveType.Unknown, 0, 0, 0, [], 0, []);
+            var first = new CoreComparison("First", "First", "Test", "-", "1.0", false, true, "Available", "https://packages.example/first.zip");
+            var second = new CoreComparison("Second", "Second", "Test", "-", "1.0", false, true, "Available", "https://packages.example/second.zip");
+
+            CoreSyncPreview preview = await service.PrepareAsync(pocket, [first, second]);
+
+            Assert.True(preview.CanSync);
+            Assert.Empty(preview.Blockers);
+            Assert.Equal(3, preview.Changes.Count);
+            Assert.Single(preview.Changes, change => change.RelativePath == Path.Combine("Assets", "shared", "image.bin"));
+        }
+        finally
+        {
+            Directory.Delete(root, true);
+        }
+    }
+
     private static byte[] CreateArchive((string Path, string Content)[] files)
     {
         using var memory = new MemoryStream();
@@ -161,5 +192,16 @@ public sealed class CoreSyncServiceTests
         {
             Content = new ByteArrayContent(archive)
         });
+    }
+
+    private sealed class ArchiveMapHandler(IReadOnlyDictionary<string, byte[]> archives) : HttpMessageHandler
+    {
+        protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
+        {
+            return Task.FromResult(new HttpResponseMessage(System.Net.HttpStatusCode.OK)
+            {
+                Content = new ByteArrayContent(archives[request.RequestUri!.ToString()])
+            });
+        }
     }
 }

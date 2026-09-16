@@ -23,7 +23,6 @@ public partial class CoreReviewPage : ContentPage
     protected override void OnAppearing()
     {
         base.OnAppearing();
-        SelectedCoreList.ItemsSource = coreSelection.SelectedCores;
     }
 
     protected override void OnDisappearing()
