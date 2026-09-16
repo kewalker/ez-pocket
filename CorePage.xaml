@@ -57,18 +57,20 @@
             <CollectionView.EmptyView><Label Text="No cores found yet." TextColor="#63708A" HorizontalOptions="Center" VerticalOptions="Center" /></CollectionView.EmptyView>
             <CollectionView.ItemTemplate>
                 <DataTemplate x:DataType="models:CoreComparison">
-                    <Border BackgroundColor="White" Stroke="#E2E7F0" StrokeShape="RoundRectangle 14" Padding="16" Margin="0,0,0,10">
+                    <Border BackgroundColor="White" Stroke="#E2E7F0" StrokeShape="RoundRectangle 10" Padding="10,8" Margin="0,0,0,5">
                         <Border.GestureRecognizers>
                             <TapGestureRecognizer Tapped="OnCoreRowTapped" />
                         </Border.GestureRecognizers>
-                        <Grid ColumnDefinitions="Auto,*,Auto" RowDefinitions="Auto,Auto" RowSpacing="2" ColumnSpacing="8">
+                        <Grid ColumnDefinitions="Auto,*,Auto" RowDefinitions="Auto,Auto" RowSpacing="0" ColumnSpacing="8">
                             <CheckBox Grid.RowSpan="2" IsChecked="{Binding IsSelected, Mode=TwoWay}" VerticalOptions="Center" Color="#2563EB" CheckedChanged="OnCoreSelectionChanged" />
-                            <Label Grid.Column="1" Text="{Binding FriendlyName}" FontSize="16" FontAttributes="Bold" TextColor="#14213D" />
-                            <Label Grid.Row="1" Grid.Column="1" Text="{Binding Identifier}" FontSize="12" TextColor="#63708A" />
-                            <VerticalStackLayout Grid.Column="2" Grid.RowSpan="2" HorizontalOptions="End" Spacing="3">
-                                <Label Text="{Binding StatusLabel}" FontSize="13" FontAttributes="Bold" TextColor="#19734E" HorizontalTextAlignment="End" />
-                                <Label Text="{Binding VersionLabel}" FontSize="12" TextColor="#63708A" HorizontalTextAlignment="End" />
-                                <controls:EzButton Text="Details" FontSize="12" ButtonPadding="10,3" Clicked="OnDetailsClicked" />
+                            <Label Grid.Column="1" Text="{Binding FriendlyName}" FontSize="15" FontAttributes="Bold" TextColor="#14213D" LineBreakMode="TailTruncation" />
+                            <Label Grid.Row="1" Grid.Column="1" Text="{Binding Identifier}" FontSize="11" TextColor="#63708A" LineBreakMode="TailTruncation" />
+                            <VerticalStackLayout Grid.Column="2" Grid.RowSpan="2" HorizontalOptions="End" Spacing="0">
+                                <Label Text="{Binding StatusLabel}" FontSize="12" FontAttributes="Bold" TextColor="#19734E" HorizontalTextAlignment="End" />
+                                <Grid ColumnDefinitions="Auto,Auto" ColumnSpacing="7" HorizontalOptions="End">
+                                    <Label Text="{Binding VersionLabel}" FontSize="11" TextColor="#63708A" HorizontalTextAlignment="End" VerticalOptions="Center" />
+                                    <controls:EzButton Grid.Column="1" Text="Details" FontSize="11" ButtonPadding="7,1" Clicked="OnDetailsClicked" />
+                                </Grid>
                             </VerticalStackLayout>
                         </Grid>
                     </Border>

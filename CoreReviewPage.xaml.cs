@@ -41,6 +41,7 @@ public partial class CoreReviewPage : ContentPage
         PreparingIndicator.IsVisible = true;
         PreparingIndicator.IsRunning = true;
         SyncButton.IsVisible = false;
+        SyncButton.IsEnabled = true;
         ChangeList.IsVisible = false;
         SyncStatus.Text = "Downloading and checking selected core packages…";
         try
@@ -54,6 +55,7 @@ public partial class CoreReviewPage : ContentPage
                 return;
             }
 
+            SyncButton.IsEnabled = preview.CanSync;
             SyncButton.IsVisible = preview.CanSync;
             SyncStatus.Text = $"Ready to sync {preview.Changes.Count} files ({FormatBytes(preview.TotalBytes)}). Existing files marked Replace will be backed up.";
         }
@@ -85,6 +87,13 @@ public partial class CoreReviewPage : ContentPage
             ? $"{result.Message} Backup: {result.BackupPath ?? "not needed"}"
             : result.Message;
         SyncButton.IsVisible = false;
+        PrepareButton.Text = "Prepare another sync";
+        PrepareButton.IsEnabled = true;
+        if (!result.Succeeded)
+        {
+            SyncButton.IsEnabled = true;
+            SyncButton.IsVisible = true;
+        }
     }
 
     private async void OnBackClicked(object? sender, EventArgs e)
