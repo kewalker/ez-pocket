@@ -42,4 +42,9 @@ public partial class CoreDetailsPage : ContentPage
     {
         await Shell.Current.GoToAsync("..");
     }
+
+    private async void OnHomeClicked(object? sender, EventArgs e)
+    {
+        await Shell.Current.GoToAsync("//MainPage");
+    }
 }

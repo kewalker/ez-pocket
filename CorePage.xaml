@@ -6,9 +6,9 @@
              x:Class="EzPocket.CorePage"
              BackgroundColor="#F5F7FB"
              Title="Core Manager">
-    <Grid Padding="24,16,24,20" RowDefinitions="Auto,Auto,Auto,Auto,Auto,*" RowSpacing="10">
+    <Grid Padding="24,16,24,20" RowDefinitions="Auto,Auto,Auto,Auto,*" RowSpacing="10">
         <Grid ColumnDefinitions="Auto,Auto,Auto,Auto" ColumnSpacing="6">
-            <controls:EzButton Text="&#x2190;" FontSize="16" Clicked="OnBackClicked" ButtonPadding="10,4" CornerRadius="8" ButtonBackgroundColor="#E8F0FF" ButtonTextColor="#1E3A8A" SemanticProperties.Description="Back to dashboard" />
+            <controls:EzButton Text="&#x2190;" FontSize="16" MinimumHeight="24" Clicked="OnBackClicked" ButtonPadding="10,1" CornerRadius="8" ButtonBackgroundColor="#E8F0FF" ButtonTextColor="#1E3A8A" SemanticProperties.Description="Back to dashboard" />
             <Label Grid.Column="1" Text="ez-pocket" TextDecorations="Underline" TextColor="#2563EB" FontSize="13" VerticalOptions="Center">
                 <Label.GestureRecognizers>
                     <TapGestureRecognizer Tapped="OnBackClicked" />
@@ -18,16 +18,12 @@
             <Label Grid.Column="2" Text="/" FontSize="13" TextColor="#AAB3C4" VerticalOptions="Center" />
             <Label Grid.Column="3" Text="Manage cores" FontSize="13" TextColor="#63708A" VerticalOptions="Center" />
         </Grid>
-        <VerticalStackLayout Grid.Row="1" Spacing="4">
-            <Label Text="Core Manager" FontSize="26" FontAttributes="Bold" TextColor="#14213D" />
-            <Label x:Name="Subtitle" Text="Scan a Pocket to compare installed and available cores." FontSize="14" TextColor="#63708A" />
-        </VerticalStackLayout>
-        <Grid Grid.Row="2" ColumnDefinitions="*,Auto,Auto" ColumnSpacing="10">
+        <Grid Grid.Row="1" ColumnDefinitions="*,Auto,Auto" ColumnSpacing="10">
             <Label x:Name="Summary" Text="-" FontSize="16" FontAttributes="Bold" TextColor="#14213D" VerticalOptions="Center" />
             <Label x:Name="InventoryState" Grid.Column="1" Text="" FontSize="13" TextColor="#63708A" VerticalOptions="Center" />
             <controls:EzButton x:Name="RefreshButton" Grid.Column="2" Text="Refresh" Clicked="OnRefreshClicked" />
         </Grid>
-        <Grid Grid.Row="3" ColumnDefinitions="*,220" ColumnSpacing="12">
+        <Grid Grid.Row="2" ColumnDefinitions="*,220" ColumnSpacing="12">
             <VerticalStackLayout Spacing="4">
                 <Label Text="Search" FontSize="12" FontAttributes="Bold" TextColor="#52627A" />
                 <Border BackgroundColor="White" Stroke="#B8C4D6" StrokeThickness="1" StrokeShape="RoundRectangle 8" Padding="4,0">
@@ -48,19 +44,16 @@
                 </Border>
             </VerticalStackLayout>
         </Grid>
-        <Grid Grid.Row="4" ColumnDefinitions="*,Auto" x:Name="SelectionBar" BackgroundColor="#E8F0FF" Padding="12,8" ColumnSpacing="14">
+        <Grid Grid.Row="3" ColumnDefinitions="*,Auto" x:Name="SelectionBar" BackgroundColor="#E8F0FF" Padding="12,8" ColumnSpacing="14">
             <Label x:Name="SelectionSummary" Text="Select cores to review" TextColor="#1E3A8A" VerticalOptions="Center" />
             <controls:EzButton x:Name="ReviewButton" Grid.Column="1" Text="Review changes" Clicked="OnReviewClicked" ButtonPadding="14,8" />
         </Grid>
-        <Grid Grid.Row="5">
+        <Grid Grid.Row="4">
             <CollectionView x:Name="CoreList" SelectionMode="None">
             <CollectionView.EmptyView><Label Text="No cores found yet." TextColor="#63708A" HorizontalOptions="Center" VerticalOptions="Center" /></CollectionView.EmptyView>
             <CollectionView.ItemTemplate>
                 <DataTemplate x:DataType="models:CoreComparison">
                     <Border BackgroundColor="White" Stroke="#E2E7F0" StrokeShape="RoundRectangle 10" Padding="12,9" Margin="0,0,0,5">
-                        <Border.GestureRecognizers>
-                            <TapGestureRecognizer Tapped="OnCoreRowTapped" />
-                        </Border.GestureRecognizers>
                         <Grid ColumnDefinitions="Auto,*,Auto" RowDefinitions="Auto,Auto" RowSpacing="0" ColumnSpacing="8">
                             <CheckBox Grid.RowSpan="2" IsChecked="{Binding IsSelected, Mode=TwoWay}" VerticalOptions="Center" Color="#2563EB" CheckedChanged="OnCoreSelectionChanged" />
                             <Label Grid.Column="1" Text="{Binding FriendlyName}" FontSize="15" FontAttributes="Bold" TextColor="#14213D" LineBreakMode="TailTruncation" />

@@ -7,6 +7,7 @@ public partial class EzButton : ContentView
     public static readonly BindableProperty FontAttributesProperty = BindableProperty.Create(nameof(FontAttributes), typeof(FontAttributes), typeof(EzButton), FontAttributes.None);
     public static readonly BindableProperty CornerRadiusProperty = BindableProperty.Create(nameof(CornerRadius), typeof(int), typeof(EzButton), 6);
     public static readonly BindableProperty ButtonPaddingProperty = BindableProperty.Create(nameof(ButtonPadding), typeof(Thickness), typeof(EzButton), new Thickness(18, 10));
+    public static readonly BindableProperty MinimumHeightProperty = BindableProperty.Create(nameof(MinimumHeight), typeof(double), typeof(EzButton), 44d);
     public static readonly BindableProperty ButtonBackgroundColorProperty = BindableProperty.Create(nameof(ButtonBackgroundColor), typeof(Color), typeof(EzButton), Color.FromArgb("#2563EB"));
     public static readonly BindableProperty ButtonTextColorProperty = BindableProperty.Create(nameof(ButtonTextColor), typeof(Color), typeof(EzButton), Colors.White);
 
@@ -40,6 +41,12 @@ public partial class EzButton : ContentView
     {
         get => (Thickness)GetValue(ButtonPaddingProperty);
         set => SetValue(ButtonPaddingProperty, value);
+    }
+
+    public double MinimumHeight
+    {
+        get => (double)GetValue(MinimumHeightProperty);
+        set => SetValue(MinimumHeightProperty, value);
     }
 
     public Color ButtonBackgroundColor

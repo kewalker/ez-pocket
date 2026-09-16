@@ -6,13 +6,17 @@
              Title="Core details">
     <ScrollView>
         <VerticalStackLayout Padding="24,16,24,24" Spacing="12">
-            <Grid ColumnDefinitions="Auto,Auto,Auto,Auto" ColumnSpacing="5">
-                <controls:EzButton xmlns:controls="clr-namespace:EzPocket.Controls" Text="&#x2190;" FontSize="16" Clicked="OnBackClicked" ButtonPadding="10,4" CornerRadius="8" ButtonBackgroundColor="#E8F0FF" ButtonTextColor="#1E3A8A" SemanticProperties.Description="Back to Core Manager" />
-                <Label Grid.Column="1" Text="Manage cores" TextDecorations="Underline" TextColor="#2563EB" FontSize="13" VerticalOptions="Center">
-                    <Label.GestureRecognizers><TapGestureRecognizer Tapped="OnManageCoresClicked" /></Label.GestureRecognizers>
+            <Grid ColumnDefinitions="Auto,Auto,Auto,Auto,Auto,Auto" ColumnSpacing="5">
+                <controls:EzButton xmlns:controls="clr-namespace:EzPocket.Controls" Text="&#x2190;" FontSize="16" MinimumHeight="24" Clicked="OnBackClicked" ButtonPadding="10,1" CornerRadius="8" ButtonBackgroundColor="#E8F0FF" ButtonTextColor="#1E3A8A" SemanticProperties.Description="Back to Core Manager" />
+                <Label Grid.Column="1" Text="ez-pocket" TextDecorations="Underline" TextColor="#2563EB" FontSize="13" VerticalOptions="Center">
+                    <Label.GestureRecognizers><TapGestureRecognizer Tapped="OnHomeClicked" /></Label.GestureRecognizers>
                 </Label>
                 <Label Grid.Column="2" Text="/" FontSize="13" TextColor="#AAB3C4" VerticalOptions="Center" />
-                <Label Grid.Column="3" Text="Core details" FontSize="13" TextColor="#63708A" VerticalOptions="Center" />
+                <Label Grid.Column="3" Text="Manage cores" TextDecorations="Underline" TextColor="#2563EB" FontSize="13" VerticalOptions="Center">
+                    <Label.GestureRecognizers><TapGestureRecognizer Tapped="OnManageCoresClicked" /></Label.GestureRecognizers>
+                </Label>
+                <Label Grid.Column="4" Text="/" FontSize="13" TextColor="#AAB3C4" VerticalOptions="Center" />
+                <Label Grid.Column="5" Text="Details" FontSize="13" TextColor="#63708A" VerticalOptions="Center" />
             </Grid>
             <VerticalStackLayout Spacing="2">
                 <Label x:Name="FriendlyName" Text="Core details" FontSize="26" FontAttributes="Bold" TextColor="#14213D" />

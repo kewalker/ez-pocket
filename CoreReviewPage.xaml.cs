@@ -49,7 +49,9 @@ public partial class CoreReviewPage : ContentPage
         SyncStatus.Text = "Preparing selected core packages…";
         try
         {
-            IReadOnlyList<CoreComparison> coresToRemove = Array.Empty<CoreComparison>();
+            IReadOnlyList<CoreComparison> coresToRemove = coreSelection.Cores
+                .Where(core => core.IsInstalled && !core.IsSelected)
+                .ToArray();
             preview = await coreSync.PrepareAsync(pocket, coreSelection.SelectedCores, coresToRemove);
             ChangeList.ItemsSource = preview.Changes;
             RemovalList.ItemsSource = preview.Removals;
@@ -66,8 +68,8 @@ public partial class CoreReviewPage : ContentPage
             SyncButton.IsEnabled = preview.CanSync;
             SyncButton.IsVisible = preview.CanSync;
             SyncStatus.Text = preview.CanSync
-                ? "Review the planned file changes, then apply them."
-                : "No changes are planned. Select a core to install or update.";
+                ? "Review the planned additions and removals, then apply them."
+                : "No changes are planned. Select cores to keep, install, update, or remove.";
         }
         catch (OperationCanceledException)
         {
@@ -88,7 +90,7 @@ public partial class CoreReviewPage : ContentPage
     private async void OnSyncClicked(object? sender, EventArgs e)
     {
         if (preview is not { CanSync: true }) return;
-        string summary = $"Add or replace {preview.AddOrReplaceFileCount} file(s) on {preview.PocketPath}?";
+        string summary = $"Add or replace {preview.AddOrReplaceFileCount} file(s) and remove {preview.Removals.Count} core(s) ({preview.RemoveFileCount} file(s)) on {preview.PocketPath}? All changed core files will be backed up first.";
         bool confirmed = await DisplayAlert("Apply core changes", summary, "Apply", "Cancel");
         if (!confirmed) return;
 

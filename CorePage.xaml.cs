@@ -39,16 +39,6 @@ public partial class CorePage : ContentPage
         await Shell.Current.GoToAsync("..");
     }
 
-    private void OnCoreRowTapped(object? sender, TappedEventArgs e)
-    {
-        if (sender is BindableObject { BindingContext: CoreComparison core })
-        {
-            bool isSelected = coreSelection.SelectedCores.Any(selected => string.Equals(selected.Identifier, core.Identifier, StringComparison.OrdinalIgnoreCase));
-            coreSelection.SetSelected(core, !isSelected);
-            UpdateSelectionBar();
-        }
-    }
-
     private async void OnDetailsClicked(object? sender, EventArgs e)
     {
         if (sender is BindableObject { BindingContext: CoreComparison core })
@@ -115,7 +105,6 @@ public partial class CorePage : ContentPage
         var pocket = selection.SelectedPocket;
         if (pocket is null)
         {
-            Subtitle.Text = "Select a Pocket on the dashboard before comparing cores.";
             Summary.Text = "No Pocket selected";
             CoreList.ItemsSource = null;
             InventoryState.Text = string.Empty;
@@ -147,14 +136,12 @@ public partial class CorePage : ContentPage
                 StatusFilter.SelectedIndex = 0;
                 StatusFilter.SelectedItem = StatusFilter.Items[0];
             });
-            Subtitle.Text = pocket.Name;
             InventoryState.Text = "Live inventory updated";
             Summary.Text = $"{pocket.CoreCount} installed · {available.Count} available";
             OnFilterChanged(this, EventArgs.Empty);
         }
         catch (HttpRequestException)
         {
-            Subtitle.Text = "The Pocket was found, but the live inventory could not be reached.";
             Summary.Text = $"{pocket.CoreCount} installed";
             InventoryState.Text = "Offline";
             OfflineState.IsVisible = true;
@@ -169,7 +156,6 @@ public partial class CorePage : ContentPage
         }
         catch (OperationCanceledException)
         {
-            Subtitle.Text = "The Pocket was found, but the live inventory could not be reached.";
             Summary.Text = $"{pocket.CoreCount} installed";
             InventoryState.Text = "Offline";
             OfflineState.IsVisible = true;

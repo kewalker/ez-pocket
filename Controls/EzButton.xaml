@@ -11,6 +11,7 @@
             FontAttributes="{Binding FontAttributes, Source={x:Reference Root}}"
             CornerRadius="{Binding CornerRadius, Source={x:Reference Root}}"
             Padding="{Binding ButtonPadding, Source={x:Reference Root}}"
+            MinimumHeightRequest="{Binding MinimumHeight, Source={x:Reference Root}}"
             BackgroundColor="{Binding ButtonBackgroundColor, Source={x:Reference Root}}"
             TextColor="{Binding ButtonTextColor, Source={x:Reference Root}}"
             Clicked="OnNativeClicked"

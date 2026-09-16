@@ -4,7 +4,7 @@
              xmlns:controls="clr-namespace:EzPocket.Controls"
              x:Class="EzPocket.MainPage"
              BackgroundColor="#F5F7FB"
-             Title="Dashboard">
+             Title="ez-pocket">
     <ScrollView>
         <VerticalStackLayout Padding="24,16,24,24" Spacing="16">
             <Grid ColumnDefinitions="*,Auto">
