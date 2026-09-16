@@ -6,7 +6,7 @@
              BackgroundColor="#F5F7FB"
              Title="Dashboard">
     <ScrollView>
-        <VerticalStackLayout Padding="28,24,28,40" Spacing="22">
+        <VerticalStackLayout Padding="24,16,24,24" Spacing="16">
             <Grid ColumnDefinitions="*,Auto">
                 <VerticalStackLayout Spacing="4">
                     <Label Text="ez-pocket" FontSize="32" FontAttributes="Bold" TextColor="#14213D" />
@@ -19,7 +19,7 @@
                     </Grid>
                 </Border>
             </Grid>
-            <Border BackgroundColor="#14213D" StrokeThickness="0" Padding="22" StrokeShape="RoundRectangle 22">
+            <Border BackgroundColor="#14213D" StrokeThickness="0" Padding="20" StrokeShape="RoundRectangle 16">
                 <Grid RowDefinitions="Auto,Auto,Auto" ColumnDefinitions="*,Auto,Auto,Auto" ColumnSpacing="10" RowSpacing="16">
                     <Label Text="Pocket status" TextColor="#AEBBD4" FontSize="13" />
                     <Label x:Name="StatusTitle" Grid.Row="1" Text="No Pocket connected" TextColor="White" FontSize="24" FontAttributes="Bold" />
@@ -28,7 +28,7 @@
                     <controls:EzButton Grid.Column="2" Grid.RowSpan="3" Text="Choose folder" Clicked="OnChooseFolderClicked" FontAttributes="Bold" CornerRadius="14" ButtonPadding="16,10" VerticalOptions="Center" />
                 </Grid>
             </Border>
-            <Border BackgroundColor="White" Stroke="#E2E7F0" StrokeShape="RoundRectangle 16" Padding="18">
+            <Border BackgroundColor="White" Stroke="#E2E7F0" StrokeShape="RoundRectangle 12" Padding="16">
                 <Grid ColumnDefinitions="*,Auto" ColumnSpacing="16">
                     <VerticalStackLayout Spacing="4">
                         <Label x:Name="NextStepEyebrow" Text="GET STARTED" FontSize="11" FontAttributes="Bold" TextColor="#2563EB" />
@@ -40,11 +40,11 @@
             </Border>
             <Label Text="Pocket overview" FontSize="20" FontAttributes="Bold" TextColor="#14213D" />
             <Grid ColumnDefinitions="*,*,*" ColumnSpacing="12">
-                <Border BackgroundColor="White" Stroke="#E2E7F0" StrokeShape="RoundRectangle 16" Padding="16"><VerticalStackLayout Spacing="5"><Label Text="Installed cores" TextColor="#63708A" FontSize="13" /><Label x:Name="CoreCountValue" Text="—" FontSize="26" FontAttributes="Bold" TextColor="#14213D" /><Label x:Name="CoreCountDetail" Text="Select a Pocket first" TextColor="#63708A" FontSize="12" /></VerticalStackLayout></Border>
-                <Border Grid.Column="1" BackgroundColor="White" Stroke="#E2E7F0" StrokeShape="RoundRectangle 16" Padding="16"><VerticalStackLayout Spacing="5"><Label Text="Current target" TextColor="#63708A" FontSize="13" /><Label x:Name="TargetValue" Text="None" FontSize="18" FontAttributes="Bold" TextColor="#14213D" LineBreakMode="TailTruncation" /><Label x:Name="TargetDetail" Text="No folder selected" TextColor="#63708A" FontSize="12" LineBreakMode="TailTruncation" /></VerticalStackLayout></Border>
-                <Border Grid.Column="2" BackgroundColor="White" Stroke="#E2E7F0" StrokeShape="RoundRectangle 16" Padding="16"><VerticalStackLayout Spacing="5"><Label Text="Sync safety" TextColor="#63708A" FontSize="13" /><Label Text="Preview first" FontSize="18" FontAttributes="Bold" TextColor="#14213D" /><Label Text="Backups are retained automatically" TextColor="#63708A" FontSize="12" /></VerticalStackLayout></Border>
+                <Border BackgroundColor="White" Stroke="#E2E7F0" StrokeShape="RoundRectangle 12" Padding="14"><VerticalStackLayout Spacing="4"><Label Text="Installed cores" TextColor="#63708A" FontSize="13" /><Label x:Name="CoreCountValue" Text="—" FontSize="24" FontAttributes="Bold" TextColor="#14213D" /><Label x:Name="CoreCountDetail" Text="Select a Pocket first" TextColor="#63708A" FontSize="12" /></VerticalStackLayout></Border>
+                <Border Grid.Column="1" BackgroundColor="White" Stroke="#E2E7F0" StrokeShape="RoundRectangle 12" Padding="14"><VerticalStackLayout Spacing="4"><Label Text="Current target" TextColor="#63708A" FontSize="13" /><Label x:Name="TargetValue" Text="None" FontSize="18" FontAttributes="Bold" TextColor="#14213D" LineBreakMode="TailTruncation" /><Label x:Name="TargetDetail" Text="No folder selected" TextColor="#63708A" FontSize="12" LineBreakMode="TailTruncation" /></VerticalStackLayout></Border>
+                <Border Grid.Column="2" BackgroundColor="White" Stroke="#E2E7F0" StrokeShape="RoundRectangle 12" Padding="14"><VerticalStackLayout Spacing="4"><Label Text="Changes" TextColor="#63708A" FontSize="13" /><Label Text="Review first" FontSize="18" FontAttributes="Bold" TextColor="#14213D" /><Label Text="Apply only what you select" TextColor="#63708A" FontSize="12" /></VerticalStackLayout></Border>
             </Grid>
-            <Border BackgroundColor="#FFF7E6" Stroke="#F8D99A" StrokeShape="RoundRectangle 16" Padding="18"><VerticalStackLayout Spacing="6"><Label Text="Designed for safe updates" FontSize="16" FontAttributes="Bold" TextColor="#7B4D00" /><Label Text="ez-pocket scans first, previews exactly what will change, and keeps a bounded backup before replacing a core file." FontSize="14" TextColor="#8A620F" /></VerticalStackLayout></Border>
+            <Label Text="Changes are always reviewed before they are applied." FontSize="13" TextColor="#63708A" />
         </VerticalStackLayout>
     </ScrollView>
 </ContentPage>

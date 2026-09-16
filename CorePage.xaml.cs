@@ -78,9 +78,9 @@ public partial class CorePage : ContentPage
         SelectionBar.IsVisible = true;
         SelectionSummary.Text = count switch
         {
-            0 => "No cores selected — syncing never removes cores.",
-            1 => "1 core selected",
-            _ => $"{count} cores selected"
+            0 => "Select cores to review",
+            1 => "1 core selected for review",
+            _ => $"{count} cores selected for review"
         };
     }
 

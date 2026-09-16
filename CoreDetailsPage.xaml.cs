@@ -24,9 +24,21 @@ public partial class CoreDetailsPage : ContentPage
         Category.Text = core.Category;
         InstalledVersion.Text = core.IsInstalled ? core.InstalledVersion : "Not installed";
         AvailableVersion.Text = core.IsAvailable ? core.AvailableVersion : "Not available";
+        StatusSummary.Text = core.Status switch
+        {
+            "Installed" => "This core is installed and up to date.",
+            "Update" => "An update is available. You can review it from Manage cores.",
+            "Available" => "This core is not installed. You can select it from Manage cores.",
+            _ => "Return to Manage cores to review this core."
+        };
     }
 
     private async void OnBackClicked(object? sender, EventArgs e)
+    {
+        await Shell.Current.GoToAsync("..");
+    }
+
+    private async void OnManageCoresClicked(object? sender, EventArgs e)
     {
         await Shell.Current.GoToAsync("..");
     }

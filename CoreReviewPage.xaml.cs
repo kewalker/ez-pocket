@@ -46,12 +46,10 @@ public partial class CoreReviewPage : ContentPage
         SyncButton.IsVisible = false;
         SyncButton.IsEnabled = true;
         ChangeList.IsVisible = false;
-        SyncStatus.Text = "Downloading and checking selected core packages…";
+        SyncStatus.Text = "Preparing selected core packages…";
         try
         {
-            IReadOnlyList<CoreComparison> coresToRemove = coreSelection.Cores
-                .Where(core => core.IsInstalled && !core.IsSelected)
-                .ToArray();
+            IReadOnlyList<CoreComparison> coresToRemove = Array.Empty<CoreComparison>();
             preview = await coreSync.PrepareAsync(pocket, coreSelection.SelectedCores, coresToRemove);
             ChangeList.ItemsSource = preview.Changes;
             RemovalList.ItemsSource = preview.Removals;
@@ -68,8 +66,8 @@ public partial class CoreReviewPage : ContentPage
             SyncButton.IsEnabled = preview.CanSync;
             SyncButton.IsVisible = preview.CanSync;
             SyncStatus.Text = preview.CanSync
-                ? "Review the green additions and red removals, then sync. All changed core files will be backed up first."
-                : "No changes are planned. Select cores to install, keep, update, or remove.";
+                ? "Review the planned file changes, then apply them."
+                : "No changes are planned. Select a core to install or update.";
         }
         catch (OperationCanceledException)
         {
@@ -90,17 +88,17 @@ public partial class CoreReviewPage : ContentPage
     private async void OnSyncClicked(object? sender, EventArgs e)
     {
         if (preview is not { CanSync: true }) return;
-        string summary = $"Add or replace {preview.AddOrReplaceFileCount} file(s) and remove {preview.Removals.Count} core(s) ({preview.RemoveFileCount} file(s)) on {preview.PocketPath}? All changed core files will be backed up first.";
-        bool confirmed = await DisplayAlert("Apply core sync", summary, "Sync", "Cancel");
+        string summary = $"Add or replace {preview.AddOrReplaceFileCount} file(s) on {preview.PocketPath}?";
+        bool confirmed = await DisplayAlert("Apply core changes", summary, "Apply", "Cancel");
         if (!confirmed) return;
 
         SyncButton.IsEnabled = false;
         CoreSyncResult result = await coreSync.ApplyAsync(preview);
         SyncStatus.Text = result.Succeeded
-            ? $"{result.Message} Backup: {result.BackupPath ?? "not needed"}{(result.BackupsPruned > 0 ? $" Removed {result.BackupsPruned} older backup(s)." : string.Empty)}"
+            ? result.Message
             : result.Message;
         SyncButton.IsVisible = false;
-        PrepareButton.Text = "Prepare another sync";
+        PrepareButton.Text = "Prepare another change";
         PrepareButton.IsEnabled = true;
         if (!result.Succeeded)
         {

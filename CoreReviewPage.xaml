@@ -5,40 +5,37 @@
              xmlns:controls="clr-namespace:EzPocket.Controls"
              x:Class="EzPocket.CoreReviewPage"
              BackgroundColor="#F5F7FB"
-             Title="Sync cores">
-    <Grid Padding="28,24,28,40" RowDefinitions="Auto,Auto,Auto,Auto,*" RowSpacing="16">
+             Title="Review changes">
+    <Grid Padding="24,16,24,20" RowDefinitions="Auto,Auto,Auto,Auto,*" RowSpacing="10">
         <Grid ColumnDefinitions="Auto,Auto,Auto,Auto,Auto,Auto" ColumnSpacing="6">
-            <controls:EzButton Text="&#x2190;" FontSize="22" Clicked="OnBackClicked" ButtonPadding="14,5" SemanticProperties.Description="Back" />
-            <Label Grid.Column="1" Text="ez-pocket" TextDecorations="Underline" TextColor="#2563EB" FontSize="14" VerticalOptions="Center">
+            <controls:EzButton Text="&#x2190;" FontSize="16" Clicked="OnBackClicked" ButtonPadding="10,4" CornerRadius="8" ButtonBackgroundColor="#E8F0FF" ButtonTextColor="#1E3A8A" SemanticProperties.Description="Back to Core Manager" />
+            <Label Grid.Column="1" Text="ez-pocket" TextDecorations="Underline" TextColor="#2563EB" FontSize="13" VerticalOptions="Center">
                 <Label.GestureRecognizers><TapGestureRecognizer Tapped="OnHomeClicked" /></Label.GestureRecognizers>
             </Label>
-            <Label Grid.Column="2" Text="/" FontSize="14" TextColor="#AAB3C4" VerticalOptions="Center" />
-            <Label Grid.Column="3" Text="Manage cores" TextDecorations="Underline" TextColor="#2563EB" FontSize="14" VerticalOptions="Center">
+            <Label Grid.Column="2" Text="/" FontSize="13" TextColor="#AAB3C4" VerticalOptions="Center" />
+            <Label Grid.Column="3" Text="Manage cores" TextDecorations="Underline" TextColor="#2563EB" FontSize="13" VerticalOptions="Center">
                 <Label.GestureRecognizers><TapGestureRecognizer Tapped="OnManageCoresClicked" /></Label.GestureRecognizers>
             </Label>
-            <Label Grid.Column="4" Text="/" FontSize="14" TextColor="#AAB3C4" VerticalOptions="Center" />
-            <Label Grid.Column="5" Text="Sync cores" FontSize="14" TextColor="#63708A" VerticalOptions="Center" />
+            <Label Grid.Column="4" Text="/" FontSize="13" TextColor="#AAB3C4" VerticalOptions="Center" />
+            <Label Grid.Column="5" Text="Review changes" FontSize="13" TextColor="#63708A" VerticalOptions="Center" />
         </Grid>
         <VerticalStackLayout Grid.Row="1" Spacing="5">
-            <Label Text="Review core sync" FontSize="30" FontAttributes="Bold" TextColor="#14213D" />
-            <Label Text="Selected cores are installed or updated; unselected installed cores are removed only after this review." FontSize="14" TextColor="#63708A" />
+            <Label Text="Review changes" FontSize="26" FontAttributes="Bold" TextColor="#14213D" />
+            <Label Text="Selected cores will be installed or updated. Nothing else is changed." FontSize="14" TextColor="#63708A" />
         </VerticalStackLayout>
-        <Border Grid.Row="2" BackgroundColor="#FFF7E6" Stroke="#F8D99A" StrokeShape="RoundRectangle 16" Padding="18">
-            <VerticalStackLayout Spacing="5">
-                <Label Text="Nothing has been written to the Pocket" FontSize="16" FontAttributes="Bold" TextColor="#7B4D00" />
-                <Label Text="Preparing downloads is read-only. Sync creates backups before replacing a package file, retaining the five newest backups per Pocket up to 1 GB. The inventory does not publish checksums, so package provenance is shown by its HTTPS release URL." FontSize="14" TextColor="#8A620F" />
-            </VerticalStackLayout>
+        <Border Grid.Row="2" BackgroundColor="#EEF6F1" Stroke="#CDE8D6" StrokeShape="RoundRectangle 12" Padding="14,10">
+            <Label Text="No changes have been made. Review the package changes before you apply them." FontSize="13" TextColor="#176B49" />
         </Border>
         <Grid Grid.Row="3" ColumnDefinitions="Auto,Auto,*" ColumnSpacing="10">
-            <controls:EzButton x:Name="PrepareButton" Text="Prepare sync" Clicked="OnPrepareClicked" />
-            <controls:EzButton x:Name="SyncButton" Grid.Column="1" Text="Sync to Pocket" IsVisible="False" Clicked="OnSyncClicked" />
+            <controls:EzButton x:Name="PrepareButton" Text="Prepare changes" Clicked="OnPrepareClicked" ButtonPadding="14,8" />
+            <controls:EzButton x:Name="SyncButton" Grid.Column="1" Text="Apply changes" IsVisible="False" Clicked="OnSyncClicked" ButtonPadding="14,8" />
             <ActivityIndicator x:Name="PreparingIndicator" Grid.Column="2" IsVisible="False" IsRunning="False" Color="#2563EB" HorizontalOptions="Start" VerticalOptions="Center" />
         </Grid>
         <Grid Grid.Row="4" RowDefinitions="Auto,110,Auto,*" RowSpacing="10">
-            <Label x:Name="SyncStatus" Text="Select Prepare sync to download and inspect selected packages. Unselected installed cores are shown as removals." TextColor="#63708A" />
+            <Label x:Name="SyncStatus" Text="Prepare selected packages to inspect the files that will be added or replaced." TextColor="#63708A" />
             <CollectionView Grid.Row="1" x:Name="SelectedCoreList" SelectionMode="None">
             <CollectionView.EmptyView>
-                <Label Text="No cores selected. Preparing sync will review all installed cores as removals." TextColor="#63708A" VerticalOptions="Center" HorizontalTextAlignment="Center" />
+                <Label Text="No cores selected." TextColor="#63708A" VerticalOptions="Center" HorizontalTextAlignment="Center" />
             </CollectionView.EmptyView>
             <CollectionView.ItemTemplate>
                 <DataTemplate x:DataType="models:CoreComparison">
@@ -52,15 +49,15 @@
                 </DataTemplate>
             </CollectionView.ItemTemplate>
             </CollectionView>
-            <Grid Grid.Row="2" ColumnDefinitions="*,*" ColumnSpacing="10">
+            <Grid Grid.Row="2" ColumnDefinitions="*" ColumnSpacing="10">
                 <Border BackgroundColor="#E8F7EE" Stroke="#B8E0C5" StrokeShape="RoundRectangle 10" Padding="10,7">
                     <Label x:Name="AddSummary" Text="0 cores · 0 files to add or replace" TextColor="#19734E" FontSize="12" FontAttributes="Bold" />
                 </Border>
-                <Border Grid.Column="1" BackgroundColor="#FDEBEC" Stroke="#F2C1C5" StrokeShape="RoundRectangle 10" Padding="10,7">
+                <Border Grid.Column="1" IsVisible="False" BackgroundColor="#FDEBEC" Stroke="#F2C1C5" StrokeShape="RoundRectangle 10" Padding="10,7">
                     <Label x:Name="RemoveSummary" Text="0 cores · 0 files to remove" TextColor="#B42318" FontSize="12" FontAttributes="Bold" />
                 </Border>
             </Grid>
-            <Grid Grid.Row="3" ColumnDefinitions="*,*" ColumnSpacing="14">
+            <Grid Grid.Row="3" ColumnDefinitions="*" ColumnSpacing="14">
                 <Grid RowDefinitions="Auto,*" RowSpacing="6">
                     <Label Text="Add or replace" TextColor="#19734E" FontAttributes="Bold" />
                     <CollectionView Grid.Row="1" x:Name="ChangeList" SelectionMode="None" IsVisible="False">
@@ -75,7 +72,7 @@
                         </CollectionView.ItemTemplate>
                     </CollectionView>
                 </Grid>
-                <Grid Grid.Column="1" RowDefinitions="Auto,*" RowSpacing="6">
+                <Grid Grid.Column="1" IsVisible="False" RowDefinitions="Auto,*" RowSpacing="6">
                     <Label Text="Remove" TextColor="#B42318" FontAttributes="Bold" />
                     <CollectionView Grid.Row="1" x:Name="RemovalList" SelectionMode="None" IsVisible="False">
                         <CollectionView.ItemTemplate>

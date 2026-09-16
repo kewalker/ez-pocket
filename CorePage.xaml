@@ -6,20 +6,20 @@
              x:Class="EzPocket.CorePage"
              BackgroundColor="#F5F7FB"
              Title="Core Manager">
-    <Grid Padding="28,24" RowDefinitions="Auto,Auto,Auto,Auto,Auto,*" RowSpacing="14">
+    <Grid Padding="24,16,24,20" RowDefinitions="Auto,Auto,Auto,Auto,Auto,*" RowSpacing="10">
         <Grid ColumnDefinitions="Auto,Auto,Auto,Auto" ColumnSpacing="6">
-            <controls:EzButton Text="&#x2190;" FontSize="22" Clicked="OnBackClicked" ButtonPadding="14,5" SemanticProperties.Description="Back" />
-            <Label Grid.Column="1" Text="ez-pocket" TextDecorations="Underline" TextColor="#2563EB" FontSize="14" VerticalOptions="Center">
+            <controls:EzButton Text="&#x2190;" FontSize="16" Clicked="OnBackClicked" ButtonPadding="10,4" CornerRadius="8" ButtonBackgroundColor="#E8F0FF" ButtonTextColor="#1E3A8A" SemanticProperties.Description="Back to dashboard" />
+            <Label Grid.Column="1" Text="ez-pocket" TextDecorations="Underline" TextColor="#2563EB" FontSize="13" VerticalOptions="Center">
                 <Label.GestureRecognizers>
                     <TapGestureRecognizer Tapped="OnBackClicked" />
                     <PointerGestureRecognizer PointerEntered="OnBreadcrumbPointerEntered" PointerExited="OnBreadcrumbPointerExited" />
                 </Label.GestureRecognizers>
             </Label>
-            <Label Grid.Column="2" Text="/" FontSize="14" TextColor="#AAB3C4" VerticalOptions="Center" />
-            <Label Grid.Column="3" Text="Manage cores" FontSize="14" TextColor="#63708A" VerticalOptions="Center" />
+            <Label Grid.Column="2" Text="/" FontSize="13" TextColor="#AAB3C4" VerticalOptions="Center" />
+            <Label Grid.Column="3" Text="Manage cores" FontSize="13" TextColor="#63708A" VerticalOptions="Center" />
         </Grid>
         <VerticalStackLayout Grid.Row="1" Spacing="4">
-            <Label Text="Core Manager" FontSize="30" FontAttributes="Bold" TextColor="#14213D" />
+            <Label Text="Core Manager" FontSize="26" FontAttributes="Bold" TextColor="#14213D" />
             <Label x:Name="Subtitle" Text="Scan a Pocket to compare installed and available cores." FontSize="14" TextColor="#63708A" />
         </VerticalStackLayout>
         <Grid Grid.Row="2" ColumnDefinitions="*,Auto,Auto" ColumnSpacing="10">
@@ -48,16 +48,16 @@
                 </Border>
             </VerticalStackLayout>
         </Grid>
-        <Grid Grid.Row="4" ColumnDefinitions="*,Auto" x:Name="SelectionBar" BackgroundColor="#E8F0FF" Padding="14,10" ColumnSpacing="14">
-            <Label x:Name="SelectionSummary" Text="No cores selected — syncing never removes cores." TextColor="#1E3A8A" VerticalOptions="Center" />
-            <controls:EzButton x:Name="ReviewButton" Grid.Column="1" Text="Sync cores" Clicked="OnReviewClicked" />
+        <Grid Grid.Row="4" ColumnDefinitions="*,Auto" x:Name="SelectionBar" BackgroundColor="#E8F0FF" Padding="12,8" ColumnSpacing="14">
+            <Label x:Name="SelectionSummary" Text="Select cores to review" TextColor="#1E3A8A" VerticalOptions="Center" />
+            <controls:EzButton x:Name="ReviewButton" Grid.Column="1" Text="Review changes" Clicked="OnReviewClicked" ButtonPadding="14,8" />
         </Grid>
         <Grid Grid.Row="5">
             <CollectionView x:Name="CoreList" SelectionMode="None">
             <CollectionView.EmptyView><Label Text="No cores found yet." TextColor="#63708A" HorizontalOptions="Center" VerticalOptions="Center" /></CollectionView.EmptyView>
             <CollectionView.ItemTemplate>
                 <DataTemplate x:DataType="models:CoreComparison">
-                    <Border BackgroundColor="White" Stroke="#E2E7F0" StrokeShape="RoundRectangle 10" Padding="10,8" Margin="0,0,0,5">
+                    <Border BackgroundColor="White" Stroke="#E2E7F0" StrokeShape="RoundRectangle 10" Padding="12,9" Margin="0,0,0,5">
                         <Border.GestureRecognizers>
                             <TapGestureRecognizer Tapped="OnCoreRowTapped" />
                         </Border.GestureRecognizers>
@@ -69,7 +69,7 @@
                                 <Label Text="{Binding StatusLabel}" FontSize="12" FontAttributes="Bold" TextColor="#19734E" HorizontalTextAlignment="End" />
                                 <Grid ColumnDefinitions="Auto,Auto" ColumnSpacing="7" HorizontalOptions="End">
                                     <Label Text="{Binding VersionLabel}" FontSize="11" TextColor="#63708A" HorizontalTextAlignment="End" VerticalOptions="Center" />
-                                    <controls:EzButton Grid.Column="1" Text="Details" FontSize="11" ButtonPadding="7,1" Clicked="OnDetailsClicked" />
+                                    <controls:EzButton Grid.Column="1" Text="Details" FontSize="11" ButtonPadding="8,3" ButtonBackgroundColor="#EEF2F7" ButtonTextColor="#1E3A8A" Clicked="OnDetailsClicked" />
                                 </Grid>
                             </VerticalStackLayout>
                         </Grid>
