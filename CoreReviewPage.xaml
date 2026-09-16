@@ -29,10 +29,10 @@
                 <Label Text="Preparing downloads is read-only. Sync creates backups before replacing a package file. The inventory does not publish checksums, so package provenance is shown by its HTTPS release URL." FontSize="14" TextColor="#8A620F" />
             </VerticalStackLayout>
         </Border>
-        <Grid Grid.Row="3" ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12">
+        <Grid Grid.Row="3" ColumnDefinitions="Auto,Auto,*" ColumnSpacing="10">
             <controls:EzButton x:Name="PrepareButton" Text="Prepare sync" Clicked="OnPrepareClicked" />
-            <ActivityIndicator x:Name="PreparingIndicator" Grid.Column="1" IsVisible="False" IsRunning="False" Color="#2563EB" HorizontalOptions="Start" VerticalOptions="Center" />
-            <controls:EzButton x:Name="SyncButton" Grid.Column="2" Text="Sync to Pocket" IsVisible="False" Clicked="OnSyncClicked" />
+            <controls:EzButton x:Name="SyncButton" Grid.Column="1" Text="Sync to Pocket" IsVisible="False" Clicked="OnSyncClicked" />
+            <ActivityIndicator x:Name="PreparingIndicator" Grid.Column="2" IsVisible="False" IsRunning="False" Color="#2563EB" HorizontalOptions="Start" VerticalOptions="Center" />
         </Grid>
         <VerticalStackLayout Grid.Row="4" Spacing="10">
             <Label x:Name="SyncStatus" Text="Select Prepare sync to download and inspect the selected packages." TextColor="#63708A" />

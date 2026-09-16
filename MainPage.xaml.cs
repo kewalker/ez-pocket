@@ -18,6 +18,13 @@ public partial class MainPage : ContentPage
         folderPicker = IPlatformApplication.Current?.Services.GetService<IFolderPickerService>() ?? new UnsupportedFolderPickerService();
     }
 
+    protected override void OnAppearing()
+    {
+        base.OnAppearing();
+        PocketDrive? pocket = selection.Restore(scanner);
+        if (pocket is not null) ShowPocket(pocket);
+    }
+
     private async void OnScanClicked(object? sender, EventArgs e)
     {
         candidates = scanner.Scan().ToList();
