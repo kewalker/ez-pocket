@@ -84,7 +84,7 @@ public partial class CoreReviewPage : ContentPage
         SyncButton.IsEnabled = false;
         CoreSyncResult result = await coreSync.ApplyAsync(preview);
         SyncStatus.Text = result.Succeeded
-            ? $"{result.Message} Backup: {result.BackupPath ?? "not needed"}"
+            ? $"{result.Message} Backup: {result.BackupPath ?? "not needed"}{(result.BackupsPruned > 0 ? $" Removed {result.BackupsPruned} older backup(s)." : string.Empty)}"
             : result.Message;
         SyncButton.IsVisible = false;
         PrepareButton.Text = "Prepare another sync";

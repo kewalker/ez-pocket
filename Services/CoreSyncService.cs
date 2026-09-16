@@ -1,4 +1,6 @@
 using System.IO.Compression;
+using System.Security.Cryptography;
+using System.Text;
 using EzPocket.Models;
 
 namespace EzPocket.Services;
@@ -7,6 +9,8 @@ namespace EzPocket.Services;
 public sealed class CoreSyncService
 {
     private static readonly string[] AllowedRootFolders = ["Assets", "Cores", "Platforms"];
+    private const int MaximumBackupsPerPocket = 5;
+    private const long MaximumBackupBytesPerPocket = 1024L * 1024 * 1024;
     private readonly HttpClient client;
     private readonly string workingRoot;
     private readonly string backupRoot;
@@ -81,7 +85,7 @@ public sealed class CoreSyncService
         if (!preview.CanSync)
             return Task.FromResult(new CoreSyncResult(false, 0, null, "Resolve the package issues before syncing."));
 
-        string backupPath = Path.Combine(backupRoot, $"core-sync-{DateTimeOffset.UtcNow:yyyyMMdd-HHmmss}");
+        string backupPath = Path.Combine(GetPocketBackupRoot(preview.PocketPath), $"core-sync-{DateTimeOffset.UtcNow.Ticks:D19}-{Guid.NewGuid():N}");
         var addedFiles = new List<string>();
         var replacedFiles = new List<string>();
         try
@@ -111,9 +115,10 @@ public sealed class CoreSyncService
                 File.Move(temporaryDestination, destination, true);
             }
 
+            int backupsPruned = Directory.Exists(backupPath) ? PruneBackups(preview.PocketPath) : 0;
             try { Cleanup(preview); }
             catch (IOException) { }
-            return Task.FromResult(new CoreSyncResult(true, preview.Changes.Count, Directory.Exists(backupPath) ? backupPath : null, $"Synced {preview.Changes.Count} files."));
+            return Task.FromResult(new CoreSyncResult(true, preview.Changes.Count, Directory.Exists(backupPath) ? backupPath : null, $"Synced {preview.Changes.Count} files.", backupsPruned));
         }
         catch (Exception exception) when (exception is IOException or UnauthorizedAccessException or OperationCanceledException)
         {
@@ -126,6 +131,40 @@ public sealed class CoreSyncService
     {
         if (Directory.Exists(preview.StagingPath)) Directory.Delete(preview.StagingPath, true);
     }
+
+    private int PruneBackups(string pocketPath)
+    {
+        string pocketBackupRoot = GetPocketBackupRoot(pocketPath);
+        if (!Directory.Exists(pocketBackupRoot)) return 0;
+
+        List<DirectoryInfo> backups = new DirectoryInfo(pocketBackupRoot)
+            .GetDirectories("core-sync-*")
+            .OrderByDescending(directory => directory.Name, StringComparer.Ordinal)
+            .ToList();
+        long totalBytes = backups.Sum(GetDirectorySize);
+        int removed = 0;
+
+        foreach (DirectoryInfo backup in backups.Skip(MaximumBackupsPerPocket).Concat(backups.Skip(1)).Distinct())
+        {
+            if (backups.Count - removed <= MaximumBackupsPerPocket && totalBytes <= MaximumBackupBytesPerPocket) break;
+            long bytes = GetDirectorySize(backup);
+            backup.Delete(true);
+            totalBytes -= bytes;
+            removed++;
+        }
+        return removed;
+    }
+
+    private string GetPocketBackupRoot(string pocketPath)
+    {
+        byte[] hash = SHA256.HashData(Encoding.UTF8.GetBytes(Path.GetFullPath(pocketPath).ToUpperInvariant()));
+        string key = Convert.ToHexString(hash)[..16];
+        return Path.Combine(backupRoot, key);
+    }
+
+    private static long GetDirectorySize(DirectoryInfo directory) => directory
+        .EnumerateFiles("*", SearchOption.AllDirectories)
+        .Sum(file => file.Length);
 
     private static void ExtractArchive(string archivePath, string extractPath)
     {

@@ -26,7 +26,7 @@
         <Border Grid.Row="2" BackgroundColor="#FFF7E6" Stroke="#F8D99A" StrokeShape="RoundRectangle 16" Padding="18">
             <VerticalStackLayout Spacing="5">
                 <Label Text="Nothing has been written to the Pocket" FontSize="16" FontAttributes="Bold" TextColor="#7B4D00" />
-                <Label Text="Preparing downloads is read-only. Sync creates backups before replacing a package file. The inventory does not publish checksums, so package provenance is shown by its HTTPS release URL." FontSize="14" TextColor="#8A620F" />
+                <Label Text="Preparing downloads is read-only. Sync creates backups before replacing a package file, retaining the five newest backups per Pocket up to 1 GB. The inventory does not publish checksums, so package provenance is shown by its HTTPS release URL." FontSize="14" TextColor="#8A620F" />
             </VerticalStackLayout>
         </Border>
         <Grid Grid.Row="3" ColumnDefinitions="Auto,Auto,*" ColumnSpacing="10">

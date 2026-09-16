@@ -19,4 +19,4 @@ public sealed record CoreSyncFileChange(string RelativePath, string SourcePath, 
         : $"{SizeBytes / 1024d / 1024d:0.#} MB";
 }
 
-public sealed record CoreSyncResult(bool Succeeded, int FilesWritten, string? BackupPath, string Message);
+public sealed record CoreSyncResult(bool Succeeded, int FilesWritten, string? BackupPath, string Message, int BackupsPruned = 0);
