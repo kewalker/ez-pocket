@@ -23,6 +23,7 @@ public partial class MainPage : ContentPage
         base.OnAppearing();
         PocketDrive? pocket = selection.Restore(scanner);
         if (pocket is not null) ShowPocket(pocket);
+        else ShowNoPocket();
     }
 
     private async void OnScanClicked(object? sender, EventArgs e)
@@ -40,9 +41,7 @@ public partial class MainPage : ContentPage
 
         if (pocket is null)
         {
-            StatusTitle.Text = "No Pocket connected";
-            StatusDetail.Text = "Connect an SD card or USB Pocket to begin.";
-            ReadyBadgeText.Text = "Ready";
+            ShowNoPocket();
             string message = candidates.Count > 1
                 ? "More than one Pocket-like drive was found. Choose one from the list."
                 : "Connect an SD card or Pocket over USB, or choose its folder manually.";
@@ -54,7 +53,15 @@ public partial class MainPage : ContentPage
         ShowPocket(pocket);
     }
 
-    private async void OnChooseFolderClicked(object? sender, EventArgs e)
+    private async void OnChooseFolderClicked(object? sender, EventArgs e) => await ChooseFolderAsync();
+
+    private async void OnNextStepClicked(object? sender, EventArgs e)
+    {
+        if (selection.SelectedPocket is null) await ChooseFolderAsync();
+        else await Shell.Current.GoToAsync("CorePage");
+    }
+
+    private async Task ChooseFolderAsync()
     {
         string? path = await folderPicker.PickFolderAsync();
         if (string.IsNullOrWhiteSpace(path)) return;
@@ -88,7 +95,30 @@ public partial class MainPage : ContentPage
             : $"{pocket.RootPath} | Blank folder target | {pocket.CapacitySummary}";
         ReadyBadgeText.Text = pocket.LooksLikePocket ? "Connected" : "New target";
         ScanButton.Text = "Rescan";
-        // The Core Manager owns the detailed installed/available comparison.
+        NextStepEyebrow.Text = "NEXT STEP";
+        NextStepTitle.Text = "Manage your cores";
+        NextStepDetail.Text = "Compare installed cores with the live inventory, then prepare a safe sync.";
+        NextStepButton.Text = "Manage cores";
+        CoreCountValue.Text = pocket.CoreCount.ToString();
+        CoreCountDetail.Text = pocket.CoreCount == 1 ? "core installed" : "cores installed";
+        TargetValue.Text = pocket.LooksLikePocket ? pocket.Name : "New target";
+        TargetDetail.Text = pocket.CapacitySummary;
+    }
+
+    private void ShowNoPocket()
+    {
+        StatusTitle.Text = "No Pocket selected";
+        StatusDetail.Text = "Connect an SD card or USB Pocket, or choose a folder target to begin.";
+        ReadyBadgeText.Text = "Ready";
+        ScanButton.Text = "Scan";
+        NextStepEyebrow.Text = "GET STARTED";
+        NextStepTitle.Text = "Select your Pocket";
+        NextStepDetail.Text = "Choose an SD card, connected Pocket, or a folder target. Nothing will be changed.";
+        NextStepButton.Text = "Choose folder";
+        CoreCountValue.Text = "—";
+        CoreCountDetail.Text = "Select a Pocket first";
+        TargetValue.Text = "None";
+        TargetDetail.Text = "No folder selected";
     }
 
     private async void OnManageCoresClicked(object? sender, EventArgs e)
