@@ -69,15 +69,19 @@ public partial class CorePage : ContentPage
 
     private async void OnReviewClicked(object? sender, EventArgs e)
     {
-        if (coreSelection.SelectedCores.Count > 0)
-            await Shell.Current.GoToAsync("CoreReviewPage");
+        await Shell.Current.GoToAsync("CoreReviewPage");
     }
 
     private void UpdateSelectionBar()
     {
         int count = coreSelection.SelectedCores.Count;
-        SelectionBar.IsVisible = count > 0;
-        SelectionSummary.Text = count == 1 ? "1 core selected" : $"{count} cores selected";
+        SelectionBar.IsVisible = true;
+        SelectionSummary.Text = count switch
+        {
+            0 => "No cores selected — syncing never removes cores.",
+            1 => "1 core selected",
+            _ => $"{count} cores selected"
+        };
     }
 
     private void OnBreadcrumbPointerEntered(object? sender, PointerEventArgs e)
@@ -134,6 +138,8 @@ public partial class CorePage : ContentPage
             var available = await inventory.GetAvailableAsync(cancellation.Token);
             var comparison = CoreInventoryService.Compare(pocket, available);
             allCores = comparison;
+            coreSelection.InitializeForPocket(pocket, comparison);
+            UpdateSelectionBar();
             StatusFilter.SelectedIndex = 0;
             StatusFilter.SelectedItem = StatusFilter.Items[0];
             Dispatcher.Dispatch(() =>
@@ -153,6 +159,8 @@ public partial class CorePage : ContentPage
             InventoryState.Text = "Offline";
             OfflineState.IsVisible = true;
             allCores = pocket.InstalledCoreNames.Select(identifier => new CoreComparison(identifier, identifier, "Unknown", "Unknown", "-", true, false, "Unknown")).ToArray();
+            coreSelection.InitializeForPocket(pocket, allCores);
+            UpdateSelectionBar();
             OnFilterChanged(this, EventArgs.Empty);
         }
         catch (OperationCanceledException) when (cancellation.IsCancellationRequested)
@@ -166,6 +174,8 @@ public partial class CorePage : ContentPage
             InventoryState.Text = "Offline";
             OfflineState.IsVisible = true;
             allCores = pocket.InstalledCoreNames.Select(identifier => new CoreComparison(identifier, identifier, "Unknown", "Unknown", "-", true, false, "Unknown")).ToArray();
+            coreSelection.InitializeForPocket(pocket, allCores);
+            UpdateSelectionBar();
             OnFilterChanged(this, EventArgs.Empty);
         }
         finally

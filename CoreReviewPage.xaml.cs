@@ -33,7 +33,16 @@ public partial class CoreReviewPage : ContentPage
     private async void OnPrepareClicked(object? sender, EventArgs e)
     {
         var pocket = pocketSelection.SelectedPocket;
-        if (pocket is null || coreSelection.SelectedCores.Count == 0) return;
+        if (pocket is null)
+        {
+            SyncStatus.Text = "Select a Pocket before preparing a sync.";
+            return;
+        }
+        if (coreSelection.SelectedCores.Count == 0)
+        {
+            SyncStatus.Text = "No cores selected. Sync only adds or replaces selected package files; it never removes unselected cores.";
+            return;
+        }
 
         if (preview is not null) coreSync.Cleanup(preview);
         preview = null;

@@ -35,8 +35,11 @@
             <ActivityIndicator x:Name="PreparingIndicator" Grid.Column="2" IsVisible="False" IsRunning="False" Color="#2563EB" HorizontalOptions="Start" VerticalOptions="Center" />
         </Grid>
         <VerticalStackLayout Grid.Row="4" Spacing="10">
-            <Label x:Name="SyncStatus" Text="Select Prepare sync to download and inspect the selected packages." TextColor="#63708A" />
+            <Label x:Name="SyncStatus" Text="Select Prepare sync to download and inspect selected packages. Unselected cores are never removed." TextColor="#63708A" />
             <CollectionView x:Name="SelectedCoreList" SelectionMode="None" HeightRequest="150">
+            <CollectionView.EmptyView>
+                <Label Text="No cores selected. Syncing does not uninstall or remove any core." TextColor="#63708A" VerticalOptions="Center" HorizontalTextAlignment="Center" />
+            </CollectionView.EmptyView>
             <CollectionView.ItemTemplate>
                 <DataTemplate x:DataType="models:CoreComparison">
                     <Border BackgroundColor="White" Stroke="#E2E7F0" StrokeShape="RoundRectangle 14" Padding="16" Margin="0,0,0,10">

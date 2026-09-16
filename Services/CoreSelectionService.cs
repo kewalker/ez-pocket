@@ -6,6 +6,7 @@ public sealed class CoreSelectionService
 {
     public CoreComparison? SelectedCore { get; private set; }
     private readonly Dictionary<string, CoreComparison> selectedCores = new(StringComparer.OrdinalIgnoreCase);
+    private string? initializedPocketPath;
 
     public IReadOnlyList<CoreComparison> SelectedCores => selectedCores.Values.OrderBy(core => core.FriendlyName).ToArray();
 
@@ -18,5 +19,26 @@ public sealed class CoreSelectionService
         else selectedCores.Remove(core.Identifier);
     }
 
-    public void ClearSelected() => selectedCores.Clear();
+    public void InitializeForPocket(PocketDrive pocket, IReadOnlyList<CoreComparison> cores)
+    {
+        bool isNewPocket = !string.Equals(initializedPocketPath, pocket.RootPath, StringComparison.OrdinalIgnoreCase);
+        var previouslySelected = isNewPocket
+            ? new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+            : selectedCores.Keys.ToHashSet(StringComparer.OrdinalIgnoreCase);
+
+        selectedCores.Clear();
+        foreach (CoreComparison core in cores)
+        {
+            bool isSelected = isNewPocket ? core.IsInstalled : previouslySelected.Contains(core.Identifier);
+            core.IsSelected = isSelected;
+            if (isSelected) selectedCores[core.Identifier] = core;
+        }
+        initializedPocketPath = pocket.RootPath;
+    }
+
+    public void ClearSelected()
+    {
+        foreach (CoreComparison core in selectedCores.Values) core.IsSelected = false;
+        selectedCores.Clear();
+    }
 }
