@@ -76,10 +76,10 @@ public sealed class CoreSyncService
         return new CoreSyncPreview(pocket.RootPath, stagingPath, cores, changes, blockers);
     }
 
-    public async Task<CoreSyncResult> ApplyAsync(CoreSyncPreview preview, CancellationToken cancellationToken = default)
+    public Task<CoreSyncResult> ApplyAsync(CoreSyncPreview preview, CancellationToken cancellationToken = default)
     {
         if (!preview.CanSync)
-            return new CoreSyncResult(false, 0, null, "Resolve the package issues before syncing.");
+            return Task.FromResult(new CoreSyncResult(false, 0, null, "Resolve the package issues before syncing."));
 
         string backupPath = Path.Combine(backupRoot, $"core-sync-{DateTimeOffset.UtcNow:yyyyMMdd-HHmmss}");
         var addedFiles = new List<string>();
@@ -113,12 +113,12 @@ public sealed class CoreSyncService
 
             try { Cleanup(preview); }
             catch (IOException) { }
-            return new CoreSyncResult(true, preview.Changes.Count, Directory.Exists(backupPath) ? backupPath : null, $"Synced {preview.Changes.Count} files.");
+            return Task.FromResult(new CoreSyncResult(true, preview.Changes.Count, Directory.Exists(backupPath) ? backupPath : null, $"Synced {preview.Changes.Count} files."));
         }
         catch (Exception exception) when (exception is IOException or UnauthorizedAccessException or OperationCanceledException)
         {
             Restore(backupPath, preview.PocketPath, replacedFiles, addedFiles);
-            return new CoreSyncResult(false, 0, Directory.Exists(backupPath) ? backupPath : null, $"Sync stopped and restored changed files: {exception.Message}");
+            return Task.FromResult(new CoreSyncResult(false, 0, Directory.Exists(backupPath) ? backupPath : null, $"Sync stopped and restored changed files: {exception.Message}"));
         }
     }
 
