@@ -38,12 +38,6 @@ public partial class CoreReviewPage : ContentPage
             SyncStatus.Text = "Select a Pocket before preparing a sync.";
             return;
         }
-        if (coreSelection.SelectedCores.Count == 0)
-        {
-            SyncStatus.Text = "No cores selected. Sync only adds or replaces selected package files; it never removes unselected cores.";
-            return;
-        }
-
         if (preview is not null) coreSync.Cleanup(preview);
         preview = null;
         PrepareButton.IsEnabled = false;
@@ -55,9 +49,16 @@ public partial class CoreReviewPage : ContentPage
         SyncStatus.Text = "Downloading and checking selected core packages…";
         try
         {
-            preview = await coreSync.PrepareAsync(pocket, coreSelection.SelectedCores);
+            IReadOnlyList<CoreComparison> coresToRemove = coreSelection.Cores
+                .Where(core => core.IsInstalled && !core.IsSelected)
+                .ToArray();
+            preview = await coreSync.PrepareAsync(pocket, coreSelection.SelectedCores, coresToRemove);
             ChangeList.ItemsSource = preview.Changes;
+            RemovalList.ItemsSource = preview.Removals;
+            AddSummary.Text = $"{preview.Cores.Count} core(s) · {preview.AddOrReplaceFileCount} file(s) to add or replace";
+            RemoveSummary.Text = $"{preview.Removals.Count} core(s) · {preview.RemoveFileCount} file(s) to remove";
             ChangeList.IsVisible = preview.Changes.Count > 0;
+            RemovalList.IsVisible = preview.Removals.Count > 0;
             if (preview.Blockers.Count > 0)
             {
                 SyncStatus.Text = string.Join(Environment.NewLine, preview.Blockers);
@@ -66,7 +67,9 @@ public partial class CoreReviewPage : ContentPage
 
             SyncButton.IsEnabled = preview.CanSync;
             SyncButton.IsVisible = preview.CanSync;
-            SyncStatus.Text = $"Ready to sync {preview.Changes.Count} files ({FormatBytes(preview.TotalBytes)}). Existing files marked Replace will be backed up.";
+            SyncStatus.Text = preview.CanSync
+                ? "Review the green additions and red removals, then sync. All changed core files will be backed up first."
+                : "No changes are planned. Select cores to install, keep, update, or remove.";
         }
         catch (OperationCanceledException)
         {
@@ -87,7 +90,8 @@ public partial class CoreReviewPage : ContentPage
     private async void OnSyncClicked(object? sender, EventArgs e)
     {
         if (preview is not { CanSync: true }) return;
-        bool confirmed = await DisplayAlert("Sync selected cores", $"Copy {preview.Changes.Count} prepared files to {preview.PocketPath}? Existing package files will be backed up first.", "Sync", "Cancel");
+        string summary = $"Add or replace {preview.AddOrReplaceFileCount} file(s) and remove {preview.Removals.Count} core(s) ({preview.RemoveFileCount} file(s)) on {preview.PocketPath}? All changed core files will be backed up first.";
+        bool confirmed = await DisplayAlert("Apply core sync", summary, "Sync", "Cancel");
         if (!confirmed) return;
 
         SyncButton.IsEnabled = false;

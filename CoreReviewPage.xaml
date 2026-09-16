@@ -20,8 +20,8 @@
             <Label Grid.Column="5" Text="Sync cores" FontSize="14" TextColor="#63708A" VerticalOptions="Center" />
         </Grid>
         <VerticalStackLayout Grid.Row="1" Spacing="5">
-            <Label Text="Sync selected cores" FontSize="30" FontAttributes="Bold" TextColor="#14213D" />
-            <Label Text="Download packages, inspect their files, then explicitly sync them to the selected Pocket." FontSize="14" TextColor="#63708A" />
+            <Label Text="Review core sync" FontSize="30" FontAttributes="Bold" TextColor="#14213D" />
+            <Label Text="Selected cores are installed or updated; unselected installed cores are removed only after this review." FontSize="14" TextColor="#63708A" />
         </VerticalStackLayout>
         <Border Grid.Row="2" BackgroundColor="#FFF7E6" Stroke="#F8D99A" StrokeShape="RoundRectangle 16" Padding="18">
             <VerticalStackLayout Spacing="5">
@@ -34,11 +34,11 @@
             <controls:EzButton x:Name="SyncButton" Grid.Column="1" Text="Sync to Pocket" IsVisible="False" Clicked="OnSyncClicked" />
             <ActivityIndicator x:Name="PreparingIndicator" Grid.Column="2" IsVisible="False" IsRunning="False" Color="#2563EB" HorizontalOptions="Start" VerticalOptions="Center" />
         </Grid>
-        <VerticalStackLayout Grid.Row="4" Spacing="10">
-            <Label x:Name="SyncStatus" Text="Select Prepare sync to download and inspect selected packages. Unselected cores are never removed." TextColor="#63708A" />
-            <CollectionView x:Name="SelectedCoreList" SelectionMode="None" HeightRequest="150">
+        <Grid Grid.Row="4" RowDefinitions="Auto,110,Auto,*" RowSpacing="10">
+            <Label x:Name="SyncStatus" Text="Select Prepare sync to download and inspect selected packages. Unselected installed cores are shown as removals." TextColor="#63708A" />
+            <CollectionView Grid.Row="1" x:Name="SelectedCoreList" SelectionMode="None">
             <CollectionView.EmptyView>
-                <Label Text="No cores selected. Syncing does not uninstall or remove any core." TextColor="#63708A" VerticalOptions="Center" HorizontalTextAlignment="Center" />
+                <Label Text="No cores selected. Preparing sync will review all installed cores as removals." TextColor="#63708A" VerticalOptions="Center" HorizontalTextAlignment="Center" />
             </CollectionView.EmptyView>
             <CollectionView.ItemTemplate>
                 <DataTemplate x:DataType="models:CoreComparison">
@@ -52,17 +52,43 @@
                 </DataTemplate>
             </CollectionView.ItemTemplate>
             </CollectionView>
-            <CollectionView x:Name="ChangeList" SelectionMode="None" IsVisible="False">
-                <CollectionView.ItemTemplate>
-                    <DataTemplate x:DataType="models:CoreSyncFileChange">
-                        <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="10">
-                            <Label Text="{Binding Action}" TextColor="#2563EB" FontAttributes="Bold" />
-                            <Label Grid.Column="1" Text="{Binding RelativePath}" TextColor="#14213D" LineBreakMode="TailTruncation" />
-                            <Label Grid.Column="2" Text="{Binding SizeLabel}" TextColor="#63708A" />
-                        </Grid>
-                    </DataTemplate>
-                </CollectionView.ItemTemplate>
-            </CollectionView>
-        </VerticalStackLayout>
+            <Grid Grid.Row="2" ColumnDefinitions="*,*" ColumnSpacing="10">
+                <Border BackgroundColor="#E8F7EE" Stroke="#B8E0C5" StrokeShape="RoundRectangle 10" Padding="10,7">
+                    <Label x:Name="AddSummary" Text="0 cores · 0 files to add or replace" TextColor="#19734E" FontSize="12" FontAttributes="Bold" />
+                </Border>
+                <Border Grid.Column="1" BackgroundColor="#FDEBEC" Stroke="#F2C1C5" StrokeShape="RoundRectangle 10" Padding="10,7">
+                    <Label x:Name="RemoveSummary" Text="0 cores · 0 files to remove" TextColor="#B42318" FontSize="12" FontAttributes="Bold" />
+                </Border>
+            </Grid>
+            <Grid Grid.Row="3" ColumnDefinitions="*,*" ColumnSpacing="14">
+                <Grid RowDefinitions="Auto,*" RowSpacing="6">
+                    <Label Text="Add or replace" TextColor="#19734E" FontAttributes="Bold" />
+                    <CollectionView Grid.Row="1" x:Name="ChangeList" SelectionMode="None" IsVisible="False">
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate x:DataType="models:CoreSyncFileChange">
+                                <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="10">
+                                    <Label Text="{Binding Action}" TextColor="#19734E" FontAttributes="Bold" />
+                                    <Label Grid.Column="1" Text="{Binding RelativePath}" TextColor="#14213D" LineBreakMode="TailTruncation" />
+                                    <Label Grid.Column="2" Text="{Binding SizeLabel}" TextColor="#63708A" />
+                                </Grid>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                    </CollectionView>
+                </Grid>
+                <Grid Grid.Column="1" RowDefinitions="Auto,*" RowSpacing="6">
+                    <Label Text="Remove" TextColor="#B42318" FontAttributes="Bold" />
+                    <CollectionView Grid.Row="1" x:Name="RemovalList" SelectionMode="None" IsVisible="False">
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate x:DataType="models:CoreSyncRemoval">
+                                <Grid ColumnDefinitions="*,Auto" ColumnSpacing="10">
+                                    <Label Text="{Binding FriendlyName}" TextColor="#14213D" LineBreakMode="TailTruncation" />
+                                    <Label Grid.Column="1" Text="{Binding Summary}" TextColor="#B42318" />
+                                </Grid>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                    </CollectionView>
+                </Grid>
+            </Grid>
+        </Grid>
     </Grid>
 </ContentPage>

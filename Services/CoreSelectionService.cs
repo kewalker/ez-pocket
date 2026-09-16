@@ -6,9 +6,11 @@ public sealed class CoreSelectionService
 {
     public CoreComparison? SelectedCore { get; private set; }
     private readonly Dictionary<string, CoreComparison> selectedCores = new(StringComparer.OrdinalIgnoreCase);
+    private IReadOnlyList<CoreComparison> cores = [];
     private string? initializedPocketPath;
 
     public IReadOnlyList<CoreComparison> SelectedCores => selectedCores.Values.OrderBy(core => core.FriendlyName).ToArray();
+    public IReadOnlyList<CoreComparison> Cores => cores;
 
     public void Select(CoreComparison core) => SelectedCore = core;
 
@@ -27,6 +29,7 @@ public sealed class CoreSelectionService
             : selectedCores.Keys.ToHashSet(StringComparer.OrdinalIgnoreCase);
 
         selectedCores.Clear();
+        this.cores = cores;
         foreach (CoreComparison core in cores)
         {
             bool isSelected = isNewPocket ? core.IsInstalled : previouslySelected.Contains(core.Identifier);

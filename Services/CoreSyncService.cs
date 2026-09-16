@@ -23,7 +23,10 @@ public sealed class CoreSyncService
         this.backupRoot = backupRoot ?? Path.Combine(appData, "EzPocket", "backups");
     }
 
-    public async Task<CoreSyncPreview> PrepareAsync(PocketDrive pocket, IReadOnlyList<CoreComparison> cores, CancellationToken cancellationToken = default)
+    public Task<CoreSyncPreview> PrepareAsync(PocketDrive pocket, IReadOnlyList<CoreComparison> cores, CancellationToken cancellationToken = default) =>
+        PrepareAsync(pocket, cores, [], cancellationToken);
+
+    public async Task<CoreSyncPreview> PrepareAsync(PocketDrive pocket, IReadOnlyList<CoreComparison> cores, IReadOnlyList<CoreComparison> coresToRemove, CancellationToken cancellationToken = default)
     {
         string stagingPath = Path.Combine(workingRoot, Guid.NewGuid().ToString("N"));
         Directory.CreateDirectory(stagingPath);
@@ -77,17 +80,24 @@ public sealed class CoreSyncService
             .OrderBy(pair => pair.Key, StringComparer.OrdinalIgnoreCase)
             .Select(pair => new CoreSyncFileChange(pair.Key, pair.Value, new FileInfo(pair.Value).Length, File.Exists(Path.Combine(pocket.RootPath, pair.Key))))
             .ToArray();
-        return new CoreSyncPreview(pocket.RootPath, stagingPath, cores, changes, blockers);
+        IReadOnlyList<CoreSyncRemoval> removals = coresToRemove
+            .Where(core => core.IsInstalled)
+            .Select(core => CreateRemoval(pocket, core))
+            .Where(removal => removal is not null)
+            .Cast<CoreSyncRemoval>()
+            .ToArray();
+        return new CoreSyncPreview(pocket.RootPath, stagingPath, cores, changes, removals, blockers);
     }
 
     public Task<CoreSyncResult> ApplyAsync(CoreSyncPreview preview, CancellationToken cancellationToken = default)
     {
         if (!preview.CanSync)
-            return Task.FromResult(new CoreSyncResult(false, 0, null, "Resolve the package issues before syncing."));
+            return Task.FromResult(new CoreSyncResult(false, 0, 0, null, "Resolve the package issues before syncing."));
 
         string backupPath = Path.Combine(GetPocketBackupRoot(preview.PocketPath), $"core-sync-{DateTimeOffset.UtcNow.Ticks:D19}-{Guid.NewGuid():N}");
         var addedFiles = new List<string>();
         var replacedFiles = new List<string>();
+        var removedDirectories = new List<CoreSyncRemoval>();
         try
         {
             foreach (CoreSyncFileChange change in preview.Changes)
@@ -115,15 +125,29 @@ public sealed class CoreSyncService
                 File.Move(temporaryDestination, destination, true);
             }
 
+            foreach (CoreSyncRemoval removal in preview.Removals)
+            {
+                cancellationToken.ThrowIfCancellationRequested();
+                EnsureSafeRelativePath(removal.RelativePath);
+                string sourceDirectory = Path.Combine(preview.PocketPath, removal.RelativePath);
+                if (!Directory.Exists(sourceDirectory)) continue;
+
+                string backupDirectory = Path.Combine(backupPath, "removed", removal.RelativePath);
+                CopyDirectory(sourceDirectory, backupDirectory);
+                Directory.Delete(sourceDirectory, true);
+                removedDirectories.Add(removal);
+            }
+
             int backupsPruned = Directory.Exists(backupPath) ? PruneBackups(preview.PocketPath) : 0;
             try { Cleanup(preview); }
             catch (IOException) { }
-            return Task.FromResult(new CoreSyncResult(true, preview.Changes.Count, Directory.Exists(backupPath) ? backupPath : null, $"Synced {preview.Changes.Count} files.", backupsPruned));
+            string message = $"Synced {preview.Changes.Count} files" + (removedDirectories.Count > 0 ? $" and removed {removedDirectories.Count} core(s)." : ".");
+            return Task.FromResult(new CoreSyncResult(true, preview.Changes.Count, removedDirectories.Count, Directory.Exists(backupPath) ? backupPath : null, message, backupsPruned));
         }
         catch (Exception exception) when (exception is IOException or UnauthorizedAccessException or OperationCanceledException)
         {
-            Restore(backupPath, preview.PocketPath, replacedFiles, addedFiles);
-            return Task.FromResult(new CoreSyncResult(false, 0, Directory.Exists(backupPath) ? backupPath : null, $"Sync stopped and restored changed files: {exception.Message}"));
+            Restore(backupPath, preview.PocketPath, replacedFiles, addedFiles, removedDirectories);
+            return Task.FromResult(new CoreSyncResult(false, 0, 0, Directory.Exists(backupPath) ? backupPath : null, $"Sync stopped and restored changed files: {exception.Message}"));
         }
     }
 
@@ -195,7 +219,29 @@ public sealed class CoreSyncService
 
     private static string SanitizeDirectoryName(string value) => string.Concat(value.Select(character => Path.GetInvalidFileNameChars().Contains(character) ? '_' : character));
 
-    private static void Restore(string backupPath, string pocketPath, IReadOnlyList<string> replacedFiles, IReadOnlyList<string> addedFiles)
+    private static CoreSyncRemoval? CreateRemoval(PocketDrive pocket, CoreComparison core)
+    {
+        string relativePath = Path.Combine("Cores", core.Identifier);
+        EnsureSafeRelativePath(relativePath);
+        string directory = Path.Combine(pocket.RootPath, relativePath);
+        if (!Directory.Exists(directory)) return null;
+        FileInfo[] files = new DirectoryInfo(directory).GetFiles("*", SearchOption.AllDirectories);
+        return new CoreSyncRemoval(core.Identifier, core.FriendlyName, relativePath, files.Length, files.Sum(file => file.Length));
+    }
+
+    private static void CopyDirectory(string sourceDirectory, string destinationDirectory)
+    {
+        Directory.CreateDirectory(destinationDirectory);
+        foreach (string file in Directory.EnumerateFiles(sourceDirectory, "*", SearchOption.AllDirectories))
+        {
+            string relativePath = Path.GetRelativePath(sourceDirectory, file);
+            string destination = Path.Combine(destinationDirectory, relativePath);
+            Directory.CreateDirectory(Path.GetDirectoryName(destination)!);
+            File.Copy(file, destination, true);
+        }
+    }
+
+    private static void Restore(string backupPath, string pocketPath, IReadOnlyList<string> replacedFiles, IReadOnlyList<string> addedFiles, IReadOnlyList<CoreSyncRemoval> removedDirectories)
     {
         foreach (string added in addedFiles.Where(File.Exists)) File.Delete(added);
         foreach (string destination in replacedFiles)
@@ -203,6 +249,12 @@ public sealed class CoreSyncService
             string relativePath = Path.GetRelativePath(pocketPath, destination);
             string backup = Path.Combine(backupPath, relativePath);
             if (File.Exists(backup)) File.Copy(backup, destination, true);
+        }
+        foreach (CoreSyncRemoval removal in removedDirectories)
+        {
+            string backup = Path.Combine(backupPath, "removed", removal.RelativePath);
+            string destination = Path.Combine(pocketPath, removal.RelativePath);
+            if (Directory.Exists(backup)) CopyDirectory(backup, destination);
         }
     }
 }

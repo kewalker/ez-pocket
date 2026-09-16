@@ -100,6 +100,40 @@ public sealed class CoreSyncServiceTests
         }
     }
 
+    [Fact]
+    public async Task SyncRemovesUnselectedInstalledCoreAndBacksItUp()
+    {
+        string root = CreateTempFolder();
+        try
+        {
+            string pocketPath = Path.Combine(root, "Pocket");
+            string coreDirectory = Path.Combine(pocketPath, "Cores", "Example.Core");
+            Directory.CreateDirectory(coreDirectory);
+            await File.WriteAllTextAsync(Path.Combine(coreDirectory, "core.json"), "core");
+            await File.WriteAllTextAsync(Path.Combine(coreDirectory, "core.rbf"), "bitstream");
+            Directory.CreateDirectory(Path.Combine(pocketPath, "Assets", "Example"));
+            await File.WriteAllTextAsync(Path.Combine(pocketPath, "Assets", "Example", "keep.txt"), "asset");
+            var service = new CoreSyncService(new HttpClient(new ArchiveHandler([])), Path.Combine(root, "staging"), Path.Combine(root, "backups"));
+            var pocket = new PocketDrive(pocketPath, "Pocket", DriveType.Unknown, 0, 0, 2, ["Assets", "Cores"], 1, ["Example.Core"]);
+            var core = new CoreComparison("Example.Core", "Example", "Test", "1.0", "1.0", true, true, "Installed");
+
+            CoreSyncPreview preview = await service.PrepareAsync(pocket, [], [core]);
+            CoreSyncResult result = await service.ApplyAsync(preview);
+
+            Assert.True(preview.CanSync);
+            Assert.Single(preview.Removals);
+            Assert.True(result.Succeeded);
+            Assert.Equal(1, result.CoresRemoved);
+            Assert.False(Directory.Exists(coreDirectory));
+            Assert.Equal("asset", await File.ReadAllTextAsync(Path.Combine(pocketPath, "Assets", "Example", "keep.txt")));
+            Assert.Equal("core", await File.ReadAllTextAsync(Path.Combine(result.BackupPath!, "removed", "Cores", "Example.Core", "core.json")));
+        }
+        finally
+        {
+            Directory.Delete(root, true);
+        }
+    }
+
     private static byte[] CreateArchive((string Path, string Content)[] files)
     {
         using var memory = new MemoryStream();
