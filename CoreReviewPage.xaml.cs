@@ -7,6 +7,7 @@ public partial class CoreReviewPage : ContentPage
 {
     private readonly CoreSelectionService coreSelection;
     private readonly PocketSelectionService pocketSelection;
+    private readonly PocketScanner scanner;
     private readonly CoreSyncService coreSync;
     private CoreSyncPreview? preview;
 
@@ -15,6 +16,7 @@ public partial class CoreReviewPage : ContentPage
         InitializeComponent();
         coreSelection = IPlatformApplication.Current?.Services.GetService<CoreSelectionService>() ?? new CoreSelectionService();
         pocketSelection = IPlatformApplication.Current?.Services.GetService<PocketSelectionService>() ?? new PocketSelectionService();
+        scanner = IPlatformApplication.Current?.Services.GetService<PocketScanner>() ?? new PocketScanner();
         coreSync = IPlatformApplication.Current?.Services.GetService<CoreSyncService>() ?? new CoreSyncService();
     }
 
@@ -96,6 +98,11 @@ public partial class CoreReviewPage : ContentPage
 
         SyncButton.IsEnabled = false;
         CoreSyncResult result = await coreSync.ApplyAsync(preview);
+        if (result.Succeeded)
+        {
+            PocketDrive? refreshedPocket = scanner.ScanFolder(preview.PocketPath);
+            if (refreshedPocket is not null) pocketSelection.Select(refreshedPocket);
+        }
         SyncStatus.Text = result.Succeeded
             ? result.Message
             : result.Message;

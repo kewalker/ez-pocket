@@ -39,6 +39,15 @@ public partial class CorePage : ContentPage
         await Shell.Current.GoToAsync("..");
     }
 
+    private void OnCoreRowTapped(object? sender, TappedEventArgs e)
+    {
+        if (sender is BindableObject { BindingContext: CoreComparison core })
+        {
+            coreSelection.SetSelected(core, !core.IsSelected);
+            UpdateSelectionBar();
+        }
+    }
+
     private async void OnDetailsClicked(object? sender, EventArgs e)
     {
         if (sender is BindableObject { BindingContext: CoreComparison core })
