@@ -4,5 +4,12 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:maui="using:Microsoft.Maui"
     xmlns:local="using:EzPocket.WinUI">
+    <maui:MauiWinUIApplication.Resources>
+        <ResourceDictionary>
+            <SolidColorBrush x:Key="ComboBoxDropDownGlyphForeground" Color="#52627A" />
+            <SolidColorBrush x:Key="ComboBoxDropDownGlyphForegroundFocused" Color="#1E3A8A" />
+            <x:Double x:Key="ComboBoxArrowThemeFontSize">16</x:Double>
+        </ResourceDictionary>
+    </maui:MauiWinUIApplication.Resources>
 
 </maui:MauiWinUIApplication>

@@ -34,13 +34,11 @@
                 <Label Text="Status" FontSize="12" FontAttributes="Bold" TextColor="#52627A" />
                 <Border BackgroundColor="White" Stroke="#B8C4D6" StrokeThickness="1" StrokeShape="RoundRectangle 8" Padding="10,0">
                     <Grid ColumnDefinitions="*,Auto">
-                        <Label Grid.Column="1" Text="⌄" FontSize="20" TextColor="#52627A" VerticalOptions="Center" InputTransparent="True" />
                         <Picker Grid.ColumnSpan="2" x:Name="StatusFilter" TextColor="#14213D" BackgroundColor="Transparent" FontSize="14" HeightRequest="46" HorizontalOptions="Fill" SelectedIndex="0" SelectedIndexChanged="OnFilterChanged" SemanticProperties.Description="Status filter dropdown">
                             <Picker.Items>
                                 <x:String>All cores</x:String><x:String>Updates</x:String><x:String>Installed</x:String><x:String>Available</x:String>
                             </Picker.Items>
                         </Picker>
-                        <Label Grid.Column="1" Text="&#x2304;" FontSize="20" TextColor="#52627A" VerticalOptions="Center" InputTransparent="True" />
                     </Grid>
                 </Border>
             </VerticalStackLayout>
@@ -51,7 +49,6 @@
                         <Picker Grid.ColumnSpan="2" x:Name="CategoryFilter" TextColor="#14213D" BackgroundColor="Transparent" FontSize="14" HeightRequest="46" HorizontalOptions="Fill" SelectedIndexChanged="OnFilterChanged" SemanticProperties.Description="Category filter dropdown">
                             <Picker.Items><x:String>All categories</x:String></Picker.Items>
                         </Picker>
-                        <Label Grid.Column="1" Text="&#x2304;" FontSize="20" TextColor="#52627A" VerticalOptions="Center" InputTransparent="True" />
                     </Grid>
                 </Border>
             </VerticalStackLayout>
