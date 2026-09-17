@@ -24,7 +24,7 @@
             <Label Text="Review the planned changes, then apply them to your Pocket." FontSize="14" TextColor="#63708A" />
         </VerticalStackLayout>
         <Border Grid.Row="2" BackgroundColor="#EEF6F1" Stroke="#CDE8D6" StrokeShape="RoundRectangle 12" Padding="14,10">
-            <Label Text="No changes have been made. Review the package changes before you apply them." FontSize="13" TextColor="#176B49" />
+            <Label Text="Only the additions, replacements, and removals listed below will change. Everything else on your Pocket stays as it is." FontSize="13" TextColor="#176B49" />
         </Border>
         <Grid Grid.Row="3" ColumnDefinitions="Auto,Auto,*" ColumnSpacing="10">
             <controls:EzButton x:Name="PrepareButton" Text="Try again" IsVisible="False" Clicked="OnPrepareClicked" ButtonPadding="14,8" />
