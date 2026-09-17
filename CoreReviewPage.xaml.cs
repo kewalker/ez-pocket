@@ -59,6 +59,7 @@ public partial class CoreReviewPage : ContentPage
         SyncButton.IsVisible = false;
         SyncButton.IsEnabled = true;
         ChangeList.IsVisible = false;
+        ChangeDetails.IsVisible = false;
         OverrideSummary.IsVisible = false;
         SyncStatus.Text = "Preparing selected core packages…";
         try
@@ -77,6 +78,7 @@ public partial class CoreReviewPage : ContentPage
             RemoveSummary.Text = $"{preview.Removals.Count} core(s) · {preview.RemoveFileCount} file(s) to remove";
             ChangeList.IsVisible = preview.Changes.Count > 0;
             RemovalList.IsVisible = preview.Removals.Count > 0;
+            ChangeDetails.IsVisible = preview.Changes.Count > 0 || preview.Removals.Count > 0;
             if (preview.Blockers.Count > 0)
             {
                 SyncStatus.Text = string.Join(Environment.NewLine, preview.Blockers);
