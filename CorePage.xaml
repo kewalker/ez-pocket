@@ -61,7 +61,7 @@
             <CollectionView x:Name="CoreList" SelectionMode="None">
             <CollectionView.EmptyView><Label Text="No cores found yet." TextColor="#63708A" HorizontalOptions="Center" VerticalOptions="Center" /></CollectionView.EmptyView>
             <CollectionView.Header>
-                <Grid ColumnDefinitions="44,2*,1.05*,.8*,.8*,1.1*,Auto" Padding="12,4" ColumnSpacing="10">
+                <Grid ColumnDefinitions="44,2*,1.05*,.8*,.8*,1.1*,70" Padding="12,4" ColumnSpacing="10">
                     <Label Grid.Column="1" Text="CORE" FontSize="11" FontAttributes="Bold" TextColor="#63708A" />
                     <Label Grid.Column="2" Text="CATEGORY" FontSize="11" FontAttributes="Bold" TextColor="#63708A" />
                     <Label Grid.Column="3" Text="INSTALLED" FontSize="11" FontAttributes="Bold" TextColor="#63708A" />
@@ -72,7 +72,7 @@
             <CollectionView.ItemTemplate>
                 <DataTemplate x:DataType="models:CoreComparison">
                     <Border BackgroundColor="White" Stroke="#E2E7F0" StrokeShape="RoundRectangle 10" Padding="12,8" Margin="0,0,0,4">
-                        <Grid ColumnDefinitions="44,2*,1.05*,.8*,.8*,1.1*,Auto" RowDefinitions="Auto,Auto" RowSpacing="0" ColumnSpacing="10">
+                        <Grid ColumnDefinitions="44,2*,1.05*,.8*,.8*,1.1*,70" RowDefinitions="Auto,Auto" RowSpacing="0" ColumnSpacing="10">
                             <CheckBox Grid.RowSpan="2" IsChecked="{Binding IsSelected, Mode=TwoWay}" VerticalOptions="Center" Color="#2563EB" CheckedChanged="OnCoreSelectionChanged" />
                             <Grid Grid.Column="1" Grid.RowSpan="2">
                                 <Grid.GestureRecognizers>
