@@ -31,7 +31,8 @@ public sealed class CoreSyncService
         string stagingPath = Path.Combine(workingRoot, Guid.NewGuid().ToString("N"));
         Directory.CreateDirectory(stagingPath);
         var blockers = new List<string>();
-        var sources = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+        var sources = new Dictionary<string, StagedSource>(StringComparer.OrdinalIgnoreCase);
+        var overrides = new List<CoreSyncOverride>();
 
         foreach (CoreComparison core in cores)
         {
@@ -66,13 +67,13 @@ public sealed class CoreSyncService
                 {
                     string relativePath = Path.GetRelativePath(extractPath, file);
                     if (!IsAllowedPackageFile(relativePath)) continue;
-                    if (sources.TryGetValue(relativePath, out string? existingFile))
+                    if (sources.TryGetValue(relativePath, out StagedSource? existing))
                     {
-                        if (!FilesMatch(existingFile, file))
-                            blockers.Add($"Selected packages contain different versions of {relativePath}.");
+                        if (!FilesMatch(existing.SourcePath, file))
+                            overrides.Add(new CoreSyncOverride(relativePath, existing.CoreName, core.FriendlyName));
                         continue;
                     }
-                    sources.Add(relativePath, file);
+                    sources.Add(relativePath, new StagedSource(file, core.FriendlyName));
                 }
             }
             catch (Exception exception) when (exception is HttpRequestException or IOException or InvalidDataException)
@@ -83,7 +84,7 @@ public sealed class CoreSyncService
 
         IReadOnlyList<CoreSyncFileChange> changes = sources
             .OrderBy(pair => pair.Key, StringComparer.OrdinalIgnoreCase)
-            .Select(pair => new CoreSyncFileChange(pair.Key, pair.Value, new FileInfo(pair.Value).Length, File.Exists(Path.Combine(pocket.RootPath, pair.Key))))
+            .Select(pair => new CoreSyncFileChange(pair.Key, pair.Value.SourcePath, new FileInfo(pair.Value.SourcePath).Length, File.Exists(Path.Combine(pocket.RootPath, pair.Key))))
             .ToArray();
         IReadOnlyList<CoreSyncRemoval> removals = coresToRemove
             .Where(core => core.IsInstalled)
@@ -91,7 +92,7 @@ public sealed class CoreSyncService
             .Where(removal => removal is not null)
             .Cast<CoreSyncRemoval>()
             .ToArray();
-        return new CoreSyncPreview(pocket.RootPath, stagingPath, cores, changes, removals, blockers);
+        return new CoreSyncPreview(pocket.RootPath, stagingPath, cores, changes, removals, overrides, blockers);
     }
 
     public Task<CoreSyncResult> ApplyAsync(CoreSyncPreview preview, CancellationToken cancellationToken = default)
@@ -205,6 +206,8 @@ public sealed class CoreSyncService
         using FileStream secondStream = File.OpenRead(secondPath);
         return CryptographicOperations.FixedTimeEquals(SHA256.HashData(firstStream), SHA256.HashData(secondStream));
     }
+
+    private sealed record StagedSource(string SourcePath, string CoreName);
 
     private static void ExtractArchive(string archivePath, string extractPath)
     {

@@ -165,6 +165,37 @@ public sealed class CoreSyncServiceTests
         }
     }
 
+    [Fact]
+    public async Task PrepareKeepsFirstSelectedPackageForDifferingSharedFile()
+    {
+        string root = CreateTempFolder();
+        try
+        {
+            byte[] firstArchive = CreateArchive([("Cores/First/core.json", "first"), ("Assets/shared/image.bin", "first-image")]);
+            byte[] secondArchive = CreateArchive([("Cores/Second/core.json", "second"), ("Assets/shared/image.bin", "second-image")]);
+            var client = new HttpClient(new ArchiveMapHandler(new Dictionary<string, byte[]>
+            {
+                ["https://packages.example/first.zip"] = firstArchive,
+                ["https://packages.example/second.zip"] = secondArchive
+            }));
+            var service = new CoreSyncService(client, Path.Combine(root, "staging"), Path.Combine(root, "backups"));
+            var pocket = new PocketDrive(Path.Combine(root, "Pocket"), "Pocket", DriveType.Unknown, 0, 0, 0, [], 0, []);
+            var first = new CoreComparison("First", "First", "Test", "-", "1.0", false, true, "Available", "https://packages.example/first.zip");
+            var second = new CoreComparison("Second", "Second", "Test", "-", "1.0", false, true, "Available", "https://packages.example/second.zip");
+
+            CoreSyncPreview preview = await service.PrepareAsync(pocket, [first, second]);
+
+            Assert.True(preview.CanSync);
+            CoreSyncOverride overrideFile = Assert.Single(preview.Overrides);
+            Assert.Equal(Path.Combine("Assets", "shared", "image.bin"), overrideFile.RelativePath);
+            Assert.Equal("First", overrideFile.KeptFromCore);
+        }
+        finally
+        {
+            Directory.Delete(root, true);
+        }
+    }
+
     private static byte[] CreateArchive((string Path, string Content)[] files)
     {
         using var memory = new MemoryStream();

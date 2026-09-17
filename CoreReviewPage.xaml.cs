@@ -47,6 +47,7 @@ public partial class CoreReviewPage : ContentPage
         SyncButton.IsVisible = false;
         SyncButton.IsEnabled = true;
         ChangeList.IsVisible = false;
+        OverrideSummary.IsVisible = false;
         SyncStatus.Text = "Preparing selected core packages…";
         try
         {
@@ -56,6 +57,10 @@ public partial class CoreReviewPage : ContentPage
             preview = await coreSync.PrepareAsync(pocket, coreSelection.SelectedCores, coresToRemove);
             ChangeList.ItemsSource = preview.Changes;
             RemovalList.ItemsSource = preview.Removals;
+            OverrideSummaryText.Text = preview.Overrides.Count == 1
+                ? $"1 shared-file override: {preview.Overrides[0].RelativePath}. {preview.Overrides[0].Summary}"
+                : $"{preview.Overrides.Count} shared-file overrides will use the first package's version in this plan.";
+            OverrideSummary.IsVisible = preview.Overrides.Count > 0;
             AddSummary.Text = $"{preview.Cores.Count} core(s) · {preview.AddOrReplaceFileCount} file(s) to add or replace";
             RemoveSummary.Text = $"{preview.Removals.Count} core(s) · {preview.RemoveFileCount} file(s) to remove";
             ChangeList.IsVisible = preview.Changes.Count > 0;
