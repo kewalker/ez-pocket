@@ -82,10 +82,15 @@ public sealed class CoreSyncService
             }
         }
 
-        IReadOnlyList<CoreSyncFileChange> changes = sources
-            .OrderBy(pair => pair.Key, StringComparer.OrdinalIgnoreCase)
-            .Select(pair => new CoreSyncFileChange(pair.Key, pair.Value.SourcePath, new FileInfo(pair.Value.SourcePath).Length, File.Exists(Path.Combine(pocket.RootPath, pair.Key))))
-            .ToArray();
+        var changes = new List<CoreSyncFileChange>();
+        foreach ((string relativePath, StagedSource source) in sources.OrderBy(pair => pair.Key, StringComparer.OrdinalIgnoreCase))
+        {
+            string destination = Path.Combine(pocket.RootPath, relativePath);
+            bool replacesExisting = File.Exists(destination);
+            if (replacesExisting && FilesMatch(source.SourcePath, destination)) continue;
+
+            changes.Add(new CoreSyncFileChange(relativePath, source.SourcePath, new FileInfo(source.SourcePath).Length, replacesExisting));
+        }
         IReadOnlyList<CoreSyncRemoval> removals = coresToRemove
             .Where(core => core.IsInstalled)
             .Select(core => CreateRemoval(pocket, core))

@@ -48,6 +48,36 @@ public sealed class CoreSyncServiceTests
     }
 
     [Fact]
+    public async Task PrepareSkipsIdenticalInstalledFiles()
+    {
+        string root = CreateTempFolder();
+        try
+        {
+            string pocketPath = Path.Combine(root, "pocket");
+            Directory.CreateDirectory(Path.Combine(pocketPath, "Cores", "Example.Core"));
+            Directory.CreateDirectory(Path.Combine(pocketPath, "Assets", "example"));
+            await File.WriteAllTextAsync(Path.Combine(pocketPath, "Cores", "Example.Core", "core.json"), "same-core");
+            await File.WriteAllTextAsync(Path.Combine(pocketPath, "Assets", "example", "readme.txt"), "same-asset");
+            byte[] archive = CreateArchive([
+                ("Cores/Example.Core/core.json", "same-core"),
+                ("Assets/example/readme.txt", "same-asset")
+            ]);
+            var service = new CoreSyncService(new HttpClient(new ArchiveHandler(archive)), Path.Combine(root, "staging"), Path.Combine(root, "backups"));
+            var pocket = new PocketDrive(pocketPath, "Pocket", DriveType.Unknown, 0, 0, 2, ["Assets", "Cores"], 1, ["Example.Core"]);
+            var core = new CoreComparison("Example.Core", "Example", "Test", "1.0", "1.0", true, false, "Installed", "https://packages.example/core.zip");
+
+            CoreSyncPreview preview = await service.PrepareAsync(pocket, [core]);
+
+            Assert.Empty(preview.Changes);
+            Assert.False(preview.CanSync);
+        }
+        finally
+        {
+            Directory.Delete(root, true);
+        }
+    }
+
+    [Fact]
     public async Task PrepareBlocksLicenseRequiredCoreBeforeDownload()
     {
         string root = CreateTempFolder();
@@ -77,14 +107,14 @@ public sealed class CoreSyncServiceTests
             string pocketPath = Path.Combine(root, "Pocket");
             Directory.CreateDirectory(Path.Combine(pocketPath, "Cores", "Example.Core"));
             await File.WriteAllTextAsync(Path.Combine(pocketPath, "Cores", "Example.Core", "core.json"), "old");
-            byte[] archive = CreateArchive([("Cores/Example.Core/core.json", "new")]);
-            var service = new CoreSyncService(new HttpClient(new ArchiveHandler(archive)), Path.Combine(root, "staging"), Path.Combine(root, "backups"));
             var pocket = new PocketDrive(pocketPath, "Pocket", DriveType.Unknown, 0, 0, 2, ["Assets", "Cores"], 1, ["Example.Core"]);
             var core = new CoreComparison("Example.Core", "Example", "Test", "1.0", "2.0", true, true, "Update", "https://packages.example/core.zip");
             CoreSyncResult? result = null;
 
             for (int attempt = 0; attempt < 6; attempt++)
             {
+                byte[] archive = CreateArchive([("Cores/Example.Core/core.json", $"new-{attempt}")]);
+                var service = new CoreSyncService(new HttpClient(new ArchiveHandler(archive)), Path.Combine(root, "staging"), Path.Combine(root, "backups"));
                 CoreSyncPreview preview = await service.PrepareAsync(pocket, [core]);
                 result = await service.ApplyAsync(preview);
                 Assert.True(result.Succeeded);
