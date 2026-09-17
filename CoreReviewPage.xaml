@@ -27,12 +27,12 @@
             <Label Text="No changes have been made. Review the package changes before you apply them." FontSize="13" TextColor="#176B49" />
         </Border>
         <Grid Grid.Row="3" ColumnDefinitions="Auto,Auto,*" ColumnSpacing="10">
-            <controls:EzButton x:Name="PrepareButton" Text="Prepare changes" Clicked="OnPrepareClicked" ButtonPadding="14,8" />
+            <controls:EzButton x:Name="PrepareButton" Text="Try again" IsVisible="False" Clicked="OnPrepareClicked" ButtonPadding="14,8" />
             <controls:EzButton x:Name="SyncButton" Grid.Column="1" Text="Apply changes" IsVisible="False" Clicked="OnSyncClicked" ButtonPadding="14,8" />
             <ActivityIndicator x:Name="PreparingIndicator" Grid.Column="2" IsVisible="False" IsRunning="False" Color="#2563EB" HorizontalOptions="Start" VerticalOptions="Center" />
         </Grid>
         <Grid Grid.Row="4" RowDefinitions="Auto,Auto,Auto,*" RowSpacing="10">
-            <Label x:Name="SyncStatus" Text="Prepare selected packages to inspect the files that will be added or replaced." TextColor="#63708A" />
+            <Label x:Name="SyncStatus" Text="Calculating planned changes…" TextColor="#63708A" />
             <Grid Grid.Row="1" ColumnDefinitions="*,*" ColumnSpacing="10">
                 <Border BackgroundColor="#E8F7EE" Stroke="#B8E0C5" StrokeShape="RoundRectangle 10" Padding="10,7">
                     <Label x:Name="AddSummary" Text="0 cores · 0 files to add or replace" TextColor="#19734E" FontSize="12" FontAttributes="Bold" />

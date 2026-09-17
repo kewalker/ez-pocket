@@ -10,6 +10,7 @@ public partial class CoreReviewPage : ContentPage
     private readonly PocketScanner scanner;
     private readonly CoreSyncService coreSync;
     private CoreSyncPreview? preview;
+    private bool hasPrepared;
 
     public CoreReviewPage()
     {
@@ -20,9 +21,14 @@ public partial class CoreReviewPage : ContentPage
         coreSync = IPlatformApplication.Current?.Services.GetService<CoreSyncService>() ?? new CoreSyncService();
     }
 
-    protected override void OnAppearing()
+    protected override async void OnAppearing()
     {
         base.OnAppearing();
+        if (!hasPrepared)
+        {
+            hasPrepared = true;
+            await PrepareAsync();
+        }
     }
 
     protected override void OnDisappearing()
@@ -33,6 +39,11 @@ public partial class CoreReviewPage : ContentPage
 
     private async void OnPrepareClicked(object? sender, EventArgs e)
     {
+        await PrepareAsync();
+    }
+
+    private async Task PrepareAsync()
+    {
         var pocket = pocketSelection.SelectedPocket;
         if (pocket is null)
         {
@@ -42,6 +53,7 @@ public partial class CoreReviewPage : ContentPage
         if (preview is not null) coreSync.Cleanup(preview);
         preview = null;
         PrepareButton.IsEnabled = false;
+        PrepareButton.IsVisible = false;
         PreparingIndicator.IsVisible = true;
         PreparingIndicator.IsRunning = true;
         SyncButton.IsVisible = false;
@@ -80,10 +92,12 @@ public partial class CoreReviewPage : ContentPage
         catch (OperationCanceledException)
         {
             SyncStatus.Text = "Preparing the sync was cancelled.";
+            PrepareButton.IsVisible = true;
         }
         catch (Exception exception)
         {
             SyncStatus.Text = $"Could not prepare sync: {exception.Message}";
+            PrepareButton.IsVisible = true;
         }
         finally
         {
@@ -111,8 +125,6 @@ public partial class CoreReviewPage : ContentPage
             ? result.Message
             : result.Message;
         SyncButton.IsVisible = false;
-        PrepareButton.Text = "Prepare another change";
-        PrepareButton.IsEnabled = true;
         if (!result.Succeeded)
         {
             SyncButton.IsEnabled = true;
