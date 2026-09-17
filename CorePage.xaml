@@ -23,7 +23,7 @@
             <Label x:Name="InventoryState" Grid.Column="1" Text="" FontSize="13" TextColor="#63708A" VerticalOptions="Center" />
             <controls:EzButton x:Name="RefreshButton" Grid.Column="2" Text="Refresh" Clicked="OnRefreshClicked" />
         </Grid>
-        <Grid Grid.Row="2" ColumnDefinitions="*,220" ColumnSpacing="12">
+        <Grid Grid.Row="2" ColumnDefinitions="*,180,180" ColumnSpacing="12">
             <VerticalStackLayout Spacing="4">
                 <Label Text="Search" FontSize="12" FontAttributes="Bold" TextColor="#52627A" />
                 <Border BackgroundColor="White" Stroke="#B8C4D6" StrokeThickness="1" StrokeShape="RoundRectangle 8" Padding="4,0">
@@ -43,6 +43,14 @@
                     </Grid>
                 </Border>
             </VerticalStackLayout>
+            <VerticalStackLayout Grid.Column="2" Spacing="4">
+                <Label Text="Category" FontSize="12" FontAttributes="Bold" TextColor="#52627A" />
+                <Border BackgroundColor="White" Stroke="#B8C4D6" StrokeThickness="1" StrokeShape="RoundRectangle 8" Padding="10,0">
+                    <Picker x:Name="CategoryFilter" TextColor="#14213D" BackgroundColor="Transparent" FontSize="14" HeightRequest="46" HorizontalOptions="Fill" SelectedIndexChanged="OnFilterChanged" SemanticProperties.Description="Category filter dropdown">
+                        <Picker.Items><x:String>All categories</x:String></Picker.Items>
+                    </Picker>
+                </Border>
+            </VerticalStackLayout>
         </Grid>
         <Grid Grid.Row="3" ColumnDefinitions="*,Auto" x:Name="SelectionBar" BackgroundColor="#E8F0FF" Padding="12,8" ColumnSpacing="14">
             <Label x:Name="SelectionSummary" Text="Select cores to review" TextColor="#1E3A8A" VerticalOptions="Center" />
@@ -51,10 +59,19 @@
         <Grid Grid.Row="4">
             <CollectionView x:Name="CoreList" SelectionMode="None">
             <CollectionView.EmptyView><Label Text="No cores found yet." TextColor="#63708A" HorizontalOptions="Center" VerticalOptions="Center" /></CollectionView.EmptyView>
+            <CollectionView.Header>
+                <Grid ColumnDefinitions="44,2*,1.05*,.8*,.8*,1.1*,Auto" Padding="12,4" ColumnSpacing="10">
+                    <Label Grid.Column="1" Text="CORE" FontSize="11" FontAttributes="Bold" TextColor="#63708A" />
+                    <Label Grid.Column="2" Text="CATEGORY" FontSize="11" FontAttributes="Bold" TextColor="#63708A" />
+                    <Label Grid.Column="3" Text="INSTALLED" FontSize="11" FontAttributes="Bold" TextColor="#63708A" />
+                    <Label Grid.Column="4" Text="LATEST" FontSize="11" FontAttributes="Bold" TextColor="#63708A" />
+                    <Label Grid.Column="5" Text="STATUS" FontSize="11" FontAttributes="Bold" TextColor="#63708A" />
+                </Grid>
+            </CollectionView.Header>
             <CollectionView.ItemTemplate>
                 <DataTemplate x:DataType="models:CoreComparison">
-                    <Border BackgroundColor="White" Stroke="#E2E7F0" StrokeShape="RoundRectangle 10" Padding="12,9" Margin="0,0,0,5">
-                        <Grid ColumnDefinitions="Auto,*,Auto" RowDefinitions="Auto,Auto" RowSpacing="0" ColumnSpacing="8">
+                    <Border BackgroundColor="White" Stroke="#E2E7F0" StrokeShape="RoundRectangle 10" Padding="12,8" Margin="0,0,0,4">
+                        <Grid ColumnDefinitions="44,2*,1.05*,.8*,.8*,1.1*,Auto" RowDefinitions="Auto,Auto" RowSpacing="0" ColumnSpacing="10">
                             <CheckBox Grid.RowSpan="2" IsChecked="{Binding IsSelected, Mode=TwoWay}" VerticalOptions="Center" Color="#2563EB" CheckedChanged="OnCoreSelectionChanged" />
                             <Grid Grid.Column="1" Grid.RowSpan="2">
                                 <Grid.GestureRecognizers>
@@ -65,13 +82,11 @@
                                     <Label Grid.Row="1" Text="{Binding Identifier}" FontSize="11" TextColor="#63708A" LineBreakMode="TailTruncation" />
                                 </Grid>
                             </Grid>
-                            <VerticalStackLayout Grid.Column="2" Grid.RowSpan="2" HorizontalOptions="End" Spacing="0">
-                                <Label Text="{Binding StatusLabel}" FontSize="12" FontAttributes="Bold" TextColor="#19734E" HorizontalTextAlignment="End" />
-                                <Grid ColumnDefinitions="Auto,Auto" ColumnSpacing="7" HorizontalOptions="End">
-                                    <Label Text="{Binding VersionLabel}" FontSize="11" TextColor="#63708A" HorizontalTextAlignment="End" VerticalOptions="Center" />
-                                    <controls:EzButton Grid.Column="1" Text="Details" FontSize="11" ButtonPadding="8,3" ButtonBackgroundColor="#EEF2F7" ButtonTextColor="#1E3A8A" Clicked="OnDetailsClicked" />
-                                </Grid>
-                            </VerticalStackLayout>
+                            <Label Grid.Column="2" Grid.RowSpan="2" Text="{Binding Category}" FontSize="12" TextColor="#52627A" VerticalOptions="Center" LineBreakMode="TailTruncation" />
+                            <Label Grid.Column="3" Grid.RowSpan="2" Text="{Binding InstalledVersion}" FontSize="12" TextColor="#52627A" VerticalOptions="Center" LineBreakMode="TailTruncation" />
+                            <Label Grid.Column="4" Grid.RowSpan="2" Text="{Binding AvailableVersion}" FontSize="12" TextColor="#52627A" VerticalOptions="Center" LineBreakMode="TailTruncation" />
+                            <Label Grid.Column="5" Grid.RowSpan="2" Text="{Binding StatusLabel}" FontSize="12" FontAttributes="Bold" TextColor="#19734E" VerticalOptions="Center" LineBreakMode="TailTruncation" />
+                            <controls:EzButton Grid.Column="6" Grid.RowSpan="2" Text="Details" FontSize="11" ButtonPadding="8,3" ButtonBackgroundColor="#EEF2F7" ButtonTextColor="#1E3A8A" Clicked="OnDetailsClicked" VerticalOptions="Center" />
                         </Grid>
                     </Border>
                 </DataTemplate>

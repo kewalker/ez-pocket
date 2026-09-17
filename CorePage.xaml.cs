@@ -97,6 +97,7 @@ public partial class CorePage : ContentPage
     {
         string query = Search.Text?.Trim() ?? string.Empty;
         string filter = StatusFilter.SelectedItem?.ToString() ?? "All cores";
+        string category = CategoryFilter.SelectedItem?.ToString() ?? "All categories";
         IEnumerable<CoreComparison> filtered = allCores;
 
         if (!string.IsNullOrWhiteSpace(query))
@@ -104,7 +105,18 @@ public partial class CorePage : ContentPage
         if (filter == "Updates") filtered = filtered.Where(core => core.Status == "Update");
         if (filter == "Installed") filtered = filtered.Where(core => core.IsInstalled);
         if (filter == "Available") filtered = filtered.Where(core => core.Status == "Available");
+        if (category != "All categories") filtered = filtered.Where(core => string.Equals(core.Category, category, StringComparison.OrdinalIgnoreCase));
         CoreList.ItemsSource = filtered.ToArray();
+    }
+
+    private void PopulateCategoryFilter()
+    {
+        string previous = CategoryFilter.SelectedItem?.ToString() ?? "All categories";
+        CategoryFilter.Items.Clear();
+        CategoryFilter.Items.Add("All categories");
+        foreach (string category in allCores.Select(core => core.Category).Distinct(StringComparer.OrdinalIgnoreCase).OrderBy(category => category))
+            CategoryFilter.Items.Add(category);
+        CategoryFilter.SelectedItem = CategoryFilter.Items.Contains(previous) ? previous : "All categories";
     }
 
     private async Task RefreshAsync()
@@ -138,6 +150,7 @@ public partial class CorePage : ContentPage
             allCores = comparison;
             coreSelection.InitializeForPocket(pocket, comparison);
             UpdateSelectionBar();
+            PopulateCategoryFilter();
             StatusFilter.SelectedIndex = 0;
             StatusFilter.SelectedItem = StatusFilter.Items[0];
             Dispatcher.Dispatch(() =>
@@ -157,6 +170,7 @@ public partial class CorePage : ContentPage
             allCores = pocket.InstalledCoreNames.Select(identifier => new CoreComparison(identifier, identifier, "Unknown", "Unknown", "-", true, false, "Unknown")).ToArray();
             coreSelection.InitializeForPocket(pocket, allCores);
             UpdateSelectionBar();
+            PopulateCategoryFilter();
             OnFilterChanged(this, EventArgs.Empty);
         }
         catch (OperationCanceledException) when (cancellation.IsCancellationRequested)
@@ -171,6 +185,7 @@ public partial class CorePage : ContentPage
             allCores = pocket.InstalledCoreNames.Select(identifier => new CoreComparison(identifier, identifier, "Unknown", "Unknown", "-", true, false, "Unknown")).ToArray();
             coreSelection.InitializeForPocket(pocket, allCores);
             UpdateSelectionBar();
+            PopulateCategoryFilter();
             OnFilterChanged(this, EventArgs.Empty);
         }
         finally
