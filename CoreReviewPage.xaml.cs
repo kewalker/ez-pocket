@@ -61,7 +61,7 @@ public partial class CoreReviewPage : ContentPage
         ChangeList.IsVisible = false;
         ChangeDetails.IsVisible = false;
         OverrideSummary.IsVisible = false;
-        SyncStatus.Text = "Preparing selected core packages…";
+        SyncStatus.Text = "Preparing selected core packages. Each download times out after 45 seconds and retries once.";
         try
         {
             IReadOnlyList<CoreComparison> coresToRemove = coreSelection.Cores

@@ -226,6 +226,29 @@ public sealed class CoreSyncServiceTests
         }
     }
 
+    [Fact]
+    public async Task PrepareRetriesAnIndividualPackageDownloadOnce()
+    {
+        string root = CreateTempFolder();
+        try
+        {
+            byte[] archive = CreateArchive([("Cores/Example.Core/core.json", "new")]);
+            var handler = new FlakyArchiveHandler(archive);
+            var service = new CoreSyncService(new HttpClient(handler), Path.Combine(root, "staging"), Path.Combine(root, "backups"));
+            var pocket = new PocketDrive(Path.Combine(root, "Pocket"), "Pocket", DriveType.Unknown, 0, 0, 0, [], 0, []);
+            var core = new CoreComparison("Example.Core", "Example", "Test", "-", "1.0", false, true, "Available", "https://packages.example/core.zip");
+
+            CoreSyncPreview preview = await service.PrepareAsync(pocket, [core]);
+
+            Assert.True(preview.CanSync);
+            Assert.Equal(2, handler.RequestCount);
+        }
+        finally
+        {
+            Directory.Delete(root, true);
+        }
+    }
+
     private static byte[] CreateArchive((string Path, string Content)[] files)
     {
         using var memory = new MemoryStream();
@@ -262,6 +285,21 @@ public sealed class CoreSyncServiceTests
             return Task.FromResult(new HttpResponseMessage(System.Net.HttpStatusCode.OK)
             {
                 Content = new ByteArrayContent(archives[request.RequestUri!.ToString()])
+            });
+        }
+    }
+
+    private sealed class FlakyArchiveHandler(byte[] archive) : HttpMessageHandler
+    {
+        public int RequestCount { get; private set; }
+
+        protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
+        {
+            RequestCount++;
+            if (RequestCount == 1) throw new HttpRequestException("Temporary network failure.");
+            return Task.FromResult(new HttpResponseMessage(System.Net.HttpStatusCode.OK)
+            {
+                Content = new ByteArrayContent(archive)
             });
         }
     }

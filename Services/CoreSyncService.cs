@@ -11,6 +11,8 @@ public sealed class CoreSyncService
     private static readonly string[] AllowedRootFolders = ["Assets", "Cores", "Platforms"];
     private const int MaximumBackupsPerPocket = 5;
     private const long MaximumBackupBytesPerPocket = 1024L * 1024 * 1024;
+    private const int PackageDownloadAttempts = 2;
+    private static readonly TimeSpan PackageDownloadTimeout = TimeSpan.FromSeconds(45);
     private readonly HttpClient client;
     private readonly string workingRoot;
     private readonly string backupRoot;
@@ -54,13 +56,7 @@ public sealed class CoreSyncService
 
             try
             {
-                using HttpResponseMessage response = await client.GetAsync(url, HttpCompletionOption.ResponseHeadersRead, cancellationToken);
-                response.EnsureSuccessStatusCode();
-                await using Stream source = await response.Content.ReadAsStreamAsync(cancellationToken);
-                await using (FileStream destination = File.Create(archivePath))
-                {
-                    await source.CopyToAsync(destination, cancellationToken);
-                }
+                await DownloadPackageAsync(url, archivePath, cancellationToken);
                 ExtractArchive(archivePath, extractPath);
 
                 foreach (string file in Directory.EnumerateFiles(extractPath, "*", SearchOption.AllDirectories))
@@ -76,7 +72,7 @@ public sealed class CoreSyncService
                     sources.Add(relativePath, new StagedSource(file, core.FriendlyName));
                 }
             }
-            catch (Exception exception) when (exception is HttpRequestException or IOException or InvalidDataException)
+            catch (Exception exception) when (exception is HttpRequestException or IOException or InvalidDataException or TimeoutException)
             {
                 blockers.Add($"{core.FriendlyName} could not be staged: {exception.Message}");
             }
@@ -98,6 +94,40 @@ public sealed class CoreSyncService
             .Cast<CoreSyncRemoval>()
             .ToArray();
         return new CoreSyncPreview(pocket.RootPath, stagingPath, cores, changes, removals, overrides, blockers);
+    }
+
+    private async Task DownloadPackageAsync(Uri url, string archivePath, CancellationToken cancellationToken)
+    {
+        Exception? lastFailure = null;
+        for (int attempt = 1; attempt <= PackageDownloadAttempts; attempt++)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            using var attemptCancellation = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
+            attemptCancellation.CancelAfter(PackageDownloadTimeout);
+            try
+            {
+                using HttpResponseMessage response = await client.GetAsync(url, HttpCompletionOption.ResponseHeadersRead, attemptCancellation.Token);
+                response.EnsureSuccessStatusCode();
+                await using Stream source = await response.Content.ReadAsStreamAsync(attemptCancellation.Token);
+                await using FileStream destination = File.Create(archivePath);
+                await source.CopyToAsync(destination, attemptCancellation.Token);
+                return;
+            }
+            catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
+            {
+                throw;
+            }
+            catch (OperationCanceledException) when (attemptCancellation.IsCancellationRequested)
+            {
+                lastFailure = new TimeoutException($"Timed out after {PackageDownloadTimeout.TotalSeconds:0} seconds.");
+            }
+            catch (HttpRequestException exception)
+            {
+                lastFailure = exception;
+            }
+        }
+
+        throw lastFailure ?? new HttpRequestException("Package download failed.");
     }
 
     public Task<CoreSyncResult> ApplyAsync(CoreSyncPreview preview, CancellationToken cancellationToken = default)
