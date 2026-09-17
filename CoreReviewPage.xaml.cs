@@ -120,16 +120,14 @@ public partial class CoreReviewPage : ContentPage
         {
             PocketDrive? refreshedPocket = scanner.ScanFolder(preview.PocketPath);
             if (refreshedPocket is not null) pocketSelection.Select(refreshedPocket);
+            coreSelection.ReportSuccessfulSync(result.Message);
+            await Shell.Current.GoToAsync("..");
+            return;
         }
-        SyncStatus.Text = result.Succeeded
-            ? result.Message
-            : result.Message;
+        SyncStatus.Text = result.Message;
         SyncButton.IsVisible = false;
-        if (!result.Succeeded)
-        {
-            SyncButton.IsEnabled = true;
-            SyncButton.IsVisible = true;
-        }
+        SyncButton.IsEnabled = true;
+        SyncButton.IsVisible = true;
     }
 
     private async void OnBackClicked(object? sender, EventArgs e)

@@ -5,7 +5,7 @@
              xmlns:controls="clr-namespace:EzPocket.Controls"
              x:Class="EzPocket.CoreReviewPage"
              BackgroundColor="#F5F7FB"
-             Title="Review changes">
+             Title="Sync changes">
     <Grid Padding="24,16,24,20" RowDefinitions="Auto,Auto,Auto,Auto,*" RowSpacing="10">
         <Grid ColumnDefinitions="Auto,Auto,Auto,Auto,Auto,Auto" ColumnSpacing="6">
             <controls:EzButton Text="&#x2190;" FontSize="16" MinimumHeight="24" Clicked="OnBackClicked" ButtonPadding="10,1" CornerRadius="8" ButtonBackgroundColor="#E8F0FF" ButtonTextColor="#1E3A8A" SemanticProperties.Description="Back to Core Manager" />
@@ -17,11 +17,11 @@
                 <Label.GestureRecognizers><TapGestureRecognizer Tapped="OnManageCoresClicked" /></Label.GestureRecognizers>
             </Label>
             <Label Grid.Column="4" Text="/" FontSize="13" TextColor="#AAB3C4" VerticalOptions="Center" />
-            <Label Grid.Column="5" Text="Review changes" FontSize="13" TextColor="#63708A" VerticalOptions="Center" />
+            <Label Grid.Column="5" Text="Sync changes" FontSize="13" TextColor="#63708A" VerticalOptions="Center" />
         </Grid>
         <VerticalStackLayout Grid.Row="1" Spacing="5">
-            <Label Text="Review changes" FontSize="26" FontAttributes="Bold" TextColor="#14213D" />
-            <Label Text="Selected cores will be installed or updated. Nothing else is changed." FontSize="14" TextColor="#63708A" />
+            <Label Text="Sync changes" FontSize="26" FontAttributes="Bold" TextColor="#14213D" />
+            <Label Text="Review the planned changes, then apply them to your Pocket." FontSize="14" TextColor="#63708A" />
         </VerticalStackLayout>
         <Border Grid.Row="2" BackgroundColor="#EEF6F1" Stroke="#CDE8D6" StrokeShape="RoundRectangle 12" Padding="14,10">
             <Label Text="No changes have been made. Review the package changes before you apply them." FontSize="13" TextColor="#176B49" />

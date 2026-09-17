@@ -8,6 +8,7 @@ public sealed class CoreSelectionService
     private readonly Dictionary<string, CoreComparison> selectedCores = new(StringComparer.OrdinalIgnoreCase);
     private IReadOnlyList<CoreComparison> cores = [];
     private string? initializedPocketPath;
+    private string? syncSuccessMessage;
 
     public IReadOnlyList<CoreComparison> SelectedCores => selectedCores.Values.OrderBy(core => core.FriendlyName).ToArray();
     public IReadOnlyList<CoreComparison> Cores => cores;
@@ -43,5 +44,14 @@ public sealed class CoreSelectionService
     {
         foreach (CoreComparison core in selectedCores.Values) core.IsSelected = false;
         selectedCores.Clear();
+    }
+
+    public void ReportSuccessfulSync(string message) => syncSuccessMessage = message;
+
+    public string? ConsumeSuccessfulSyncMessage()
+    {
+        string? message = syncSuccessMessage;
+        syncSuccessMessage = null;
+        return message;
     }
 }

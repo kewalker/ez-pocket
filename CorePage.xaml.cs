@@ -24,6 +24,8 @@ public partial class CorePage : ContentPage
     {
         base.OnAppearing();
         await RefreshAsync();
+        string? syncMessage = coreSelection.ConsumeSuccessfulSyncMessage();
+        if (syncMessage is not null) InventoryState.Text = syncMessage;
     }
 
     protected override void OnDisappearing()
@@ -77,9 +79,9 @@ public partial class CorePage : ContentPage
         SelectionBar.IsVisible = true;
         SelectionSummary.Text = count switch
         {
-            0 => "Select cores to review",
-            1 => "1 core selected for review",
-            _ => $"{count} cores selected for review"
+            0 => "Select cores to sync",
+            1 => "1 core selected for sync",
+            _ => $"{count} cores selected for sync"
         };
     }
 
