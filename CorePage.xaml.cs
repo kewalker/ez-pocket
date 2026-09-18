@@ -35,6 +35,7 @@ public partial class CorePage : ContentPage
     {
         refreshCancellation?.Cancel();
         successToastCancellation?.Cancel();
+        successToastCancellation = null;
         SuccessToast.IsVisible = false;
         base.OnDisappearing();
     }
@@ -46,15 +47,27 @@ public partial class CorePage : ContentPage
         var cancellation = new CancellationTokenSource();
         successToastCancellation = cancellation;
         SuccessToastMessage.Text = message;
+        SuccessToastCountdown.Text = "6s";
         SuccessToast.IsVisible = true;
         _ = HideSuccessToastAsync(cancellation);
+    }
+
+    private void OnDismissSuccessToastClicked(object? sender, EventArgs e)
+    {
+        successToastCancellation?.Cancel();
+        successToastCancellation = null;
+        SuccessToast.IsVisible = false;
     }
 
     private async Task HideSuccessToastAsync(CancellationTokenSource cancellation)
     {
         try
         {
-            await Task.Delay(TimeSpan.FromSeconds(6), cancellation.Token);
+            for (int secondsRemaining = 6; secondsRemaining > 0; secondsRemaining--)
+            {
+                SuccessToastCountdown.Text = $"{secondsRemaining}s";
+                await Task.Delay(TimeSpan.FromSeconds(1), cancellation.Token);
+            }
             if (ReferenceEquals(successToastCancellation, cancellation))
             {
                 SuccessToast.IsVisible = false;

@@ -103,11 +103,13 @@
                 <controls:EzButton Text="Retry" Clicked="OnRefreshClicked" HorizontalOptions="Center" />
             </VerticalStackLayout>
         </Grid>
-        <Border x:Name="SuccessToast" Grid.RowSpan="5" IsVisible="False" ZIndex="10" HorizontalOptions="End" VerticalOptions="End" Margin="0,0,0,16" BackgroundColor="#E8F7EE" Stroke="#67B98A" StrokeThickness="1" StrokeShape="RoundRectangle 10" Padding="14,10" SemanticProperties.Description="Sync completed successfully">
-            <HorizontalStackLayout Spacing="8">
+        <Border x:Name="SuccessToast" Grid.RowSpan="5" IsVisible="False" ZIndex="10" WidthRequest="440" HorizontalOptions="Center" VerticalOptions="Start" Margin="0,16,0,0" BackgroundColor="#E8F7EE" Stroke="#67B98A" StrokeThickness="1" StrokeShape="RoundRectangle 10" Padding="14,10" SemanticProperties.Description="Sync completed successfully">
+            <Grid ColumnDefinitions="Auto,*,Auto,Auto" ColumnSpacing="10">
                 <Label Text="✓" FontSize="16" TextColor="#19734E" VerticalOptions="Center" />
-                <Label x:Name="SuccessToastMessage" TextColor="#14532D" FontAttributes="Bold" VerticalOptions="Center" />
-            </HorizontalStackLayout>
+                <Label x:Name="SuccessToastMessage" Grid.Column="1" TextColor="#14532D" FontAttributes="Bold" VerticalOptions="Center" LineBreakMode="TailTruncation" />
+                <Label x:Name="SuccessToastCountdown" Grid.Column="2" TextColor="#3F7A58" FontSize="12" VerticalOptions="Center" />
+                <controls:EzButton Grid.Column="3" Text="Dismiss" FontSize="12" MinimumHeight="28" ButtonPadding="8,3" ButtonBackgroundColor="#D7F0E0" ButtonTextColor="#14532D" Clicked="OnDismissSuccessToastClicked" VerticalOptions="Center" SemanticProperties.Description="Dismiss sync success message" />
+            </Grid>
         </Border>
     </Grid>
 </ContentPage>
