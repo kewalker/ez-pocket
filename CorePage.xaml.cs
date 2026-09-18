@@ -10,6 +10,7 @@ public partial class CorePage : ContentPage
     private readonly CoreSelectionService coreSelection;
     private IReadOnlyList<CoreComparison> allCores = [];
     private CancellationTokenSource? refreshCancellation;
+    private CancellationTokenSource? successToastCancellation;
     private bool refreshInProgress;
     private string? sortColumn;
     private bool sortAscending = true;
@@ -25,15 +26,49 @@ public partial class CorePage : ContentPage
     protected override async void OnAppearing()
     {
         base.OnAppearing();
-        await RefreshAsync();
         string? syncMessage = coreSelection.ConsumeSuccessfulSyncMessage();
-        if (syncMessage is not null) InventoryState.Text = syncMessage;
+        if (syncMessage is not null) ShowSuccessToast(syncMessage);
+        await RefreshAsync();
     }
 
     protected override void OnDisappearing()
     {
         refreshCancellation?.Cancel();
+        successToastCancellation?.Cancel();
+        SuccessToast.IsVisible = false;
         base.OnDisappearing();
+    }
+
+    private void ShowSuccessToast(string message)
+    {
+        successToastCancellation?.Cancel();
+        successToastCancellation?.Dispose();
+        var cancellation = new CancellationTokenSource();
+        successToastCancellation = cancellation;
+        SuccessToastMessage.Text = message;
+        SuccessToast.IsVisible = true;
+        _ = HideSuccessToastAsync(cancellation);
+    }
+
+    private async Task HideSuccessToastAsync(CancellationTokenSource cancellation)
+    {
+        try
+        {
+            await Task.Delay(TimeSpan.FromSeconds(6), cancellation.Token);
+            if (ReferenceEquals(successToastCancellation, cancellation))
+            {
+                SuccessToast.IsVisible = false;
+                successToastCancellation = null;
+            }
+        }
+        catch (OperationCanceledException)
+        {
+            // A new result or navigation replaced this toast.
+        }
+        finally
+        {
+            if (!ReferenceEquals(successToastCancellation, cancellation)) cancellation.Dispose();
+        }
     }
 
     private async void OnRefreshClicked(object? sender, EventArgs e) => await RefreshAsync();
