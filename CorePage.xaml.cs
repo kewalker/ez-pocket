@@ -69,7 +69,7 @@ public partial class CorePage : ContentPage
             while (stopwatch.Elapsed < SuccessToastDuration)
             {
                 SuccessToastTimer.Progress = Math.Max(0, 1 - stopwatch.Elapsed.TotalMilliseconds / SuccessToastDuration.TotalMilliseconds);
-                await Task.Delay(TimeSpan.FromMilliseconds(16), cancellation.Token);
+                await Task.Delay(TimeSpan.FromMilliseconds(8), cancellation.Token);
             }
             SuccessToastTimer.Progress = 0;
             if (ReferenceEquals(successToastCancellation, cancellation))
