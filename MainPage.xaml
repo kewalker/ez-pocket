@@ -38,6 +38,16 @@
                     <controls:EzButton x:Name="NextStepButton" Grid.Column="1" Text="Choose folder" Clicked="OnNextStepClicked" VerticalOptions="Center" />
                 </Grid>
             </Border>
+            <Border BackgroundColor="#EEF6F1" Stroke="#CDE8D6" StrokeShape="RoundRectangle 12" Padding="16">
+                <Grid ColumnDefinitions="*,Auto" ColumnSpacing="16">
+                    <VerticalStackLayout Spacing="4">
+                        <Label Text="POCKETOS" FontSize="11" FontAttributes="Bold" TextColor="#19734E" />
+                        <Label Text="Update Pocket firmware" FontSize="18" FontAttributes="Bold" TextColor="#14213D" />
+                        <Label Text="Download, verify, and stage official firmware separately from core updates." FontSize="13" TextColor="#52627A" />
+                    </VerticalStackLayout>
+                    <controls:EzButton x:Name="FirmwareButton" Grid.Column="1" Text="Update firmware" IsEnabled="False" Clicked="OnFirmwareClicked" ButtonBackgroundColor="#19734E" VerticalOptions="Center" />
+                </Grid>
+            </Border>
             <Label Text="Pocket overview" FontSize="20" FontAttributes="Bold" TextColor="#14213D" />
             <Grid ColumnDefinitions="*,*,*" ColumnSpacing="12">
                 <Border BackgroundColor="White" Stroke="#E2E7F0" StrokeShape="RoundRectangle 12" Padding="14"><VerticalStackLayout Spacing="4"><Label Text="Installed cores" TextColor="#63708A" FontSize="13" /><Label x:Name="CoreCountValue" Text="—" FontSize="24" FontAttributes="Bold" TextColor="#14213D" /><Label x:Name="CoreCountDetail" Text="Select a Pocket first" TextColor="#63708A" FontSize="12" /></VerticalStackLayout></Border>

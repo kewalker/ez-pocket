@@ -61,6 +61,16 @@ public partial class MainPage : ContentPage
         else await Shell.Current.GoToAsync("CorePage");
     }
 
+    private async void OnFirmwareClicked(object? sender, EventArgs e)
+    {
+        if (selection.SelectedPocket is null)
+        {
+            await DisplayAlert("Select a Pocket", "Choose or scan a Pocket before preparing a firmware update.", "Got it");
+            return;
+        }
+        await Shell.Current.GoToAsync("FirmwarePage");
+    }
+
     private async Task ChooseFolderAsync()
     {
         string? path = await folderPicker.PickFolderAsync();
@@ -103,6 +113,7 @@ public partial class MainPage : ContentPage
         CoreCountDetail.Text = pocket.CoreCount == 1 ? "core installed" : "cores installed";
         TargetValue.Text = pocket.LooksLikePocket ? pocket.Name : "New target";
         TargetDetail.Text = pocket.CapacitySummary;
+        FirmwareButton.IsEnabled = true;
     }
 
     private void ShowNoPocket()
@@ -119,6 +130,7 @@ public partial class MainPage : ContentPage
         CoreCountDetail.Text = "Select a Pocket first";
         TargetValue.Text = "None";
         TargetDetail.Text = "No folder selected";
+        FirmwareButton.IsEnabled = false;
     }
 
     private async void OnManageCoresClicked(object? sender, EventArgs e)
