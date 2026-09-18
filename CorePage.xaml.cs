@@ -47,7 +47,7 @@ public partial class CorePage : ContentPage
         var cancellation = new CancellationTokenSource();
         successToastCancellation = cancellation;
         SuccessToastMessage.Text = message;
-        SuccessToastCountdown.Text = "6s";
+        SuccessToastTimer.Progress = 1;
         SuccessToast.IsVisible = true;
         _ = HideSuccessToastAsync(cancellation);
     }
@@ -65,7 +65,7 @@ public partial class CorePage : ContentPage
         {
             for (int secondsRemaining = 6; secondsRemaining > 0; secondsRemaining--)
             {
-                SuccessToastCountdown.Text = $"{secondsRemaining}s";
+                SuccessToastTimer.Progress = secondsRemaining / 6d;
                 await Task.Delay(TimeSpan.FromSeconds(1), cancellation.Token);
             }
             if (ReferenceEquals(successToastCancellation, cancellation))
