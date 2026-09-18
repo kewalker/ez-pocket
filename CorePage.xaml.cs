@@ -1,5 +1,6 @@
 using EzPocket.Models;
 using EzPocket.Services;
+using System.Diagnostics;
 
 namespace EzPocket;
 
@@ -14,6 +15,7 @@ public partial class CorePage : ContentPage
     private bool refreshInProgress;
     private string? sortColumn;
     private bool sortAscending = true;
+    private static readonly TimeSpan SuccessToastDuration = TimeSpan.FromSeconds(6);
 
     public CorePage()
     {
@@ -63,11 +65,13 @@ public partial class CorePage : ContentPage
     {
         try
         {
-            for (int secondsRemaining = 6; secondsRemaining > 0; secondsRemaining--)
+            Stopwatch stopwatch = Stopwatch.StartNew();
+            while (stopwatch.Elapsed < SuccessToastDuration)
             {
-                SuccessToastTimer.Progress = secondsRemaining / 6d;
-                await Task.Delay(TimeSpan.FromSeconds(1), cancellation.Token);
+                SuccessToastTimer.Progress = Math.Max(0, 1 - stopwatch.Elapsed.TotalMilliseconds / SuccessToastDuration.TotalMilliseconds);
+                await Task.Delay(TimeSpan.FromMilliseconds(16), cancellation.Token);
             }
+            SuccessToastTimer.Progress = 0;
             if (ReferenceEquals(successToastCancellation, cancellation))
             {
                 SuccessToast.IsVisible = false;
