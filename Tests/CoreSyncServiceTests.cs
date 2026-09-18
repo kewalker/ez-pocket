@@ -35,6 +35,7 @@ public sealed class CoreSyncServiceTests
             CoreSyncResult result = await service.ApplyAsync(preview);
 
             Assert.True(result.Succeeded);
+            Assert.Equal("Updated 1 core.", result.Message);
             Assert.Equal("new", await File.ReadAllTextAsync(existing));
             Assert.Equal("asset", await File.ReadAllTextAsync(Path.Combine(pocketPath, "Assets", "example", "readme.txt")));
             Assert.False(File.Exists(Path.Combine(pocketPath, "System", "unsafe.bin")));
@@ -154,6 +155,7 @@ public sealed class CoreSyncServiceTests
             Assert.Single(preview.Removals);
             Assert.True(result.Succeeded);
             Assert.Equal(1, result.CoresRemoved);
+            Assert.Equal("Removed 1 core.", result.Message);
             Assert.False(Directory.Exists(coreDirectory));
             Assert.Equal("asset", await File.ReadAllTextAsync(Path.Combine(pocketPath, "Assets", "Example", "keep.txt")));
             Assert.Equal("core", await File.ReadAllTextAsync(Path.Combine(result.BackupPath!, "removed", "Cores", "Example.Core", "core.json")));

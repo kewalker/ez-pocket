@@ -182,7 +182,7 @@ public sealed class CoreSyncService
             int backupsPruned = Directory.Exists(backupPath) ? PruneBackups(preview.PocketPath) : 0;
             try { Cleanup(preview); }
             catch (IOException) { }
-            string message = $"Synced {preview.Changes.Count} files" + (removedDirectories.Count > 0 ? $" and removed {removedDirectories.Count} core(s)." : ".");
+            string message = FormatSuccessfulSyncMessage(preview.Cores, removedDirectories.Count);
             return Task.FromResult(new CoreSyncResult(true, preview.Changes.Count, removedDirectories.Count, Directory.Exists(backupPath) ? backupPath : null, message, backupsPruned));
         }
         catch (Exception exception) when (exception is IOException or UnauthorizedAccessException or OperationCanceledException)
@@ -226,6 +226,21 @@ public sealed class CoreSyncService
         string key = Convert.ToHexString(hash)[..16];
         return Path.Combine(backupRoot, key);
     }
+
+    private static string FormatSuccessfulSyncMessage(IReadOnlyList<CoreComparison> selectedCores, int removedCoreCount)
+    {
+        int addedCoreCount = selectedCores.Count(core => !core.IsInstalled);
+        int updatedCoreCount = selectedCores.Count(core => core.IsInstalled && core.Status == "Update");
+        int syncedCoreCount = selectedCores.Count - addedCoreCount - updatedCoreCount;
+        var actions = new List<string>();
+        if (addedCoreCount > 0) actions.Add($"added {FormatCoreCount(addedCoreCount)}");
+        if (updatedCoreCount > 0) actions.Add($"updated {FormatCoreCount(updatedCoreCount)}");
+        if (syncedCoreCount > 0) actions.Add($"synced {FormatCoreCount(syncedCoreCount)}");
+        if (removedCoreCount > 0) actions.Add($"removed {FormatCoreCount(removedCoreCount)}");
+        return char.ToUpperInvariant(actions[0][0]) + actions[0][1..] + string.Concat(actions.Skip(1).Select(action => $" and {action}")) + ".";
+    }
+
+    private static string FormatCoreCount(int count) => count == 1 ? "1 core" : $"{count} cores";
 
     private static long GetDirectorySize(DirectoryInfo directory) => directory
         .EnumerateFiles("*", SearchOption.AllDirectories)
