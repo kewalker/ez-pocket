@@ -8,7 +8,8 @@ public sealed record FirmwareUpdatePreview(
     string StagingPath,
     string FirmwareFilePath,
     string FileName,
-    long SizeBytes)
+    long SizeBytes,
+    IReadOnlyList<string> ExistingFirmwareFiles)
 {
     public string SizeLabel => SizeBytes < 1024 * 1024
         ? $"{Math.Max(1, SizeBytes / 1024d):0.#} KB"

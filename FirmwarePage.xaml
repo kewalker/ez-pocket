@@ -33,10 +33,11 @@
                 </VerticalStackLayout>
             </Border>
             <Border x:Name="PreviewCard" IsVisible="False" BackgroundColor="White" Stroke="#E2E7F0" StrokeShape="RoundRectangle 12" Padding="16">
-                <Grid RowDefinitions="Auto,Auto,Auto" RowSpacing="6">
+                <Grid RowDefinitions="Auto,Auto,Auto,Auto" RowSpacing="6">
                     <Label x:Name="ReleaseTitle" FontSize="18" FontAttributes="Bold" TextColor="#14213D" />
                     <Label x:Name="ReleaseDetail" Grid.Row="1" FontSize="13" TextColor="#63708A" />
                     <Label x:Name="ChecksumDetail" Grid.Row="2" FontSize="12" TextColor="#19734E" />
+                    <Label x:Name="ReplacementDetail" Grid.Row="3" FontSize="12" TextColor="#8A620F" />
                 </Grid>
             </Border>
             <Label x:Name="FirmwareStatus" Text="Check Analogue's official firmware before staging anything on your Pocket." TextColor="#63708A" />

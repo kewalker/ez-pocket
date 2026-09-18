@@ -26,6 +26,7 @@ public sealed class FirmwareUpdateServiceTests
             Assert.Equal("2.7", preview.Release.Version);
             Assert.Equal(md5, preview.Release.Md5);
             Assert.Equal("pocket_firmware_2.7.bin", preview.FileName);
+            Assert.Empty(preview.ExistingFirmwareFiles);
             Assert.Equal(firmware, await File.ReadAllBytesAsync(preview.FirmwareFilePath));
             service.Cleanup(preview);
         }

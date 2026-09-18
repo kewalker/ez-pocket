@@ -60,12 +60,14 @@ public sealed class FirmwareUpdateService
             if (!string.Equals(actualMd5, release.Md5, StringComparison.OrdinalIgnoreCase))
                 throw new InvalidDataException("The downloaded firmware did not match Analogue's published MD5 checksum.");
 
-            bool hasOtherFirmwareFile = Directory.EnumerateFiles(pocket.RootPath, "pocket_firmware*.bin", SearchOption.TopDirectoryOnly)
-                .Any(existingFile => !string.Equals(Path.GetFileName(existingFile), fileName, StringComparison.OrdinalIgnoreCase));
-            if (hasOtherFirmwareFile)
-                throw new IOException("Remove the other Pocket firmware file from the SD-card root before staging this update.");
+            string[] existingFirmwareFiles = Directory.EnumerateFiles(pocket.RootPath, "pocket_firmware*.bin", SearchOption.TopDirectoryOnly)
+                .Select(Path.GetFileName)
+                .Where(name => !string.IsNullOrWhiteSpace(name))
+                .Cast<string>()
+                .OrderBy(name => name, StringComparer.OrdinalIgnoreCase)
+                .ToArray();
 
-            return new FirmwareUpdatePreview(pocket.RootPath, release, stagingPath, firmwarePath, fileName, new FileInfo(firmwarePath).Length);
+            return new FirmwareUpdatePreview(pocket.RootPath, release, stagingPath, firmwarePath, fileName, new FileInfo(firmwarePath).Length, existingFirmwareFiles);
         }
         catch
         {
@@ -83,20 +85,48 @@ public sealed class FirmwareUpdateService
 
             string destination = Path.Combine(preview.PocketPath, preview.FileName);
             EnsureRootDestination(preview.PocketPath, destination);
+            string[] currentFirmwareFiles = Directory.EnumerateFiles(preview.PocketPath, "pocket_firmware*.bin", SearchOption.TopDirectoryOnly)
+                .Select(Path.GetFileName)
+                .Where(name => !string.IsNullOrWhiteSpace(name))
+                .Cast<string>()
+                .OrderBy(name => name, StringComparer.OrdinalIgnoreCase)
+                .ToArray();
+            if (!currentFirmwareFiles.SequenceEqual(preview.ExistingFirmwareFiles, StringComparer.OrdinalIgnoreCase))
+                throw new IOException("Pocket firmware files changed after the preview. Prepare the update again before staging it.");
+            string[] existingFiles = preview.ExistingFirmwareFiles
+                .Select(fileName => Path.Combine(preview.PocketPath, fileName))
+                .Where(File.Exists)
+                .ToArray();
+            foreach (string existingFile in existingFiles) EnsureRootDestination(preview.PocketPath, existingFile);
             string? backupPath = null;
-            if (File.Exists(destination))
+            if (existingFiles.Length > 0)
             {
-                backupPath = Path.Combine(backupRoot, $"firmware-{DateTimeOffset.UtcNow.Ticks:D19}-{preview.FileName}");
-                Directory.CreateDirectory(Path.GetDirectoryName(backupPath)!);
-                File.Copy(destination, backupPath, true);
+                backupPath = Path.Combine(backupRoot, $"firmware-{DateTimeOffset.UtcNow.Ticks:D19}-{Guid.NewGuid():N}");
+                Directory.CreateDirectory(backupPath);
+                foreach (string existingFile in existingFiles)
+                    File.Copy(existingFile, Path.Combine(backupPath, Path.GetFileName(existingFile)), true);
             }
 
-            cancellationToken.ThrowIfCancellationRequested();
-            string temporaryDestination = destination + ".ez-pocket-" + Guid.NewGuid().ToString("N") + ".tmp";
-            File.Copy(preview.FirmwareFilePath, temporaryDestination, true);
-            File.Move(temporaryDestination, destination, true);
-            Cleanup(preview.StagingPath);
-            return Task.FromResult(new FirmwareUpdateResult(true, $"Firmware {preview.Release.Version} is ready on your Pocket SD card.", backupPath));
+            try
+            {
+                cancellationToken.ThrowIfCancellationRequested();
+                string temporaryDestination = destination + ".ez-pocket-" + Guid.NewGuid().ToString("N") + ".tmp";
+                File.Copy(preview.FirmwareFilePath, temporaryDestination, true);
+                foreach (string existingFile in existingFiles.Where(file => !string.Equals(file, destination, StringComparison.OrdinalIgnoreCase)))
+                    File.Delete(existingFile);
+                File.Move(temporaryDestination, destination, true);
+                Cleanup(preview.StagingPath);
+                return Task.FromResult(new FirmwareUpdateResult(true, $"Firmware {preview.Release.Version} is ready on your Pocket SD card.", backupPath));
+            }
+            catch
+            {
+                if (backupPath is not null)
+                {
+                    foreach (string backup in Directory.EnumerateFiles(backupPath))
+                        File.Copy(backup, Path.Combine(preview.PocketPath, Path.GetFileName(backup)), true);
+                }
+                throw;
+            }
         }
         catch (Exception exception) when (exception is IOException or UnauthorizedAccessException or OperationCanceledException)
         {
