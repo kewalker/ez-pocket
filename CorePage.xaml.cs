@@ -11,6 +11,8 @@ public partial class CorePage : ContentPage
     private IReadOnlyList<CoreComparison> allCores = [];
     private CancellationTokenSource? refreshCancellation;
     private bool refreshInProgress;
+    private string? sortColumn;
+    private bool sortAscending = true;
 
     public CorePage()
     {
@@ -108,7 +110,58 @@ public partial class CorePage : ContentPage
         if (filter == "Installed") filtered = filtered.Where(core => core.IsInstalled);
         if (filter == "Available") filtered = filtered.Where(core => core.Status == "Available");
         if (category != "All categories") filtered = filtered.Where(core => string.Equals(core.Category, category, StringComparison.OrdinalIgnoreCase));
-        CoreList.ItemsSource = filtered.ToArray();
+        CoreList.ItemsSource = Sort(filtered).ToArray();
+    }
+
+    private void OnCoreSortClicked(object? sender, EventArgs e) => SetSort("Core");
+    private void OnCategorySortClicked(object? sender, EventArgs e) => SetSort("Category");
+    private void OnInstalledSortClicked(object? sender, EventArgs e) => SetSort("Installed");
+    private void OnLatestSortClicked(object? sender, EventArgs e) => SetSort("Latest");
+    private void OnStatusSortClicked(object? sender, EventArgs e) => SetSort("Status");
+
+    private void SetSort(string column)
+    {
+        sortAscending = sortColumn == column ? !sortAscending : true;
+        sortColumn = column;
+        UpdateSortHeaders();
+        OnFilterChanged(this, EventArgs.Empty);
+    }
+
+    private IEnumerable<CoreComparison> Sort(IEnumerable<CoreComparison> cores) => sortColumn switch
+    {
+        "Core" => sortAscending ? cores.OrderBy(core => core.FriendlyName, StringComparer.OrdinalIgnoreCase).ThenBy(core => core.Identifier, StringComparer.OrdinalIgnoreCase) : cores.OrderByDescending(core => core.FriendlyName, StringComparer.OrdinalIgnoreCase).ThenByDescending(core => core.Identifier, StringComparer.OrdinalIgnoreCase),
+        "Category" => sortAscending ? cores.OrderBy(core => core.Category, StringComparer.OrdinalIgnoreCase).ThenBy(core => core.FriendlyName, StringComparer.OrdinalIgnoreCase) : cores.OrderByDescending(core => core.Category, StringComparer.OrdinalIgnoreCase).ThenByDescending(core => core.FriendlyName, StringComparer.OrdinalIgnoreCase),
+        "Installed" => sortAscending ? cores.OrderBy(core => core.InstalledVersion, VersionComparer).ThenBy(core => core.FriendlyName, StringComparer.OrdinalIgnoreCase) : cores.OrderByDescending(core => core.InstalledVersion, VersionComparer).ThenByDescending(core => core.FriendlyName, StringComparer.OrdinalIgnoreCase),
+        "Latest" => sortAscending ? cores.OrderBy(core => core.AvailableVersion, VersionComparer).ThenBy(core => core.FriendlyName, StringComparer.OrdinalIgnoreCase) : cores.OrderByDescending(core => core.AvailableVersion, VersionComparer).ThenByDescending(core => core.FriendlyName, StringComparer.OrdinalIgnoreCase),
+        "Status" => sortAscending ? cores.OrderBy(core => core.StatusLabel, StringComparer.OrdinalIgnoreCase).ThenBy(core => core.FriendlyName, StringComparer.OrdinalIgnoreCase) : cores.OrderByDescending(core => core.StatusLabel, StringComparer.OrdinalIgnoreCase).ThenByDescending(core => core.FriendlyName, StringComparer.OrdinalIgnoreCase),
+        _ => cores
+    };
+
+    private static readonly IComparer<string> VersionComparer = Comparer<string>.Create((left, right) =>
+    {
+        bool leftIsVersion = Version.TryParse(left?.Trim().TrimStart('v', 'V'), out Version? leftVersion);
+        bool rightIsVersion = Version.TryParse(right?.Trim().TrimStart('v', 'V'), out Version? rightVersion);
+        if (leftIsVersion && rightIsVersion) return leftVersion!.CompareTo(rightVersion);
+        if (leftIsVersion) return -1;
+        if (rightIsVersion) return 1;
+        return StringComparer.OrdinalIgnoreCase.Compare(left, right);
+    });
+
+    private void UpdateSortHeaders()
+    {
+        SetSortHeader(CoreSortButton, "Core", "CORE");
+        SetSortHeader(CategorySortButton, "Category", "CATEGORY");
+        SetSortHeader(InstalledSortButton, "Installed", "INSTALLED");
+        SetSortHeader(LatestSortButton, "Latest", "LATEST");
+        SetSortHeader(StatusSortButton, "Status", "STATUS");
+    }
+
+    private void SetSortHeader(Controls.EzButton button, string column, string label)
+    {
+        bool isActive = sortColumn == column;
+        button.Text = isActive ? $"{label} {(sortAscending ? "▲" : "▼")}" : label;
+        button.ButtonTextColor = isActive ? Color.FromArgb("#1E3A8A") : Color.FromArgb("#52627A");
+        SemanticProperties.SetDescription(button, $"Sort {label.ToLowerInvariant()} {(isActive && sortAscending ? "descending" : "ascending")}");
     }
 
     private void PopulateCategoryFilter()
