@@ -9,6 +9,7 @@ public sealed class CoreSelectionService
     private IReadOnlyList<CoreComparison> cores = [];
     private string? initializedPocketPath;
     private string? syncSuccessMessage;
+    private string? featuredSetSelectionMessage;
 
     public IReadOnlyList<CoreComparison> SelectedCores => selectedCores.Values.OrderBy(core => core.FriendlyName).ToArray();
     public IReadOnlyList<CoreComparison> Cores => cores;
@@ -46,7 +47,30 @@ public sealed class CoreSelectionService
         selectedCores.Clear();
     }
 
+    public void ReplaceSelection(IEnumerable<CoreComparison> desiredCores)
+    {
+        var desiredIdentifiers = desiredCores
+            .Select(core => core.Identifier)
+            .ToHashSet(StringComparer.OrdinalIgnoreCase);
+        selectedCores.Clear();
+        foreach (CoreComparison core in cores)
+        {
+            bool isSelected = desiredIdentifiers.Contains(core.Identifier);
+            core.IsSelected = isSelected;
+            if (isSelected) selectedCores[core.Identifier] = core;
+        }
+    }
+
     public void ReportSuccessfulSync(string message) => syncSuccessMessage = message;
+
+    public void ReportFeaturedSetSelection(string message) => featuredSetSelectionMessage = message;
+
+    public string? ConsumeFeaturedSetSelectionMessage()
+    {
+        string? message = featuredSetSelectionMessage;
+        featuredSetSelectionMessage = null;
+        return message;
+    }
 
     public string? ConsumeSuccessfulSyncMessage()
     {

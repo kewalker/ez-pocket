@@ -9,6 +9,10 @@ public partial class MainPage : ContentPage
     private readonly PocketSelectionService selection;
     private readonly IFolderPickerService folderPicker;
     private readonly FirmwareUpdateService firmware;
+    private readonly FeaturedCoreSetService featuredCoreSets;
+    private readonly CoreInventoryService inventory;
+    private readonly CoreSelectionService coreSelection;
+    private bool preparingFeaturedSet;
     private List<PocketDrive> candidates = [];
 
     public MainPage()
@@ -18,6 +22,9 @@ public partial class MainPage : ContentPage
         selection = IPlatformApplication.Current?.Services.GetService<PocketSelectionService>() ?? new PocketSelectionService();
         folderPicker = IPlatformApplication.Current?.Services.GetService<IFolderPickerService>() ?? new UnsupportedFolderPickerService();
         firmware = IPlatformApplication.Current?.Services.GetService<FirmwareUpdateService>() ?? new FirmwareUpdateService();
+        featuredCoreSets = IPlatformApplication.Current?.Services.GetService<FeaturedCoreSetService>() ?? new FeaturedCoreSetService();
+        inventory = IPlatformApplication.Current?.Services.GetService<CoreInventoryService>() ?? new CoreInventoryService();
+        coreSelection = IPlatformApplication.Current?.Services.GetService<CoreSelectionService>() ?? new CoreSelectionService();
     }
 
     protected override void OnAppearing()
@@ -71,6 +78,61 @@ public partial class MainPage : ContentPage
             return;
         }
         await Shell.Current.GoToAsync("FirmwarePage");
+    }
+
+    private async void OnFeaturedSetTapped(object? sender, TappedEventArgs e)
+    {
+        if (preparingFeaturedSet || sender is not VisualElement { StyleId: string id }) return;
+        if (selection.SelectedPocket is null)
+        {
+            await DisplayAlert("Select a Pocket", "Choose or scan a Pocket before reviewing a featured setup.", "Got it");
+            return;
+        }
+        if (!featuredCoreSets.Select(id)) return;
+
+        preparingFeaturedSet = true;
+        FeaturedSetupCards.IsEnabled = false;
+        FeaturedSetupStatus.Text = "Loading the current core lineup…";
+        FeaturedSetupStatus.IsVisible = true;
+        try
+        {
+            PocketDrive pocket = selection.SelectedPocket;
+            IReadOnlyList<AvailableCore> available = await inventory.GetAvailableAsync();
+            IReadOnlyList<CoreComparison> comparison = CoreInventoryService.Compare(pocket, available);
+            coreSelection.InitializeForPocket(pocket, comparison);
+            FeaturedCoreSetSelection? featuredSelection = featuredCoreSets.ApplyPendingSelection(coreSelection, comparison);
+            if (featuredSelection is null) return;
+            coreSelection.ReportFeaturedSetSelection(featuredSelection.Summary);
+            await Shell.Current.GoToAsync("CoreReviewPage");
+        }
+        catch (Exception exception) when (exception is HttpRequestException or InvalidDataException or OperationCanceledException)
+        {
+            FeaturedSetupStatus.Text = "Could not load the live inventory.";
+            await DisplayAlert("Could not load setup", "Connect to the internet and try again. No changes were made.", "Got it");
+        }
+        finally
+        {
+            preparingFeaturedSet = false;
+            FeaturedSetupCards.IsEnabled = true;
+        }
+    }
+
+    private void OnFeaturedSetPointerEntered(object? sender, PointerEventArgs e)
+    {
+        if (sender is Border card)
+        {
+            card.BackgroundColor = Color.FromArgb("#EEF6FF");
+            card.Stroke = Color.FromArgb("#2563EB");
+        }
+    }
+
+    private void OnFeaturedSetPointerExited(object? sender, PointerEventArgs e)
+    {
+        if (sender is Border card)
+        {
+            card.BackgroundColor = Colors.White;
+            card.Stroke = Color.FromArgb("#B8CDEB");
+        }
     }
 
     private async Task ChooseFolderAsync()

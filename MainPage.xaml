@@ -48,6 +48,49 @@
                     <controls:EzButton x:Name="NextStepButton" Grid.Column="1" Text="Choose folder" Clicked="OnNextStepClicked" VerticalOptions="Center" />
                 </Grid>
             </Border>
+            <VerticalStackLayout Spacing="10">
+                <VerticalStackLayout Spacing="2">
+                    <Label Text="FEATURED SETUPS" FontSize="11" FontAttributes="Bold" TextColor="#2563EB" />
+                    <Label Text="Start with a thoughtfully chosen group of cores" FontSize="20" FontAttributes="Bold" TextColor="#14213D" />
+                    <Label Text="Choose a setup to load its core lineup directly into a review. You will still approve every install, update, and removal before applying it." FontSize="13" TextColor="#63708A" />
+                </VerticalStackLayout>
+                <Grid x:Name="FeaturedSetupCards" ColumnDefinitions="*,*,*" ColumnSpacing="12">
+                    <Border StyleId="handheld-essentials" HeightRequest="158" BackgroundColor="White" Stroke="#B8CDEB" StrokeThickness="1.5" StrokeShape="RoundRectangle 12" Padding="16" SemanticProperties.Description="Review the Handheld essentials core setup">
+                        <Border.GestureRecognizers>
+                            <TapGestureRecognizer Tapped="OnFeaturedSetTapped" />
+                            <PointerGestureRecognizer PointerEntered="OnFeaturedSetPointerEntered" PointerExited="OnFeaturedSetPointerExited" />
+                        </Border.GestureRecognizers>
+                        <VerticalStackLayout Spacing="7">
+                            <Label Text="Handheld essentials" FontSize="16" FontAttributes="Bold" TextColor="#14213D" />
+                            <Label Text="GB, GBC, GBA, Game Gear, NGPC, Lynx, and PC Engine." FontSize="12" TextColor="#63708A" />
+                            <Label Text="Review this setup →" FontSize="13" FontAttributes="Bold" TextColor="#2563EB" Margin="0,4,0,0" />
+                        </VerticalStackLayout>
+                    </Border>
+                    <Border Grid.Column="1" StyleId="console-classics" HeightRequest="158" BackgroundColor="White" Stroke="#B8CDEB" StrokeThickness="1.5" StrokeShape="RoundRectangle 12" Padding="16" SemanticProperties.Description="Review the Console classics core setup">
+                        <Border.GestureRecognizers>
+                            <TapGestureRecognizer Tapped="OnFeaturedSetTapped" />
+                            <PointerGestureRecognizer PointerEntered="OnFeaturedSetPointerEntered" PointerExited="OnFeaturedSetPointerExited" />
+                        </Border.GestureRecognizers>
+                        <VerticalStackLayout Spacing="7">
+                            <Label Text="Console classics" FontSize="16" FontAttributes="Bold" TextColor="#14213D" />
+                            <Label Text="Handheld favorites plus NES, SNES, Genesis, Master System, and Atari 2600." FontSize="12" TextColor="#63708A" />
+                            <Label Text="Review this setup →" FontSize="13" FontAttributes="Bold" TextColor="#2563EB" Margin="0,4,0,0" />
+                        </VerticalStackLayout>
+                    </Border>
+                    <Border Grid.Column="2" StyleId="arcade-starter" HeightRequest="158" BackgroundColor="White" Stroke="#B8CDEB" StrokeThickness="1.5" StrokeShape="RoundRectangle 12" Padding="16" SemanticProperties.Description="Review the Arcade starter core setup">
+                        <Border.GestureRecognizers>
+                            <TapGestureRecognizer Tapped="OnFeaturedSetTapped" />
+                            <PointerGestureRecognizer PointerEntered="OnFeaturedSetPointerEntered" PointerExited="OnFeaturedSetPointerExited" />
+                        </Border.GestureRecognizers>
+                        <VerticalStackLayout Spacing="7">
+                            <Label Text="Arcade starter" FontSize="16" FontAttributes="Bold" TextColor="#14213D" />
+                            <Label Text="Five classic arcade platforms. Game ROMs are not included." FontSize="12" TextColor="#63708A" />
+                            <Label Text="Review this setup →" FontSize="13" FontAttributes="Bold" TextColor="#2563EB" Margin="0,4,0,0" />
+                        </VerticalStackLayout>
+                    </Border>
+                </Grid>
+                <Label x:Name="FeaturedSetupStatus" IsVisible="False" TextColor="#52627A" FontSize="13" />
+            </VerticalStackLayout>
             <Label Text="Pocket overview" FontSize="20" FontAttributes="Bold" TextColor="#14213D" />
             <Grid ColumnDefinitions="*,*,*" ColumnSpacing="12">
                 <Border BackgroundColor="White" Stroke="#E2E7F0" StrokeShape="RoundRectangle 12" Padding="14"><VerticalStackLayout Spacing="4"><Label Text="Installed cores" TextColor="#63708A" FontSize="13" /><Label x:Name="CoreCountValue" Text="—" FontSize="24" FontAttributes="Bold" TextColor="#14213D" /><Label x:Name="CoreCountDetail" Text="Select a Pocket first" TextColor="#63708A" FontSize="12" /></VerticalStackLayout></Border>

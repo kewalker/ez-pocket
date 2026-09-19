@@ -8,6 +8,7 @@ public partial class CorePage : ContentPage
     private readonly PocketSelectionService selection;
     private readonly CoreInventoryService inventory;
     private readonly CoreSelectionService coreSelection;
+    private readonly FeaturedCoreSetService featuredCoreSets;
     private IReadOnlyList<CoreComparison> allCores = [];
     private IReadOnlyList<CoreComparison> visibleCores = [];
     private CancellationTokenSource? refreshCancellation;
@@ -22,6 +23,7 @@ public partial class CorePage : ContentPage
         selection = IPlatformApplication.Current?.Services.GetService<PocketSelectionService>() ?? new PocketSelectionService();
         inventory = IPlatformApplication.Current?.Services.GetService<CoreInventoryService>() ?? new CoreInventoryService();
         coreSelection = IPlatformApplication.Current?.Services.GetService<CoreSelectionService>() ?? new CoreSelectionService();
+        featuredCoreSets = IPlatformApplication.Current?.Services.GetService<FeaturedCoreSetService>() ?? new FeaturedCoreSetService();
     }
 
     protected override async void OnAppearing()
@@ -237,6 +239,9 @@ public partial class CorePage : ContentPage
             var comparison = CoreInventoryService.Compare(pocket, available);
             allCores = comparison;
             coreSelection.InitializeForPocket(pocket, comparison);
+            FeaturedCoreSetSelection? featuredSelection = featuredCoreSets.ApplyPendingSelection(coreSelection, comparison);
+            FeaturedSetNotice.IsVisible = featuredSelection is not null;
+            if (featuredSelection is not null) FeaturedSetNoticeText.Text = featuredSelection.Summary;
             UpdateSelectionBar();
             PopulateCategoryFilter();
             StatusFilter.SelectedIndex = 0;

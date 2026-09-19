@@ -21,6 +21,7 @@ public static class MauiProgram
         builder.Services.AddSingleton<PocketInitializationService>();
         builder.Services.AddSingleton<CoreInventoryService>();
         builder.Services.AddSingleton<CoreSelectionService>();
+        builder.Services.AddSingleton<FeaturedCoreSetService>();
         builder.Services.AddSingleton<CoreSyncService>();
         builder.Services.AddSingleton<FirmwareUpdateService>();
 #if WINDOWS

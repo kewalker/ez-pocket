@@ -6,7 +6,7 @@
              x:Class="EzPocket.CorePage"
              BackgroundColor="#F5F7FB"
              Title="Core Manager">
-    <Grid Padding="24,16,24,20" RowDefinitions="Auto,Auto,Auto,Auto,*" RowSpacing="10">
+    <Grid Padding="24,16,24,20" RowDefinitions="Auto,Auto,Auto,Auto,Auto,*" RowSpacing="10">
         <Grid ColumnDefinitions="Auto,Auto,Auto,Auto" ColumnSpacing="6">
             <controls:EzButton Text="&#x2190;" FontSize="16" MinimumHeight="24" Clicked="OnBackClicked" ButtonPadding="10,1" CornerRadius="8" ButtonBackgroundColor="#E8F0FF" ButtonTextColor="#1E3A8A" SemanticProperties.Description="Back to dashboard" />
             <Label Grid.Column="1" Text="ez-pocket" TextDecorations="Underline" TextColor="#2563EB" FontSize="13" VerticalOptions="Center">
@@ -53,11 +53,14 @@
                 </Border>
             </VerticalStackLayout>
         </Grid>
-        <Grid Grid.Row="3" ColumnDefinitions="*,Auto" x:Name="SelectionBar" BackgroundColor="#E8F0FF" Padding="12,8" ColumnSpacing="14">
+        <Border Grid.Row="3" x:Name="FeaturedSetNotice" IsVisible="False" BackgroundColor="#EEF6F1" Stroke="#CDE8D6" StrokeShape="RoundRectangle 8" Padding="12,8">
+            <Label x:Name="FeaturedSetNoticeText" TextColor="#176B49" FontSize="13" />
+        </Border>
+        <Grid Grid.Row="4" ColumnDefinitions="*,Auto" x:Name="SelectionBar" BackgroundColor="#E8F0FF" Padding="12,8" ColumnSpacing="14">
             <Label x:Name="SelectionSummary" Text="Choose the cores to keep on this Pocket" TextColor="#1E3A8A" VerticalOptions="Center" />
             <controls:EzButton x:Name="ReviewButton" Grid.Column="1" Text="Sync changes" Clicked="OnReviewClicked" ButtonPadding="14,8" />
         </Grid>
-        <Grid Grid.Row="4">
+        <Grid Grid.Row="5">
             <CollectionView x:Name="CoreList" SelectionMode="None">
             <CollectionView.EmptyView><Label Text="No cores found yet." TextColor="#63708A" HorizontalOptions="Center" VerticalOptions="Center" /></CollectionView.EmptyView>
             <CollectionView.Header>
@@ -104,6 +107,6 @@
                 <controls:EzButton Text="Retry" Clicked="OnRefreshClicked" HorizontalOptions="Center" />
             </VerticalStackLayout>
         </Grid>
-        <controls:EzToast x:Name="SuccessToast" Grid.RowSpan="5" ZIndex="10" WidthRequest="440" HorizontalOptions="Center" VerticalOptions="Start" Margin="0,16,0,0" />
+        <controls:EzToast x:Name="SuccessToast" Grid.RowSpan="6" ZIndex="10" WidthRequest="440" HorizontalOptions="Center" VerticalOptions="Start" Margin="0,16,0,0" />
     </Grid>
 </ContentPage>

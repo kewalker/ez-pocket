@@ -24,6 +24,9 @@ public partial class CoreReviewPage : ContentPage
     protected override async void OnAppearing()
     {
         base.OnAppearing();
+        string? featuredSetMessage = coreSelection.ConsumeFeaturedSetSelectionMessage();
+        FeaturedSetSummary.IsVisible = featuredSetMessage is not null;
+        if (featuredSetMessage is not null) FeaturedSetSummaryText.Text = featuredSetMessage;
         if (!hasPrepared)
         {
             hasPrepared = true;
@@ -68,6 +71,8 @@ public partial class CoreReviewPage : ContentPage
                 .Where(core => core.IsInstalled && !core.IsSelected)
                 .ToArray();
             preview = await coreSync.PrepareAsync(pocket, coreSelection.SelectedCores, coresToRemove);
+            SelectedCoreList.ItemsSource = preview.Cores;
+            SelectedCoreSummary.Text = preview.Cores.Count == 1 ? "1 core" : $"{preview.Cores.Count} cores";
             ChangeList.ItemsSource = preview.Changes;
             RemovalList.ItemsSource = preview.Removals;
             OverrideSummaryText.Text = preview.Overrides.Count == 1
@@ -139,7 +144,7 @@ public partial class CoreReviewPage : ContentPage
 
     private async void OnManageCoresClicked(object? sender, EventArgs e)
     {
-        await Shell.Current.GoToAsync("..");
+        await Shell.Current.GoToAsync("CorePage");
     }
 
     private async void OnHomeClicked(object? sender, EventArgs e)
