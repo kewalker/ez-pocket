@@ -30,9 +30,17 @@ public partial class MainPage : ContentPage
     protected override void OnAppearing()
     {
         base.OnAppearing();
+        string? successMessage = coreSelection.ConsumeDashboardSuccessMessage();
+        if (successMessage is not null) SuccessToast.ShowSuccess(successMessage);
         PocketDrive? pocket = selection.Restore(scanner);
         if (pocket is not null) ShowPocket(pocket);
         else ShowNoPocket();
+    }
+
+    protected override void OnDisappearing()
+    {
+        SuccessToast.Hide();
+        base.OnDisappearing();
     }
 
     private async void OnScanClicked(object? sender, EventArgs e)

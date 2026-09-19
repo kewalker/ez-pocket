@@ -5,6 +5,7 @@
              x:Class="EzPocket.MainPage"
              BackgroundColor="#F5F7FB"
              Title="ez-pocket">
+    <Grid>
     <ScrollView>
         <VerticalStackLayout Padding="24,16,24,24" Spacing="16">
             <Grid ColumnDefinitions="*,Auto">
@@ -100,4 +101,6 @@
             <Label Text="Changes are always reviewed before they are applied." FontSize="13" TextColor="#63708A" />
         </VerticalStackLayout>
     </ScrollView>
+    <controls:EzToast x:Name="SuccessToast" ZIndex="10" WidthRequest="440" HorizontalOptions="Center" VerticalOptions="Start" Margin="0,16,0,0" />
+    </Grid>
 </ContentPage>

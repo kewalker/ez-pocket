@@ -11,6 +11,7 @@ public partial class CoreReviewPage : ContentPage
     private readonly CoreSyncService coreSync;
     private CoreSyncPreview? preview;
     private bool hasPrepared;
+    private bool returnsToDashboard;
 
     public CoreReviewPage()
     {
@@ -25,6 +26,7 @@ public partial class CoreReviewPage : ContentPage
     {
         base.OnAppearing();
         string? featuredSetMessage = coreSelection.ConsumeFeaturedSetSelectionMessage();
+        returnsToDashboard = featuredSetMessage is not null;
         FeaturedSetSummary.IsVisible = featuredSetMessage is not null;
         if (featuredSetMessage is not null) FeaturedSetSummaryText.Text = featuredSetMessage;
         if (!hasPrepared)
@@ -127,7 +129,8 @@ public partial class CoreReviewPage : ContentPage
         {
             PocketDrive? refreshedPocket = scanner.ScanFolder(preview.PocketPath);
             if (refreshedPocket is not null) pocketSelection.Select(refreshedPocket);
-            coreSelection.ReportSuccessfulSync(result.Message);
+            if (returnsToDashboard) coreSelection.ReportDashboardSuccess(result.Message);
+            else coreSelection.ReportSuccessfulSync(result.Message);
             await Shell.Current.GoToAsync("..");
             return;
         }

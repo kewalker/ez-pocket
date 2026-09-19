@@ -9,6 +9,7 @@ public sealed class CoreSelectionService
     private IReadOnlyList<CoreComparison> cores = [];
     private string? initializedPocketPath;
     private string? syncSuccessMessage;
+    private string? dashboardSuccessMessage;
     private string? featuredSetSelectionMessage;
 
     public IReadOnlyList<CoreComparison> SelectedCores => selectedCores.Values.OrderBy(core => core.FriendlyName).ToArray();
@@ -62,6 +63,15 @@ public sealed class CoreSelectionService
     }
 
     public void ReportSuccessfulSync(string message) => syncSuccessMessage = message;
+
+    public void ReportDashboardSuccess(string message) => dashboardSuccessMessage = message;
+
+    public string? ConsumeDashboardSuccessMessage()
+    {
+        string? message = dashboardSuccessMessage;
+        dashboardSuccessMessage = null;
+        return message;
+    }
 
     public void ReportFeaturedSetSelection(string message) => featuredSetSelectionMessage = message;
 
