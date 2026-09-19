@@ -9,6 +9,7 @@ public partial class CorePage : ContentPage
     private readonly CoreInventoryService inventory;
     private readonly CoreSelectionService coreSelection;
     private IReadOnlyList<CoreComparison> allCores = [];
+    private IReadOnlyList<CoreComparison> visibleCores = [];
     private CancellationTokenSource? refreshCancellation;
     private bool refreshInProgress;
     private string? sortColumn;
@@ -81,6 +82,14 @@ public partial class CorePage : ContentPage
         await Shell.Current.GoToAsync("CoreReviewPage");
     }
 
+    private void OnSelectVisibleClicked(object? sender, EventArgs e)
+    {
+        bool shouldSelect = visibleCores.Count > 0 && visibleCores.Any(core => !core.IsSelected);
+        foreach (CoreComparison core in visibleCores)
+            coreSelection.SetSelected(core, shouldSelect);
+        UpdateSelectionBar();
+    }
+
     private void UpdateSelectionBar()
     {
         int count = coreSelection.SelectedCores.Count;
@@ -91,6 +100,11 @@ public partial class CorePage : ContentPage
             1 => "1 core selected for sync",
             _ => $"{count} cores selected for sync"
         };
+        bool hasVisibleCores = visibleCores.Count > 0;
+        bool allVisibleSelected = hasVisibleCores && visibleCores.All(core => core.IsSelected);
+        SelectVisibleButton.IsEnabled = hasVisibleCores;
+        SelectVisibleButton.Text = allVisibleSelected ? "Clear visible" : "Select all visible";
+        SemanticProperties.SetDescription(SelectVisibleButton, allVisibleSelected ? "Clear all visible core selections" : "Select all visible cores");
     }
 
     private void OnBreadcrumbPointerEntered(object? sender, PointerEventArgs e)
@@ -116,7 +130,9 @@ public partial class CorePage : ContentPage
         if (filter == "Installed") filtered = filtered.Where(core => core.IsInstalled);
         if (filter == "Available") filtered = filtered.Where(core => core.Status == "Available");
         if (category != "All categories") filtered = filtered.Where(core => string.Equals(core.Category, category, StringComparison.OrdinalIgnoreCase));
-        CoreList.ItemsSource = Sort(filtered).ToArray();
+        visibleCores = Sort(filtered).ToArray();
+        CoreList.ItemsSource = visibleCores;
+        UpdateSelectionBar();
     }
 
     private void OnCoreSortClicked(object? sender, EventArgs e) => SetSort("Core");

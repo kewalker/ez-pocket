@@ -53,9 +53,10 @@
                 </Border>
             </VerticalStackLayout>
         </Grid>
-        <Grid Grid.Row="3" ColumnDefinitions="*,Auto" x:Name="SelectionBar" BackgroundColor="#E8F0FF" Padding="12,8" ColumnSpacing="14">
+        <Grid Grid.Row="3" ColumnDefinitions="*,Auto,Auto" x:Name="SelectionBar" BackgroundColor="#E8F0FF" Padding="12,8" ColumnSpacing="14">
             <Label x:Name="SelectionSummary" Text="Select cores to sync" TextColor="#1E3A8A" VerticalOptions="Center" />
-            <controls:EzButton x:Name="ReviewButton" Grid.Column="1" Text="Sync changes" Clicked="OnReviewClicked" ButtonPadding="14,8" />
+            <controls:EzButton x:Name="SelectVisibleButton" Grid.Column="1" Text="Select all visible" Clicked="OnSelectVisibleClicked" ButtonPadding="14,8" ButtonBackgroundColor="#D7E6FF" ButtonTextColor="#1E3A8A" SemanticProperties.Description="Select all visible cores" />
+            <controls:EzButton x:Name="ReviewButton" Grid.Column="2" Text="Sync changes" Clicked="OnReviewClicked" ButtonPadding="14,8" />
         </Grid>
         <Grid Grid.Row="4">
             <CollectionView x:Name="CoreList" SelectionMode="None">
