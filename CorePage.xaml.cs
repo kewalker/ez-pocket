@@ -14,6 +14,7 @@ public partial class CorePage : ContentPage
     private bool refreshInProgress;
     private string? sortColumn;
     private bool sortAscending = true;
+    private bool updatingVisibleSelection;
 
     public CorePage()
     {
@@ -82,11 +83,11 @@ public partial class CorePage : ContentPage
         await Shell.Current.GoToAsync("CoreReviewPage");
     }
 
-    private void OnSelectVisibleClicked(object? sender, EventArgs e)
+    private void OnSelectVisibleChanged(object? sender, CheckedChangedEventArgs e)
     {
-        bool shouldSelect = visibleCores.Count > 0 && visibleCores.Any(core => !core.IsSelected);
+        if (updatingVisibleSelection) return;
         foreach (CoreComparison core in visibleCores)
-            coreSelection.SetSelected(core, shouldSelect);
+            coreSelection.SetSelected(core, e.Value);
         UpdateSelectionBar();
     }
 
@@ -100,11 +101,14 @@ public partial class CorePage : ContentPage
             1 => "1 core selected for sync",
             _ => $"{count} cores selected for sync"
         };
+        if (SelectVisibleCheckBox is null) return;
         bool hasVisibleCores = visibleCores.Count > 0;
         bool allVisibleSelected = hasVisibleCores && visibleCores.All(core => core.IsSelected);
-        SelectVisibleButton.IsEnabled = hasVisibleCores;
-        SelectVisibleButton.Text = allVisibleSelected ? "Clear visible" : "Select all visible";
-        SemanticProperties.SetDescription(SelectVisibleButton, allVisibleSelected ? "Clear all visible core selections" : "Select all visible cores");
+        updatingVisibleSelection = true;
+        SelectVisibleCheckBox.IsEnabled = hasVisibleCores;
+        SelectVisibleCheckBox.IsChecked = allVisibleSelected;
+        updatingVisibleSelection = false;
+        SemanticProperties.SetDescription(SelectVisibleCheckBox, allVisibleSelected ? "Clear all visible core selections" : "Select all visible cores");
     }
 
     private void OnBreadcrumbPointerEntered(object? sender, PointerEventArgs e)
