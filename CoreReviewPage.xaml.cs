@@ -119,7 +119,8 @@ public partial class CoreReviewPage : ContentPage
     private async void OnSyncClicked(object? sender, EventArgs e)
     {
         if (preview is not { CanSync: true }) return;
-        string summary = $"Add or replace {preview.AddOrReplaceFileCount} file(s) and remove {preview.Removals.Count} core(s) ({preview.RemoveFileCount} file(s)) on {preview.PocketPath}? All changed core files will be backed up first.";
+        int coresToAdd = preview.Cores.Count(core => !core.IsInstalled);
+        string summary = $"Apply changes on {preview.PocketPath}? {FormatCoreCount(coresToAdd)} will be added and {FormatCoreCount(preview.Removals.Count)} will be removed. Existing files affected by updates will be backed up first.";
         bool confirmed = await DisplayAlert("Apply core changes", summary, "Apply", "Cancel");
         if (!confirmed) return;
 
@@ -154,6 +155,8 @@ public partial class CoreReviewPage : ContentPage
     {
         await Shell.Current.GoToAsync("//MainPage");
     }
+
+    private static string FormatCoreCount(int count) => count == 1 ? "1 core" : $"{count} cores";
 
     private static string FormatBytes(long bytes) => bytes < 1024 * 1024
         ? $"{Math.Max(1, bytes / 1024d):0.#} KB"
