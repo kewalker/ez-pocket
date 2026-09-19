@@ -17,8 +17,9 @@ public sealed class CoreSyncServiceTests
             Directory.CreateDirectory(Path.Combine(pocketPath, "Cores", "Example.Core"));
             string existing = Path.Combine(pocketPath, "Cores", "Example.Core", "core.json");
             await File.WriteAllTextAsync(existing, "old");
+            string newDefinition = CoreDefinition("new");
             byte[] archive = CreateArchive([
-                ("Cores/Example.Core/core.json", "new"),
+                ("Cores/Example.Core/core.json", newDefinition),
                 ("Assets/example/readme.txt", "asset"),
                 ("System/unsafe.bin", "must not copy")
             ]);
@@ -36,7 +37,7 @@ public sealed class CoreSyncServiceTests
 
             Assert.True(result.Succeeded);
             Assert.Equal("Updated 1 core.", result.Message);
-            Assert.Equal("new", await File.ReadAllTextAsync(existing));
+            Assert.Equal(newDefinition, await File.ReadAllTextAsync(existing));
             Assert.Equal("asset", await File.ReadAllTextAsync(Path.Combine(pocketPath, "Assets", "example", "readme.txt")));
             Assert.False(File.Exists(Path.Combine(pocketPath, "System", "unsafe.bin")));
             Assert.NotNull(result.BackupPath);
@@ -57,10 +58,11 @@ public sealed class CoreSyncServiceTests
             string pocketPath = Path.Combine(root, "pocket");
             Directory.CreateDirectory(Path.Combine(pocketPath, "Cores", "Example.Core"));
             Directory.CreateDirectory(Path.Combine(pocketPath, "Assets", "example"));
-            await File.WriteAllTextAsync(Path.Combine(pocketPath, "Cores", "Example.Core", "core.json"), "same-core");
+            string coreDefinition = CoreDefinition("same-core");
+            await File.WriteAllTextAsync(Path.Combine(pocketPath, "Cores", "Example.Core", "core.json"), coreDefinition);
             await File.WriteAllTextAsync(Path.Combine(pocketPath, "Assets", "example", "readme.txt"), "same-asset");
             byte[] archive = CreateArchive([
-                ("Cores/Example.Core/core.json", "same-core"),
+                ("Cores/Example.Core/core.json", coreDefinition),
                 ("Assets/example/readme.txt", "same-asset")
             ]);
             var service = new CoreSyncService(new HttpClient(new ArchiveHandler(archive)), Path.Combine(root, "staging"), Path.Combine(root, "backups"));
@@ -114,7 +116,7 @@ public sealed class CoreSyncServiceTests
 
             for (int attempt = 0; attempt < 6; attempt++)
             {
-                byte[] archive = CreateArchive([("Cores/Example.Core/core.json", $"new-{attempt}")]);
+                byte[] archive = CreateArchive([("Cores/Example.Core/core.json", CoreDefinition($"new-{attempt}"))]);
                 var service = new CoreSyncService(new HttpClient(new ArchiveHandler(archive)), Path.Combine(root, "staging"), Path.Combine(root, "backups"));
                 CoreSyncPreview preview = await service.PrepareAsync(pocket, [core]);
                 result = await service.ApplyAsync(preview);
@@ -172,8 +174,8 @@ public sealed class CoreSyncServiceTests
         string root = CreateTempFolder();
         try
         {
-            byte[] firstArchive = CreateArchive([("Cores/First/core.json", "first"), ("Assets/shared/image.bin", "same-image")]);
-            byte[] secondArchive = CreateArchive([("Cores/Second/core.json", "second"), ("Assets/shared/image.bin", "same-image")]);
+            byte[] firstArchive = CreateArchive([("Cores/First/core.json", CoreDefinition("first")), ("Assets/shared/image.bin", "same-image")]);
+            byte[] secondArchive = CreateArchive([("Cores/Second/core.json", CoreDefinition("second")), ("Assets/shared/image.bin", "same-image")]);
             var client = new HttpClient(new ArchiveMapHandler(new Dictionary<string, byte[]>
             {
                 ["https://packages.example/first.zip"] = firstArchive,
@@ -203,8 +205,8 @@ public sealed class CoreSyncServiceTests
         string root = CreateTempFolder();
         try
         {
-            byte[] firstArchive = CreateArchive([("Cores/First/core.json", "first"), ("Assets/shared/image.bin", "first-image")]);
-            byte[] secondArchive = CreateArchive([("Cores/Second/core.json", "second"), ("Assets/shared/image.bin", "second-image")]);
+            byte[] firstArchive = CreateArchive([("Cores/First/core.json", CoreDefinition("first")), ("Assets/shared/image.bin", "first-image")]);
+            byte[] secondArchive = CreateArchive([("Cores/Second/core.json", CoreDefinition("second")), ("Assets/shared/image.bin", "second-image")]);
             var client = new HttpClient(new ArchiveMapHandler(new Dictionary<string, byte[]>
             {
                 ["https://packages.example/first.zip"] = firstArchive,
@@ -234,7 +236,7 @@ public sealed class CoreSyncServiceTests
         string root = CreateTempFolder();
         try
         {
-            byte[] archive = CreateArchive([("Cores/Example.Core/core.json", "new")]);
+            byte[] archive = CreateArchive([("Cores/Example.Core/core.json", CoreDefinition("new"))]);
             var handler = new FlakyArchiveHandler(archive);
             var service = new CoreSyncService(new HttpClient(handler), Path.Combine(root, "staging"), Path.Combine(root, "backups"));
             var pocket = new PocketDrive(Path.Combine(root, "Pocket"), "Pocket", DriveType.Unknown, 0, 0, 0, [], 0, []);
@@ -251,6 +253,48 @@ public sealed class CoreSyncServiceTests
         }
     }
 
+    [Fact]
+    public async Task PrepareBlocksPackageWithoutTheSelectedCoresDefinition()
+    {
+        string root = CreateTempFolder();
+        try
+        {
+            byte[] archive = CreateArchive([("Cores/Unexpected.Core/core.json", CoreDefinition("unexpected"))]);
+            var service = new CoreSyncService(new HttpClient(new ArchiveHandler(archive)), Path.Combine(root, "staging"), Path.Combine(root, "backups"));
+            var pocket = new PocketDrive(Path.Combine(root, "Pocket"), "Pocket", DriveType.Unknown, 0, 0, 0, [], 0, []);
+            var core = new CoreComparison("Example.Core", "Example", "Test", "-", "1.0", false, true, "Available", "https://packages.example/core.zip");
+
+            CoreSyncPreview preview = await service.PrepareAsync(pocket, [core]);
+
+            Assert.False(preview.CanSync);
+            Assert.Contains("does not contain", Assert.Single(preview.Blockers), StringComparison.OrdinalIgnoreCase);
+        }
+        finally { Directory.Delete(root, true); }
+    }
+
+    [Fact]
+    public async Task ApplyBlocksWhenPreparedTargetIsNoLongerAvailable()
+    {
+        string root = CreateTempFolder();
+        try
+        {
+            string pocketPath = Path.Combine(root, "Pocket");
+            Directory.CreateDirectory(pocketPath);
+            byte[] archive = CreateArchive([("Cores/Example.Core/core.json", CoreDefinition("new"))]);
+            var service = new CoreSyncService(new HttpClient(new ArchiveHandler(archive)), Path.Combine(root, "staging"), Path.Combine(root, "backups"));
+            var pocket = new PocketDrive(pocketPath, "Pocket", DriveType.Unknown, 0, 0, 0, [], 0, []);
+            var core = new CoreComparison("Example.Core", "Example", "Test", "-", "1.0", false, true, "Available", "https://packages.example/core.zip");
+            CoreSyncPreview preview = await service.PrepareAsync(pocket, [core]);
+            Directory.Delete(pocketPath, true);
+
+            CoreSyncResult result = await service.ApplyAsync(preview);
+
+            Assert.False(result.Succeeded);
+            Assert.Contains("no longer available", result.Message, StringComparison.OrdinalIgnoreCase);
+        }
+        finally { Directory.Delete(root, true); }
+    }
+
     private static byte[] CreateArchive((string Path, string Content)[] files)
     {
         using var memory = new MemoryStream();
@@ -264,6 +308,8 @@ public sealed class CoreSyncServiceTests
         }
         return memory.ToArray();
     }
+
+    private static string CoreDefinition(string marker) => "{\"core\":{\"magic\":\"APF_VER_1\",\"metadata\":{\"version\":\"1.0.0\",\"description\":\"" + marker + "\"},\"framework\":{\"target_product\":\"Analogue Pocket\"}}}";
 
     private static string CreateTempFolder()
     {

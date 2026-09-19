@@ -3,6 +3,7 @@ namespace EzPocket.Models;
 public sealed record CoreSyncPreview(
     string PocketPath,
     string StagingPath,
+    CoreSyncTargetSnapshot TargetSnapshot,
     IReadOnlyList<CoreComparison> Cores,
     IReadOnlyList<CoreSyncFileChange> Changes,
     IReadOnlyList<CoreSyncRemoval> Removals,
@@ -22,6 +23,13 @@ public sealed record CoreSyncFileChange(string RelativePath, string SourcePath, 
         ? $"{Math.Max(1, SizeBytes / 1024d):0.#} KB"
         : $"{SizeBytes / 1024d / 1024d:0.#} MB";
 }
+
+public sealed record CoreSyncTargetSnapshot(
+    string FullPath,
+    string? VolumeRoot,
+    long TotalSize,
+    string? VolumeLabel,
+    long RequiredFreeBytes);
 
 public sealed record CoreSyncRemoval(string Identifier, string FriendlyName, string RelativePath, int FileCount, long SizeBytes)
 {

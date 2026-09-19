@@ -1,6 +1,7 @@
 using System.IO.Compression;
 using System.Security.Cryptography;
 using System.Text;
+using System.Text.Json;
 using EzPocket.Models;
 
 namespace EzPocket.Services;
@@ -13,6 +14,12 @@ public sealed class CoreSyncService
     private const long MaximumBackupBytesPerPocket = 1024L * 1024 * 1024;
     private const int PackageDownloadAttempts = 2;
     private static readonly TimeSpan PackageDownloadTimeout = TimeSpan.FromSeconds(45);
+    private const long MaximumPackageDownloadBytes = 128L * 1024 * 1024;
+    private const long MaximumPackageExtractedBytes = 512L * 1024 * 1024;
+    private const int MaximumPackageEntryCount = 10_000;
+    private const double MaximumCompressionRatio = 100;
+    private const long CompressionRatioCheckMinimumBytes = 1024L * 1024;
+    private const long MinimumFreeSpaceReserveBytes = 16L * 1024 * 1024;
     private readonly HttpClient client;
     private readonly string workingRoot;
     private readonly string backupRoot;
@@ -46,6 +53,11 @@ public sealed class CoreSyncService
 
         foreach (CoreComparison core in cores)
         {
+            if (!IsSafeCoreIdentifier(core.Identifier))
+            {
+                blockers.Add($"{core.FriendlyName} has an unsafe core identifier.");
+                continue;
+            }
             if (core.RequiresLicense)
             {
                 blockers.Add($"{core.FriendlyName} requires a license file and cannot be synced automatically.");
@@ -66,12 +78,13 @@ public sealed class CoreSyncService
             {
                 await DownloadPackageAsync(url, archivePath, cancellationToken);
                 ExtractArchive(archivePath, extractPath);
+                ValidateCorePackage(extractPath, core);
                 diagnostics.Info("CorePackageStaged", new Dictionary<string, string?> { ["CoreId"] = core.Identifier });
 
                 foreach (string file in Directory.EnumerateFiles(extractPath, "*", SearchOption.AllDirectories))
                 {
                     string relativePath = Path.GetRelativePath(extractPath, file);
-                    if (!IsAllowedPackageFile(relativePath)) continue;
+                    if (!IsAllowedPackageFile(relativePath, core.Identifier)) continue;
                     if (sources.TryGetValue(relativePath, out StagedSource? existing))
                     {
                         if (!FilesMatch(existing.SourcePath, file))
@@ -103,7 +116,7 @@ public sealed class CoreSyncService
             .Where(removal => removal is not null)
             .Cast<CoreSyncRemoval>()
             .ToArray();
-        CoreSyncPreview preview = new(pocket.RootPath, stagingPath, cores, changes, removals, overrides, blockers);
+        CoreSyncPreview preview = new(pocket.RootPath, stagingPath, CreateTargetSnapshot(pocket, changes.Sum(change => change.SizeBytes)), cores, changes, removals, overrides, blockers);
         diagnostics.Info("CoreSyncPrepared", new Dictionary<string, string?>
         {
             ["ChangeCount"] = changes.Count.ToString(),
@@ -126,9 +139,11 @@ public sealed class CoreSyncService
             {
                 using HttpResponseMessage response = await client.GetAsync(url, HttpCompletionOption.ResponseHeadersRead, attemptCancellation.Token);
                 response.EnsureSuccessStatusCode();
+                if (response.Content.Headers.ContentLength is long contentLength && contentLength > MaximumPackageDownloadBytes)
+                    throw new InvalidDataException($"Package exceeds the {MaximumPackageDownloadBytes / 1024 / 1024} MB download limit.");
                 await using Stream source = await response.Content.ReadAsStreamAsync(attemptCancellation.Token);
                 await using FileStream destination = File.Create(archivePath);
-                await source.CopyToAsync(destination, attemptCancellation.Token);
+                await CopyWithLimitAsync(source, destination, MaximumPackageDownloadBytes, attemptCancellation.Token);
                 return;
             }
             catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
@@ -160,6 +175,12 @@ public sealed class CoreSyncService
         {
             diagnostics.Warning("CoreSyncApplyBlocked");
             return Task.FromResult(new CoreSyncResult(false, 0, 0, null, "Resolve the package issues before syncing."));
+        }
+
+        if (!TryValidateApplyTarget(preview, out string targetProblem))
+        {
+            diagnostics.Warning("CoreSyncApplyTargetInvalid", new Dictionary<string, string?> { ["Reason"] = targetProblem });
+            return Task.FromResult(new CoreSyncResult(false, 0, 0, null, targetProblem));
         }
 
         string backupPath = Path.Combine(GetPocketBackupRoot(preview.PocketPath), $"core-sync-{DateTimeOffset.UtcNow.Ticks:D19}-{Guid.NewGuid():N}");
@@ -302,9 +323,18 @@ public sealed class CoreSyncService
     {
         string root = Path.GetFullPath(extractPath) + Path.DirectorySeparatorChar;
         using ZipArchive archive = ZipFile.OpenRead(archivePath);
+        if (archive.Entries.Count > MaximumPackageEntryCount)
+            throw new InvalidDataException($"Package contains more than {MaximumPackageEntryCount:N0} entries.");
+        long extractedBytes = 0;
         foreach (ZipArchiveEntry entry in archive.Entries)
         {
             if (string.IsNullOrEmpty(entry.Name)) continue;
+            if (entry.Length > MaximumPackageExtractedBytes ||
+                entry.Length >= CompressionRatioCheckMinimumBytes && entry.CompressedLength > 0 && entry.Length / (double)entry.CompressedLength > MaximumCompressionRatio)
+                throw new InvalidDataException("Package contains a suspiciously compressed entry.");
+            extractedBytes = checked(extractedBytes + entry.Length);
+            if (extractedBytes > MaximumPackageExtractedBytes)
+                throw new InvalidDataException($"Package expands beyond the {MaximumPackageExtractedBytes / 1024 / 1024} MB extraction limit.");
             string target = Path.GetFullPath(Path.Combine(extractPath, entry.FullName));
             if (!target.StartsWith(root, StringComparison.OrdinalIgnoreCase))
                 throw new InvalidDataException("Package contains an unsafe file path.");
@@ -313,10 +343,13 @@ public sealed class CoreSyncService
         }
     }
 
-    private static bool IsAllowedPackageFile(string relativePath)
+    private static bool IsAllowedPackageFile(string relativePath, string? expectedCoreIdentifier = null)
     {
-        string firstSegment = relativePath.Split(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar)[0];
-        return AllowedRootFolders.Contains(firstSegment, StringComparer.OrdinalIgnoreCase);
+        string[] segments = relativePath.Split(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
+        if (!AllowedRootFolders.Contains(segments[0], StringComparer.OrdinalIgnoreCase)) return false;
+        return !string.Equals(segments[0], "Cores", StringComparison.OrdinalIgnoreCase) ||
+            expectedCoreIdentifier is null ||
+            segments.Length > 1 && string.Equals(segments[1], expectedCoreIdentifier, StringComparison.OrdinalIgnoreCase);
     }
 
     private static void EnsureSafeRelativePath(string relativePath)
@@ -325,7 +358,84 @@ public sealed class CoreSyncService
             throw new IOException("Package contains an unsafe destination path.");
     }
 
+    private static bool IsSafeCoreIdentifier(string identifier) =>
+        !string.IsNullOrWhiteSpace(identifier) &&
+        !Path.IsPathRooted(identifier) &&
+        identifier.IndexOfAny([Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar]) < 0 &&
+        identifier is not "." and not "..";
+
     private static string SanitizeDirectoryName(string value) => string.Concat(value.Select(character => Path.GetInvalidFileNameChars().Contains(character) ? '_' : character));
+
+    private static async Task CopyWithLimitAsync(Stream source, Stream destination, long maximumBytes, CancellationToken cancellationToken)
+    {
+        byte[] buffer = new byte[81920];
+        long copied = 0;
+        int read;
+        while ((read = await source.ReadAsync(buffer, cancellationToken)) > 0)
+        {
+            copied = checked(copied + read);
+            if (copied > maximumBytes) throw new InvalidDataException($"Package exceeds the {maximumBytes / 1024 / 1024} MB download limit.");
+            await destination.WriteAsync(buffer.AsMemory(0, read), cancellationToken);
+        }
+    }
+
+    private static void ValidateCorePackage(string extractPath, CoreComparison core)
+    {
+        string coreDefinitionPath = Path.Combine(extractPath, "Cores", core.Identifier, "core.json");
+        if (!File.Exists(coreDefinitionPath))
+            throw new InvalidDataException($"Package does not contain Cores/{core.Identifier}/core.json.");
+        try
+        {
+            using JsonDocument document = JsonDocument.Parse(File.ReadAllText(coreDefinitionPath));
+            JsonElement definition = document.RootElement.GetProperty("core");
+            if (!string.Equals(definition.GetProperty("magic").GetString(), "APF_VER_1", StringComparison.Ordinal) ||
+                !string.Equals(definition.GetProperty("framework").GetProperty("target_product").GetString(), "Analogue Pocket", StringComparison.Ordinal))
+                throw new InvalidDataException("Package core definition is not for Analogue Pocket.");
+            string? packageVersion = definition.GetProperty("metadata").GetProperty("version").GetString();
+            if (string.IsNullOrWhiteSpace(packageVersion)) throw new InvalidDataException("Package core definition has no version.");
+        }
+        catch (KeyNotFoundException exception) { throw new InvalidDataException("Package core definition is incomplete.", exception); }
+        catch (JsonException exception) { throw new InvalidDataException("Package core definition is not valid JSON.", exception); }
+        catch (InvalidOperationException exception) { throw new InvalidDataException("Package core definition is incomplete.", exception); }
+    }
+
+    private static CoreSyncTargetSnapshot CreateTargetSnapshot(PocketDrive pocket, long changeBytes)
+    {
+        string fullPath = Path.GetFullPath(pocket.RootPath);
+        DriveInfo? drive = FindContainingDrive(fullPath);
+        return new CoreSyncTargetSnapshot(fullPath, drive?.RootDirectory.FullName, drive?.TotalSize ?? pocket.TotalBytes,
+            drive?.VolumeLabel, checked(changeBytes + MinimumFreeSpaceReserveBytes));
+    }
+
+    private static bool TryValidateApplyTarget(CoreSyncPreview preview, out string problem)
+    {
+        string currentPath = Path.GetFullPath(preview.PocketPath);
+        if (!string.Equals(currentPath, preview.TargetSnapshot.FullPath, StringComparison.OrdinalIgnoreCase) || !Directory.Exists(currentPath))
+        {
+            problem = "The selected Pocket target is no longer available. Re-scan and prepare the changes again.";
+            return false;
+        }
+        DriveInfo? drive = FindContainingDrive(currentPath);
+        if (!string.Equals(drive?.RootDirectory.FullName, preview.TargetSnapshot.VolumeRoot, StringComparison.OrdinalIgnoreCase) ||
+            drive?.TotalSize != preview.TargetSnapshot.TotalSize ||
+            !string.Equals(drive?.VolumeLabel, preview.TargetSnapshot.VolumeLabel, StringComparison.Ordinal))
+        {
+            problem = "The selected Pocket target changed after preview. Re-scan and prepare the changes again.";
+            return false;
+        }
+        if (drive is not null && drive.AvailableFreeSpace < preview.TargetSnapshot.RequiredFreeBytes)
+        {
+            problem = "The selected Pocket does not have enough free space for this sync. Free space, then prepare the changes again.";
+            return false;
+        }
+        problem = string.Empty;
+        return true;
+    }
+
+    private static DriveInfo? FindContainingDrive(string fullPath) => DriveInfo.GetDrives()
+        .Where(candidate => candidate.IsReady && fullPath.StartsWith(candidate.RootDirectory.FullName, StringComparison.OrdinalIgnoreCase))
+        .OrderByDescending(candidate => candidate.RootDirectory.FullName.Length)
+        .FirstOrDefault();
 
     private static CoreSyncRemoval? CreateRemoval(PocketDrive pocket, CoreComparison core)
     {
