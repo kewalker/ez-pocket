@@ -28,7 +28,7 @@ public partial class CoreDetailsPage : ContentPage
         {
             "Installed" => "This core is installed and up to date.",
             "Update" => "An update is available. You can review it from Manage cores.",
-            "Available" => "This core is not installed. You can select it from Manage cores.",
+            "Available" => "This core is not installed. Select it from Manage cores to add it during the next review.",
             _ => "Return to Manage cores to review this core."
         };
     }

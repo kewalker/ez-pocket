@@ -95,11 +95,18 @@ public partial class CorePage : ContentPage
     {
         int count = coreSelection.SelectedCores.Count;
         SelectionBar.IsVisible = true;
-        SelectionSummary.Text = count switch
+        int removals = coreSelection.Cores.Count(core => core.IsInstalled && !core.IsSelected);
+        string selectedSummary = count switch
         {
-            0 => "Select cores to sync",
-            1 => "1 core selected for sync",
-            _ => $"{count} cores selected for sync"
+            0 => "No cores selected",
+            1 => "1 core selected",
+            _ => $"{count} cores selected"
+        };
+        SelectionSummary.Text = removals switch
+        {
+            0 => $"{selectedSummary}. Installed cores will be kept.",
+            1 => $"{selectedSummary}. 1 unselected installed core will be removed after review.",
+            _ => $"{selectedSummary}. {removals} unselected installed cores will be removed after review."
         };
         if (SelectVisibleCheckBox is null) return;
         bool hasVisibleCores = visibleCores.Count > 0;

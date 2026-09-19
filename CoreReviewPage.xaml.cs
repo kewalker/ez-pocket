@@ -61,7 +61,7 @@ public partial class CoreReviewPage : ContentPage
         ChangeList.IsVisible = false;
         ChangeDetails.IsVisible = false;
         OverrideSummary.IsVisible = false;
-        SyncStatus.Text = "Preparing selected core packages. Each download times out after 45 seconds and retries once.";
+        SyncStatus.Text = "Preparing selected core packages and listing unselected installed cores for removal. Each download times out after 45 seconds and retries once.";
         try
         {
             IReadOnlyList<CoreComparison> coresToRemove = coreSelection.Cores
@@ -89,7 +89,7 @@ public partial class CoreReviewPage : ContentPage
             SyncButton.IsVisible = preview.CanSync;
             SyncStatus.Text = preview.CanSync
                 ? "Review the planned additions and removals, then apply them."
-                : "No changes are planned. Select cores to keep, install, update, or remove.";
+                : "No changes are planned. Select cores to keep, install, or update; unselect an installed core to remove it.";
         }
         catch (OperationCanceledException)
         {
