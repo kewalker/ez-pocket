@@ -6,7 +6,7 @@
              x:Class="EzPocket.CoreReviewPage"
              BackgroundColor="#FFFFFF"
              Title="Sync changes">
-    <Grid Padding="28,20,28,24" RowDefinitions="Auto,Auto,Auto,Auto,*" RowSpacing="12">
+    <Grid Padding="28,20,28,24" RowDefinitions="Auto,Auto,Auto,*,Auto" RowSpacing="12">
         <Grid ColumnDefinitions="Auto,Auto,Auto,Auto,Auto,Auto" ColumnSpacing="6">
             <controls:EzButton Text="&#x2190;" FontSize="16" MinimumHeight="24" Clicked="OnBackClicked" ButtonPadding="10,1" CornerRadius="2" ButtonBackgroundColor="#151515" ButtonTextColor="White" SemanticProperties.Description="Back to previous page" />
             <Label Grid.Column="1" Text="EZ-POCKET" TextDecorations="Underline" TextColor="#151515" FontSize="11" FontAttributes="Bold" VerticalOptions="Center">
@@ -31,12 +31,7 @@
                 <Label x:Name="FeaturedSetSummaryText" TextColor="#151515" FontSize="13" />
             </Border>
         </VerticalStackLayout>
-        <Grid Grid.Row="3" ColumnDefinitions="Auto,Auto,*" ColumnSpacing="10">
-            <controls:EzButton x:Name="PrepareButton" Text="PREPARE AGAIN" IsVisible="False" Clicked="OnPrepareClicked" ButtonPadding="14,8" CornerRadius="2" />
-            <controls:EzButton x:Name="SyncButton" Grid.Column="1" Text="APPLY CHANGES" IsVisible="False" Clicked="OnSyncClicked" ButtonPadding="14,8" CornerRadius="2" />
-            <ActivityIndicator x:Name="PreparingIndicator" Grid.Column="2" IsVisible="False" IsRunning="False" Color="#151515" HorizontalOptions="Start" VerticalOptions="Center" />
-        </Grid>
-        <Grid Grid.Row="4" RowDefinitions="Auto,*" RowSpacing="10">
+        <Grid Grid.Row="3" RowDefinitions="Auto,*" RowSpacing="10">
             <Label x:Name="SyncStatus" Text="Calculating planned changes&#x2026;" TextColor="#60605C" />
             <Grid x:Name="ChangeDetails" Grid.Row="1" IsVisible="False" RowDefinitions="Auto,Auto,Auto,*" RowSpacing="10">
             <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
@@ -101,6 +96,12 @@
                 </Grid>
             </Grid>
             </Grid>
+        </Grid>
+        <Grid Grid.Row="4" BackgroundColor="#151515" Padding="12,8" ColumnDefinitions="Auto,*,Auto,Auto" ColumnSpacing="12">
+            <controls:EzButton x:Name="PrepareButton" Text="PREPARE AGAIN" IsVisible="False" Clicked="OnPrepareClicked" ButtonPadding="12,7" CornerRadius="2" ButtonBackgroundColor="White" ButtonTextColor="#151515" VerticalOptions="Center" />
+            <Label Grid.Column="1" Text="Reviewed changes are applied only after this confirmation." TextColor="#D2D2CC" FontSize="11" VerticalOptions="Center" LineBreakMode="TailTruncation" />
+            <ActivityIndicator x:Name="PreparingIndicator" Grid.Column="2" IsVisible="False" IsRunning="False" Color="White" VerticalOptions="Center" />
+            <controls:EzButton x:Name="SyncButton" Grid.Column="3" Text="APPLY CHANGES" IsVisible="False" Clicked="OnSyncClicked" ButtonPadding="14,8" CornerRadius="2" ButtonBackgroundColor="White" ButtonTextColor="#151515" VerticalOptions="Center" />
         </Grid>
     </Grid>
 </ContentPage>
