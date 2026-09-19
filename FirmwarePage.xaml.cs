@@ -57,7 +57,7 @@ public partial class FirmwarePage : ContentPage
             };
             PreviewCard.IsVisible = true;
             ApplyButton.IsVisible = true;
-            FirmwareStatus.Text = "Review the staged firmware, then choose to place it on the selected SD card.";
+            FirmwareStatus.Text = "Review the staged firmware, then choose to place it on the selected target.";
         }
         catch (Exception exception) when (exception is HttpRequestException or IOException or InvalidDataException or OperationCanceledException)
         {
@@ -77,7 +77,7 @@ public partial class FirmwarePage : ContentPage
         string replacementSummary = preview.ExistingFirmwareFiles.Count == 0
             ? "No existing firmware file will be replaced."
             : $"{preview.ExistingFirmwareFiles.Count} existing firmware file(s) will be backed up and replaced.";
-        bool confirmed = await DisplayAlert("Stage Pocket firmware", $"Place firmware {preview.Release.Version} at the root of {preview.PocketPath}? {replacementSummary} This does not update your cores. Afterward, safely eject the SD card, power the Pocket off, insert the card, and power it on to begin Analogue's update process.", "Stage firmware", "Cancel");
+        bool confirmed = await DisplayAlert("Stage Pocket firmware", $"Place firmware {preview.Release.Version} at the root of {preview.PocketPath}? {replacementSummary} This does not update your cores. To update a Pocket afterward, safely eject its storage, power the Pocket off, insert the storage, and power it on.", "Stage firmware", "Cancel");
         if (!confirmed) return;
 
         ApplyButton.IsEnabled = false;
@@ -85,6 +85,7 @@ public partial class FirmwarePage : ContentPage
         FirmwareStatus.Text = result.Message;
         if (result.Succeeded)
         {
+            SuccessToast.ShowSuccess(result.Message);
             ApplyButton.IsVisible = false;
             PreviewCard.IsVisible = false;
             preview = null;

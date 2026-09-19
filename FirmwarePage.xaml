@@ -5,6 +5,7 @@
              x:Class="EzPocket.FirmwarePage"
              BackgroundColor="#F5F7FB"
              Title="Update Pocket firmware">
+    <Grid>
     <ScrollView>
         <VerticalStackLayout Padding="24,16,24,24" Spacing="14">
             <Grid ColumnDefinitions="Auto,Auto,Auto,Auto" ColumnSpacing="6">
@@ -22,7 +23,7 @@
             <Border BackgroundColor="#FFF7E6" Stroke="#F8D99A" StrokeShape="RoundRectangle 12" Padding="14,10">
                 <VerticalStackLayout Spacing="4">
                     <Label Text="Your cores, assets, and saves will not be changed." FontAttributes="Bold" TextColor="#8A620F" />
-                    <Label Text="This workflow only places a verified official firmware file at the root of the selected Pocket SD card. You start the update by safely ejecting the card, powering the Pocket off, inserting it, then powering it on." FontSize="13" TextColor="#8A620F" />
+                    <Label Text="This workflow only places a verified official firmware file at the root of the selected target. To update a Pocket, safely eject its storage, power the Pocket off, insert the storage, then power it on." FontSize="13" TextColor="#8A620F" />
                 </VerticalStackLayout>
             </Border>
             <Border BackgroundColor="White" Stroke="#E2E7F0" StrokeShape="RoundRectangle 12" Padding="16">
@@ -43,9 +44,11 @@
             <Label x:Name="FirmwareStatus" Text="Check Analogue's official firmware before staging anything on your Pocket." TextColor="#63708A" />
             <HorizontalStackLayout Spacing="10">
                 <controls:EzButton x:Name="PrepareButton" Text="Check and prepare firmware" Clicked="OnPrepareClicked" />
-                <controls:EzButton x:Name="ApplyButton" Text="Stage firmware on SD card" IsVisible="False" Clicked="OnApplyClicked" ButtonBackgroundColor="#19734E" />
+                <controls:EzButton x:Name="ApplyButton" Text="Stage firmware" IsVisible="False" Clicked="OnApplyClicked" ButtonBackgroundColor="#19734E" />
                 <ActivityIndicator x:Name="PreparingIndicator" IsVisible="False" IsRunning="False" Color="#2563EB" VerticalOptions="Center" />
             </HorizontalStackLayout>
         </VerticalStackLayout>
     </ScrollView>
+    <controls:EzToast x:Name="SuccessToast" ZIndex="10" WidthRequest="440" HorizontalOptions="Center" VerticalOptions="Start" Margin="0,16,0,0" />
+    </Grid>
 </ContentPage>

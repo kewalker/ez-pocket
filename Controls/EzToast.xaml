@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:controls="clr-namespace:EzPocket.Controls"
+             x:Class="EzPocket.Controls.EzToast"
+             x:Name="Root"
+             IsVisible="False"
+             SemanticProperties.Description="Success message">
+    <Border BackgroundColor="#E8F7EE" Stroke="#67B98A" StrokeThickness="1" StrokeShape="RoundRectangle 10" Padding="0">
+        <Grid RowDefinitions="Auto,3">
+            <Grid ColumnDefinitions="Auto,*,48" ColumnSpacing="10" Padding="14,10">
+                <Label Text="✓" FontSize="16" TextColor="#19734E" VerticalOptions="Center" />
+                <Label x:Name="MessageLabel" Grid.Column="1" TextColor="#14532D" FontAttributes="Bold" VerticalOptions="Center" LineBreakMode="TailTruncation" />
+                <controls:EzButton Grid.Column="2" Text="×" FontSize="16" MinimumHeight="30" WidthRequest="40" Margin="0,0,2,0" ButtonPadding="0" ButtonBackgroundColor="#D7F0E0" ButtonTextColor="#14532D" Clicked="OnDismissClicked" VerticalOptions="Center" HorizontalOptions="End" SemanticProperties.Description="Dismiss success message" />
+            </Grid>
+            <ProgressBar x:Name="Timer" Grid.Row="1" Progress="1" ProgressColor="#3A9D62" BackgroundColor="#CBE8D5" HeightRequest="3" HorizontalOptions="Fill" VerticalOptions="End" SemanticProperties.Description="Time remaining before this message closes" />
+        </Grid>
+    </Border>
+</ContentView>

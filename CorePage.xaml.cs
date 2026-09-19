@@ -1,6 +1,5 @@
 using EzPocket.Models;
 using EzPocket.Services;
-using System.Diagnostics;
 
 namespace EzPocket;
 
@@ -11,11 +10,9 @@ public partial class CorePage : ContentPage
     private readonly CoreSelectionService coreSelection;
     private IReadOnlyList<CoreComparison> allCores = [];
     private CancellationTokenSource? refreshCancellation;
-    private CancellationTokenSource? successToastCancellation;
     private bool refreshInProgress;
     private string? sortColumn;
     private bool sortAscending = true;
-    private static readonly TimeSpan SuccessToastDuration = TimeSpan.FromSeconds(6);
 
     public CorePage()
     {
@@ -36,56 +33,13 @@ public partial class CorePage : ContentPage
     protected override void OnDisappearing()
     {
         refreshCancellation?.Cancel();
-        successToastCancellation?.Cancel();
-        successToastCancellation = null;
-        SuccessToast.IsVisible = false;
+        SuccessToast.Hide();
         base.OnDisappearing();
     }
 
     private void ShowSuccessToast(string message)
     {
-        successToastCancellation?.Cancel();
-        successToastCancellation?.Dispose();
-        var cancellation = new CancellationTokenSource();
-        successToastCancellation = cancellation;
-        SuccessToastMessage.Text = message;
-        SuccessToastTimer.Progress = 1;
-        SuccessToast.IsVisible = true;
-        _ = HideSuccessToastAsync(cancellation);
-    }
-
-    private void OnDismissSuccessToastClicked(object? sender, EventArgs e)
-    {
-        successToastCancellation?.Cancel();
-        successToastCancellation = null;
-        SuccessToast.IsVisible = false;
-    }
-
-    private async Task HideSuccessToastAsync(CancellationTokenSource cancellation)
-    {
-        try
-        {
-            Stopwatch stopwatch = Stopwatch.StartNew();
-            while (stopwatch.Elapsed < SuccessToastDuration)
-            {
-                SuccessToastTimer.Progress = Math.Max(0, 1 - stopwatch.Elapsed.TotalMilliseconds / SuccessToastDuration.TotalMilliseconds);
-                await Task.Delay(TimeSpan.FromMilliseconds(8), cancellation.Token);
-            }
-            SuccessToastTimer.Progress = 0;
-            if (ReferenceEquals(successToastCancellation, cancellation))
-            {
-                SuccessToast.IsVisible = false;
-                successToastCancellation = null;
-            }
-        }
-        catch (OperationCanceledException)
-        {
-            // A new result or navigation replaced this toast.
-        }
-        finally
-        {
-            if (!ReferenceEquals(successToastCancellation, cancellation)) cancellation.Dispose();
-        }
+        SuccessToast.ShowSuccess(message);
     }
 
     private async void OnRefreshClicked(object? sender, EventArgs e) => await RefreshAsync();
