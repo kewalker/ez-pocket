@@ -29,6 +29,12 @@ public sealed class FirmwareUpdateServiceTests
             Assert.Empty(preview.ExistingFirmwareFiles);
             Assert.Equal(firmware, await File.ReadAllBytesAsync(preview.FirmwareFilePath));
             service.Cleanup(preview);
+
+            await File.WriteAllBytesAsync(Path.Combine(pocketPath, "pocket_firmware_2.7.bin"), firmware);
+            FirmwareTargetCheck check = await service.CheckTargetAsync(pocket);
+
+            Assert.True(check.IsLatestFirmwareStaged);
+            Assert.Single(check.ExistingFirmwareFiles);
         }
         finally
         {

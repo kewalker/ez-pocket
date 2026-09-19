@@ -41,11 +41,21 @@ public sealed class FirmwareUpdateService
         return new FirmwareRelease(version, md5, new Uri($"https://www.analogue.co/support/pocket/firmware/{version}/download"));
     }
 
+    public async Task<FirmwareTargetCheck> CheckTargetAsync(PocketDrive pocket, CancellationToken cancellationToken = default)
+    {
+        if (!Directory.Exists(pocket.RootPath)) throw new DirectoryNotFoundException("The selected Pocket is no longer available.");
+        FirmwareRelease release = await GetLatestReleaseAsync(cancellationToken);
+        return await InspectTargetAsync(pocket.RootPath, release, cancellationToken);
+    }
+
     public async Task<FirmwareUpdatePreview> PrepareAsync(PocketDrive pocket, CancellationToken cancellationToken = default)
     {
         if (!Directory.Exists(pocket.RootPath)) throw new DirectoryNotFoundException("The selected Pocket is no longer available.");
 
         FirmwareRelease release = await GetLatestReleaseAsync(cancellationToken);
+        FirmwareTargetCheck targetCheck = await InspectTargetAsync(pocket.RootPath, release, cancellationToken);
+        if (targetCheck.IsLatestFirmwareStaged)
+            throw new InvalidOperationException($"Firmware {release.Version} is already staged and verified on this target.");
         string stagingPath = Path.Combine(stagingRoot, Guid.NewGuid().ToString("N"));
         Directory.CreateDirectory(stagingPath);
         try
@@ -62,14 +72,7 @@ public sealed class FirmwareUpdateService
             if (!string.Equals(actualMd5, release.Md5, StringComparison.OrdinalIgnoreCase))
                 throw new InvalidDataException("The downloaded firmware did not match Analogue's published MD5 checksum.");
 
-            string[] existingFirmwareFiles = Directory.EnumerateFiles(pocket.RootPath, "pocket_firmware*.bin", SearchOption.TopDirectoryOnly)
-                .Select(Path.GetFileName)
-                .Where(name => !string.IsNullOrWhiteSpace(name))
-                .Cast<string>()
-                .OrderBy(name => name, StringComparer.OrdinalIgnoreCase)
-                .ToArray();
-
-            return new FirmwareUpdatePreview(pocket.RootPath, release, stagingPath, firmwarePath, fileName, new FileInfo(firmwarePath).Length, existingFirmwareFiles);
+            return new FirmwareUpdatePreview(pocket.RootPath, release, stagingPath, firmwarePath, fileName, new FileInfo(firmwarePath).Length, targetCheck.ExistingFirmwareFiles);
         }
         catch
         {
@@ -138,6 +141,27 @@ public sealed class FirmwareUpdateService
     }
 
     public void Cleanup(FirmwareUpdatePreview preview) => Cleanup(preview.StagingPath);
+
+    private static async Task<FirmwareTargetCheck> InspectTargetAsync(string pocketPath, FirmwareRelease release, CancellationToken cancellationToken)
+    {
+        string[] existingFirmwareFiles = Directory.EnumerateFiles(pocketPath, "pocket_firmware*.bin", SearchOption.TopDirectoryOnly)
+            .Select(Path.GetFileName)
+            .Where(name => !string.IsNullOrWhiteSpace(name))
+            .Cast<string>()
+            .OrderBy(name => name, StringComparer.OrdinalIgnoreCase)
+            .ToArray();
+        bool isLatestFirmwareStaged = false;
+        foreach (string fileName in existingFirmwareFiles)
+        {
+            string checksum = await GetMd5Async(Path.Combine(pocketPath, fileName), cancellationToken);
+            if (string.Equals(checksum, release.Md5, StringComparison.OrdinalIgnoreCase))
+            {
+                isLatestFirmwareStaged = true;
+                break;
+            }
+        }
+        return new FirmwareTargetCheck(release, existingFirmwareFiles, isLatestFirmwareStaged);
+    }
 
     private static string GetSafeFileName(ContentDispositionHeaderValue? contentDisposition, string version)
     {

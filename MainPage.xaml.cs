@@ -8,6 +8,7 @@ public partial class MainPage : ContentPage
     private readonly PocketScanner scanner;
     private readonly PocketSelectionService selection;
     private readonly IFolderPickerService folderPicker;
+    private readonly FirmwareUpdateService firmware;
     private List<PocketDrive> candidates = [];
 
     public MainPage()
@@ -16,6 +17,7 @@ public partial class MainPage : ContentPage
         scanner = IPlatformApplication.Current?.Services.GetService<PocketScanner>() ?? new PocketScanner();
         selection = IPlatformApplication.Current?.Services.GetService<PocketSelectionService>() ?? new PocketSelectionService();
         folderPicker = IPlatformApplication.Current?.Services.GetService<IFolderPickerService>() ?? new UnsupportedFolderPickerService();
+        firmware = IPlatformApplication.Current?.Services.GetService<FirmwareUpdateService>() ?? new FirmwareUpdateService();
     }
 
     protected override void OnAppearing()
@@ -114,6 +116,10 @@ public partial class MainPage : ContentPage
         TargetValue.Text = pocket.LooksLikePocket ? pocket.Name : "New target";
         TargetDetail.Text = pocket.CapacitySummary;
         FirmwareButton.IsEnabled = true;
+        FirmwareActionTitle.Text = "Checking Pocket firmware…";
+        FirmwareActionDetail.Text = "Checking the official release and this target's staged firmware.";
+        FirmwareButton.Text = "Checking…";
+        _ = CheckFirmwareAsync(pocket);
     }
 
     private void ShowNoPocket()
@@ -131,6 +137,40 @@ public partial class MainPage : ContentPage
         TargetValue.Text = "None";
         TargetDetail.Text = "No folder selected";
         FirmwareButton.IsEnabled = false;
+        FirmwareActionTitle.Text = "Update Pocket firmware";
+        FirmwareActionDetail.Text = "Select a target to check the latest official firmware.";
+        FirmwareButton.Text = "Update firmware";
+    }
+
+    private async Task CheckFirmwareAsync(PocketDrive pocket)
+    {
+        try
+        {
+            FirmwareTargetCheck check = await firmware.CheckTargetAsync(pocket);
+            if (!string.Equals(selection.SelectedPocket?.RootPath, pocket.RootPath, StringComparison.OrdinalIgnoreCase)) return;
+
+            if (check.IsLatestFirmwareStaged)
+            {
+                FirmwareActionTitle.Text = $"Firmware {check.Release.Version} is staged";
+                FirmwareActionDetail.Text = "The latest official firmware is verified on this target. Installed PocketOS version cannot be read from storage.";
+                FirmwareButton.Text = "View firmware";
+            }
+            else
+            {
+                FirmwareActionTitle.Text = $"Firmware {check.Release.Version} is available";
+                FirmwareActionDetail.Text = check.ExistingFirmwareFiles.Count == 0
+                    ? "No verified latest firmware is staged on this target."
+                    : "An older or unverified firmware file is staged and can be safely replaced.";
+                FirmwareButton.Text = "Stage firmware";
+            }
+        }
+        catch (Exception exception) when (exception is HttpRequestException or IOException or InvalidDataException or OperationCanceledException)
+        {
+            if (!string.Equals(selection.SelectedPocket?.RootPath, pocket.RootPath, StringComparison.OrdinalIgnoreCase)) return;
+            FirmwareActionTitle.Text = "Could not check firmware";
+            FirmwareActionDetail.Text = "Check your connection, then retry from the firmware page.";
+            FirmwareButton.Text = "Check firmware";
+        }
     }
 
     private async void OnManageCoresClicked(object? sender, EventArgs e)

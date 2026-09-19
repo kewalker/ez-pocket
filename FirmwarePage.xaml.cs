@@ -59,6 +59,10 @@ public partial class FirmwarePage : ContentPage
             ApplyButton.IsVisible = true;
             FirmwareStatus.Text = "Review the staged firmware, then choose to place it on the selected target.";
         }
+        catch (InvalidOperationException exception)
+        {
+            FirmwareStatus.Text = exception.Message;
+        }
         catch (Exception exception) when (exception is HttpRequestException or IOException or InvalidDataException or OperationCanceledException)
         {
             FirmwareStatus.Text = $"Could not prepare firmware: {exception.Message}";

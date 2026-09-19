@@ -2,6 +2,11 @@ namespace EzPocket.Models;
 
 public sealed record FirmwareRelease(string Version, string Md5, Uri DownloadUrl);
 
+public sealed record FirmwareTargetCheck(
+    FirmwareRelease Release,
+    IReadOnlyList<string> ExistingFirmwareFiles,
+    bool IsLatestFirmwareStaged);
+
 public sealed record FirmwareUpdatePreview(
     string PocketPath,
     FirmwareRelease Release,
