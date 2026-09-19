@@ -48,17 +48,12 @@ public sealed class CoreSelectionService
         selectedCores.Clear();
     }
 
-    public void ReplaceSelection(IEnumerable<CoreComparison> desiredCores)
+    public void AddToSelection(IEnumerable<CoreComparison> additionalCores)
     {
-        var desiredIdentifiers = desiredCores
-            .Select(core => core.Identifier)
-            .ToHashSet(StringComparer.OrdinalIgnoreCase);
-        selectedCores.Clear();
-        foreach (CoreComparison core in cores)
+        foreach (CoreComparison core in additionalCores)
         {
-            bool isSelected = desiredIdentifiers.Contains(core.Identifier);
-            core.IsSelected = isSelected;
-            if (isSelected) selectedCores[core.Identifier] = core;
+            core.IsSelected = true;
+            selectedCores[core.Identifier] = core;
         }
     }
 

@@ -7,7 +7,7 @@ namespace EzPocket.Tests;
 public sealed class FeaturedCoreSetServiceTests
 {
     [Fact]
-    public void ApplyingAFeaturedSetReplacesTheDesiredSelectionAndReportsUnavailableCores()
+    public void ApplyingAFeaturedSetAddsToTheDesiredSelectionAndReportsUnavailableCores()
     {
         var service = new FeaturedCoreSetService();
         var selection = new CoreSelectionService();
@@ -25,8 +25,8 @@ public sealed class FeaturedCoreSetServiceTests
 
         Assert.Equal(2, result.MatchedCoreCount);
         Assert.Contains("Spiritualized.GBA", result.MissingCoreIdentifiers);
-        Assert.Equal(["Spiritualized.GB", "Spiritualized.GBC"], selection.SelectedCores.Select(core => core.Identifier).OrderBy(identifier => identifier));
-        Assert.False(cores.Single(core => core.Identifier == "Other.Core").IsSelected);
+        Assert.Equal(["Other.Core", "Spiritualized.GB", "Spiritualized.GBC"], selection.SelectedCores.Select(core => core.Identifier).OrderBy(identifier => identifier));
+        Assert.True(cores.Single(core => core.Identifier == "Other.Core").IsSelected);
         Assert.Null(service.PendingSet);
     }
 }

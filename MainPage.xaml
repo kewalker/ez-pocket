@@ -53,7 +53,7 @@
                 <VerticalStackLayout Spacing="2">
                     <Label Text="FEATURED SETUPS" FontSize="11" FontAttributes="Bold" TextColor="#2563EB" />
                     <Label Text="Start with a thoughtfully chosen group of cores" FontSize="20" FontAttributes="Bold" TextColor="#14213D" />
-                    <Label Text="Choose a setup to load its core lineup directly into a review. You will still approve every install, update, and removal before applying it." FontSize="13" TextColor="#63708A" />
+                    <Label Text="Choose a setup to add its core lineup directly into a review. Existing installed cores stay selected; you will still approve every change before applying it." FontSize="13" TextColor="#63708A" />
                 </VerticalStackLayout>
                 <Grid x:Name="FeaturedSetupCards" ColumnDefinitions="*,*,*" ColumnSpacing="12">
                     <Border StyleId="handheld-essentials" HeightRequest="158" BackgroundColor="White" Stroke="#B8CDEB" StrokeThickness="1.5" StrokeShape="RoundRectangle 12" Padding="16" SemanticProperties.Description="Review the Handheld essentials core setup">

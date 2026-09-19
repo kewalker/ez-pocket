@@ -50,7 +50,7 @@ public sealed class FeaturedCoreSetService
             else missing.Add(identifier);
         }
 
-        selection.ReplaceSelection(matched);
+        selection.AddToSelection(matched);
         PendingSet = null;
         return new FeaturedCoreSetSelection(set, matched.Count, missing);
     }

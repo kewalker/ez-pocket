@@ -13,6 +13,6 @@ public sealed record FeaturedCoreSetSelection(
     IReadOnlyList<string> MissingCoreIdentifiers)
 {
     public string Summary => MissingCoreIdentifiers.Count == 0
-        ? $"{Set.Name} selected: {MatchedCoreCount} core(s) are ready to review."
-        : $"{Set.Name} selected: {MatchedCoreCount} core(s) are ready to review; {MissingCoreIdentifiers.Count} could not be found in the live inventory.";
+        ? $"{Set.Name} added: {MatchedCoreCount} core(s) are ready to review. Existing selections are kept."
+        : $"{Set.Name} added: {MatchedCoreCount} core(s) are ready to review; {MissingCoreIdentifiers.Count} could not be found in the live inventory. Existing selections are kept.";
 }
