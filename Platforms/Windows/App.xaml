@@ -6,8 +6,17 @@
     xmlns:local="using:EzPocket.WinUI">
     <maui:MauiWinUIApplication.Resources>
         <ResourceDictionary>
-            <SolidColorBrush x:Key="ComboBoxDropDownGlyphForeground" Color="#52627A" />
-            <SolidColorBrush x:Key="ComboBoxDropDownGlyphForegroundFocused" Color="#1E3A8A" />
+            <SolidColorBrush x:Key="ComboBoxDropDownGlyphForeground" Color="#60605C" />
+            <SolidColorBrush x:Key="ComboBoxDropDownGlyphForegroundFocused" Color="#151515" />
+            <SolidColorBrush x:Key="CheckBoxCheckBackgroundFillChecked" Color="#151515" />
+            <SolidColorBrush x:Key="CheckBoxCheckBackgroundFillCheckedPointerOver" Color="#343434" />
+            <SolidColorBrush x:Key="CheckBoxCheckBackgroundFillCheckedPressed" Color="#60605C" />
+            <SolidColorBrush x:Key="CheckBoxCheckBackgroundStrokeChecked" Color="#151515" />
+            <SolidColorBrush x:Key="CheckBoxCheckBackgroundStrokeCheckedPointerOver" Color="#343434" />
+            <SolidColorBrush x:Key="CheckBoxCheckBackgroundStrokeCheckedPressed" Color="#60605C" />
+            <SolidColorBrush x:Key="CheckBoxCheckGlyphForegroundChecked" Color="#FFFFFF" />
+            <SolidColorBrush x:Key="CheckBoxCheckGlyphForegroundCheckedPointerOver" Color="#FFFFFF" />
+            <SolidColorBrush x:Key="CheckBoxCheckGlyphForegroundCheckedPressed" Color="#FFFFFF" />
             <x:Double x:Key="ComboBoxArrowThemeFontSize">16</x:Double>
         </ResourceDictionary>
     </maui:MauiWinUIApplication.Resources>

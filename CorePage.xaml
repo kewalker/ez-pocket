@@ -62,10 +62,10 @@
         </Grid>
         <Grid Grid.Row="5">
             <CollectionView x:Name="CoreList" SelectionMode="None">
-            <CollectionView.EmptyView><Label Text="No cores found yet." TextColor="#63708A" HorizontalOptions="Center" VerticalOptions="Center" /></CollectionView.EmptyView>
+            <CollectionView.EmptyView><Label Text="No cores found yet." TextColor="#60605C" HorizontalOptions="Center" VerticalOptions="Center" /></CollectionView.EmptyView>
             <CollectionView.Header>
                 <Grid ColumnDefinitions="44,2*,1.05*,.8*,.8*,1.1*,70" Padding="12,4" ColumnSpacing="10">
-                    <CheckBox x:Name="SelectVisibleCheckBox" VerticalOptions="Center" HorizontalOptions="Center" Color="#2563EB" CheckedChanged="OnSelectVisibleChanged" SemanticProperties.Description="Select or clear all visible cores" />
+                    <CheckBox x:Name="SelectVisibleCheckBox" VerticalOptions="Center" HorizontalOptions="Center" Color="#151515" CheckedChanged="OnSelectVisibleChanged" SemanticProperties.Description="Select or clear all visible cores" />
                     <controls:EzButton x:Name="CoreSortButton" Grid.Column="1" HorizontalOptions="Start" Text="CORE" FontSize="11" FontAttributes="Bold" MinimumHeight="26" ButtonPadding="4,2" CornerRadius="0" ButtonBackgroundColor="White" ButtonTextColor="#60605C" Clicked="OnCoreSortClicked" SemanticProperties.Description="Sort cores ascending" />
                     <controls:EzButton x:Name="CategorySortButton" Grid.Column="2" HorizontalOptions="Start" Text="CATEGORY" FontSize="11" FontAttributes="Bold" MinimumHeight="26" ButtonPadding="4,2" CornerRadius="0" ButtonBackgroundColor="White" ButtonTextColor="#60605C" Clicked="OnCategorySortClicked" SemanticProperties.Description="Sort categories ascending" />
                     <controls:EzButton x:Name="InstalledSortButton" Grid.Column="3" HorizontalOptions="Start" Text="INSTALLED" FontSize="11" FontAttributes="Bold" MinimumHeight="26" ButtonPadding="4,2" CornerRadius="0" ButtonBackgroundColor="White" ButtonTextColor="#60605C" Clicked="OnInstalledSortClicked" SemanticProperties.Description="Sort installed versions ascending" />
@@ -77,7 +77,7 @@
                 <DataTemplate x:DataType="models:CoreComparison">
                     <Border BackgroundColor="White" Stroke="#D0D0CA" StrokeShape="RoundRectangle 0" Padding="12,8" Margin="0,0,0,0">
                         <Grid ColumnDefinitions="44,2*,1.05*,.8*,.8*,1.1*,70" RowDefinitions="Auto,Auto" RowSpacing="0" ColumnSpacing="10">
-                            <CheckBox Grid.RowSpan="2" IsChecked="{Binding IsSelected, Mode=TwoWay}" VerticalOptions="Center" Color="#2563EB" CheckedChanged="OnCoreSelectionChanged" />
+                            <CheckBox Grid.RowSpan="2" IsChecked="{Binding IsSelected, Mode=TwoWay}" VerticalOptions="Center" Color="#151515" CheckedChanged="OnCoreSelectionChanged" />
                             <Grid Grid.Column="1" Grid.RowSpan="2">
                                 <Grid.GestureRecognizers>
                                     <TapGestureRecognizer Tapped="OnCoreRowTapped" />
@@ -98,12 +98,12 @@
             </CollectionView.ItemTemplate>
             </CollectionView>
             <VerticalStackLayout x:Name="LoadingState" IsVisible="False" Spacing="10" HorizontalOptions="Center" VerticalOptions="Center">
-                <ActivityIndicator IsRunning="True" Color="#2563EB" />
+                <ActivityIndicator IsRunning="True" Color="#151515" />
                 <Label Text="Loading core inventory…" TextColor="#63708A" />
             </VerticalStackLayout>
             <VerticalStackLayout x:Name="OfflineState" IsVisible="False" Spacing="10" HorizontalOptions="Center" VerticalOptions="Center">
-                <Label Text="Live inventory is unavailable." FontSize="16" FontAttributes="Bold" TextColor="#14213D" HorizontalTextAlignment="Center" />
-                <Label Text="Showing installed cores. Check your connection and try again." TextColor="#63708A" HorizontalTextAlignment="Center" />
+                <Label Text="Live inventory is unavailable." FontSize="16" FontAttributes="Bold" TextColor="#151515" HorizontalTextAlignment="Center" />
+                <Label Text="Showing installed cores. Check your connection and try again." TextColor="#60605C" HorizontalTextAlignment="Center" />
                 <controls:EzButton Text="Retry" Clicked="OnRefreshClicked" HorizontalOptions="Center" />
             </VerticalStackLayout>
         </Grid>

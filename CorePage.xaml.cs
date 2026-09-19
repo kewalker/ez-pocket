@@ -122,12 +122,12 @@ public partial class CorePage : ContentPage
 
     private void OnBreadcrumbPointerEntered(object? sender, PointerEventArgs e)
     {
-        if (sender is Label label) label.TextColor = Color.FromArgb("#1D4ED8");
+        if (sender is Label label) label.TextColor = Color.FromArgb("#60605C");
     }
 
     private void OnBreadcrumbPointerExited(object? sender, PointerEventArgs e)
     {
-        if (sender is Label label) label.TextColor = Color.FromArgb("#2563EB");
+        if (sender is Label label) label.TextColor = Color.FromArgb("#151515");
     }
 
     private void OnFilterChanged(object? sender, EventArgs e)
@@ -195,7 +195,7 @@ public partial class CorePage : ContentPage
     {
         bool isActive = sortColumn == column;
         button.Text = isActive ? $"{label} {(sortAscending ? "▲" : "▼")}" : label;
-        button.ButtonTextColor = isActive ? Color.FromArgb("#1E3A8A") : Color.FromArgb("#52627A");
+        button.ButtonTextColor = isActive ? Color.FromArgb("#151515") : Color.FromArgb("#60605C");
         SemanticProperties.SetDescription(button, $"Sort {label.ToLowerInvariant()} {(isActive && sortAscending ? "descending" : "ascending")}");
     }
 

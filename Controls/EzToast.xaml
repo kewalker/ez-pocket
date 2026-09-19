@@ -6,14 +6,14 @@
              x:Name="Root"
              IsVisible="False"
              SemanticProperties.Description="Success message">
-    <Border BackgroundColor="#E8F7EE" Stroke="#67B98A" StrokeThickness="1" StrokeShape="RoundRectangle 10" Padding="0">
+    <Border BackgroundColor="#FFFFFF" Stroke="#151515" StrokeThickness="1" StrokeShape="RoundRectangle 2" Padding="0">
         <Grid RowDefinitions="Auto,3">
-            <Grid ColumnDefinitions="Auto,*,48" ColumnSpacing="10" Padding="14,10">
+            <Grid ColumnDefinitions="Auto,*,44" ColumnSpacing="10" Padding="14,10">
                 <Label Text="✓" FontSize="16" TextColor="#19734E" VerticalOptions="Center" />
-                <Label x:Name="MessageLabel" Grid.Column="1" TextColor="#14532D" FontAttributes="Bold" VerticalOptions="Center" LineBreakMode="TailTruncation" />
-                <controls:EzButton Grid.Column="2" Text="×" FontSize="16" MinimumHeight="30" WidthRequest="40" Margin="0,0,2,0" ButtonPadding="0" ButtonBackgroundColor="#D7F0E0" ButtonTextColor="#14532D" Clicked="OnDismissClicked" VerticalOptions="Center" HorizontalOptions="End" SemanticProperties.Description="Dismiss success message" />
+                <Label x:Name="MessageLabel" Grid.Column="1" TextColor="#151515" FontAttributes="Bold" VerticalOptions="Center" LineBreakMode="TailTruncation" />
+                <controls:EzButton Grid.Column="2" Text="&#x00D7;" FontSize="20" MinimumHeight="36" WidthRequest="44" ButtonPadding="0" CornerRadius="0" ButtonBackgroundColor="#F4F4F0" ButtonTextColor="#151515" Clicked="OnDismissClicked" VerticalOptions="Center" HorizontalOptions="Fill" SemanticProperties.Description="Dismiss success message" />
             </Grid>
-            <ProgressBar x:Name="Timer" Grid.Row="1" Progress="1" ProgressColor="#3A9D62" BackgroundColor="#CBE8D5" HeightRequest="3" HorizontalOptions="Fill" VerticalOptions="End" SemanticProperties.Description="Time remaining before this message closes" />
+            <ProgressBar x:Name="Timer" Grid.Row="1" Progress="1" ProgressColor="#151515" BackgroundColor="#D0D0CA" HeightRequest="3" HorizontalOptions="Fill" VerticalOptions="End" SemanticProperties.Description="Time remaining before this message closes" />
         </Grid>
     </Border>
 </ContentView>
