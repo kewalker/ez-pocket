@@ -25,7 +25,7 @@
 		<ApplicationTitle>EzPocket</ApplicationTitle>
 
 		<!-- App Identifier -->
-		<ApplicationId>com.signalcabinet.ezpocket</ApplicationId>
+		<ApplicationId>com.bitbird.ezpocket</ApplicationId>
 
 		<!-- Versions -->
 		<ApplicationDisplayVersion>0.1.0</ApplicationDisplayVersion>
@@ -40,6 +40,18 @@
 		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">10.0.17763.0</SupportedOSPlatformVersion>
 		<TargetPlatformMinVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">10.0.17763.0</TargetPlatformMinVersion>
 		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'tizen'">6.5</SupportedOSPlatformVersion>
+	</PropertyGroup>
+
+	<!-- Keep local Debug runs unpackaged, but create an unsigned MSIX during Release.
+		A trusted signing service signs the resulting package in CI before public distribution. -->
+	<PropertyGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows' and '$(Configuration)' == 'Release'">
+		<WindowsPackageType>Package</WindowsPackageType>
+		<AppxPackageSigningEnabled>false</AppxPackageSigningEnabled>
+	</PropertyGroup>
+
+	<!-- Avoid the Windows App SDK runtime-identifier issue when publishing in CI. -->
+	<PropertyGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows' and '$(RuntimeIdentifierOverride)' != ''">
+		<RuntimeIdentifier>$(RuntimeIdentifierOverride)</RuntimeIdentifier>
 	</PropertyGroup>
 
 	<ItemGroup>

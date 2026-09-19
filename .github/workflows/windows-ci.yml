@@ -3,6 +3,7 @@ name: Windows CI
 on:
   push:
     branches: [main]
+    tags: ["v*"]
   pull_request:
     branches: [main]
   workflow_dispatch:
@@ -44,3 +45,50 @@ jobs:
 
       - name: Run tests
         run: dotnet test Tests/EzPocket.Tests.csproj -f net9.0-windows10.0.19041.0 --no-build --no-restore
+
+  package-windows:
+    name: Package unsigned Windows MSIX
+    if: startsWith(github.ref, 'refs/tags/v')
+    needs: build-and-test
+    runs-on: windows-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v7
+
+      - name: Set up .NET 9
+        uses: actions/setup-dotnet@v6
+        with:
+          dotnet-version: 9.0.x
+
+      - name: Cache NuGet packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.nuget/packages
+          key: ${{ runner.os }}-nuget-${{ hashFiles('**/*.csproj', '**/Directory.Packages.props', '**/NuGet.config', 'global.json') }}
+          restore-keys: |
+            ${{ runner.os }}-nuget-
+
+      - name: Install .NET MAUI Windows workload
+        run: dotnet workload install maui-windows --skip-manifest-update
+
+      - name: Restore dependencies
+        run: dotnet restore EzPocket.sln -p:TargetFramework=net9.0-windows10.0.19041.0
+
+      - name: Create unsigned MSIX
+        run: >
+          dotnet publish EzPocket.csproj
+          -f net9.0-windows10.0.19041.0
+          -c Release
+          --no-restore
+          -p:RuntimeIdentifierOverride=win10-x64
+          -p:AppxPackageSigningEnabled=false
+
+      - name: Upload unsigned package for signing and tester validation
+        uses: actions/upload-artifact@v4
+        with:
+          name: ez-pocket-${{ github.ref_name }}-win-x64-unsigned
+          path: bin/Release/**/AppPackages/**/*.msix
+          if-no-files-found: error
+          retention-days: 14
