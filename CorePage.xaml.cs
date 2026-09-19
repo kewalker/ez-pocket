@@ -194,7 +194,7 @@ public partial class CorePage : ContentPage
     private void SetSortHeader(Controls.EzButton button, string column, string label)
     {
         bool isActive = sortColumn == column;
-        button.Text = isActive ? $"{label} {(sortAscending ? "▲" : "▼")}" : label;
+        button.Text = isActive ? $"{label} {(sortAscending ? "\u25B2" : "\u25BC")}" : label;
         button.ButtonTextColor = isActive ? Color.FromArgb("#151515") : Color.FromArgb("#60605C");
         SemanticProperties.SetDescription(button, $"Sort {label.ToLowerInvariant()} {(isActive && sortAscending ? "descending" : "ascending")}");
     }

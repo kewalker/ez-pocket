@@ -5,9 +5,13 @@ namespace EzPocket.Services;
 public sealed class PocketScanner
 {
     private static readonly string[] PocketFolders = ["Assets", "Cores", "Platforms", "System"];
+    private readonly IAppDiagnostics diagnostics;
+
+    public PocketScanner(IAppDiagnostics? diagnostics = null) => this.diagnostics = diagnostics ?? NullAppDiagnostics.Instance;
 
     public IReadOnlyList<PocketDrive> Scan()
     {
+        diagnostics.Info("PocketScanStarted");
         var results = new List<PocketDrive>();
         foreach (DriveInfo drive in DriveInfo.GetDrives())
         {
@@ -30,6 +34,7 @@ public sealed class PocketScanner
             catch (IOException) { }
             catch (UnauthorizedAccessException) { }
         }
+        diagnostics.Info("PocketScanCompleted", new Dictionary<string, string?> { ["CandidateCount"] = results.Count.ToString() });
         return results;
     }
 
@@ -52,12 +57,18 @@ public sealed class PocketScanner
                 .OrderByDescending(candidate => candidate.RootDirectory.FullName.Length)
                 .FirstOrDefault();
 
-            return new PocketDrive(rootPath, directory.Name, drive?.DriveType ?? DriveType.Unknown,
+            PocketDrive result = new(rootPath, directory.Name, drive?.DriveType ?? DriveType.Unknown,
                 drive?.TotalSize ?? 0, drive?.AvailableFreeSpace ?? 0, foundFolders.Length,
                 foundFolders, installedCoreNames.Length, installedCoreNames);
+            diagnostics.Info("PocketFolderScanned", new Dictionary<string, string?>
+            {
+                ["TargetId"] = AppDiagnosticsService.TargetId(rootPath),
+                ["RecognizedFolderCount"] = foundFolders.Length.ToString()
+            });
+            return result;
         }
-        catch (IOException) { return null; }
-        catch (UnauthorizedAccessException) { return null; }
-        catch (ArgumentException) { return null; }
+        catch (IOException exception) { diagnostics.Error("PocketFolderScanFailed", exception); return null; }
+        catch (UnauthorizedAccessException exception) { diagnostics.Error("PocketFolderScanFailed", exception); return null; }
+        catch (ArgumentException exception) { diagnostics.Error("PocketFolderScanFailed", exception); return null; }
     }
 }

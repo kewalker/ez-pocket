@@ -18,17 +18,20 @@ public sealed class FirmwareUpdateService
     private readonly HttpClient client;
     private readonly string stagingRoot;
     private readonly string backupRoot;
+    private readonly IAppDiagnostics diagnostics;
 
-    public FirmwareUpdateService(HttpClient? client = null, string? stagingRoot = null, string? backupRoot = null)
+    public FirmwareUpdateService(HttpClient? client = null, string? stagingRoot = null, string? backupRoot = null, IAppDiagnostics? diagnostics = null)
     {
         this.client = client ?? new HttpClient { Timeout = TimeSpan.FromSeconds(45) };
         string appData = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
         this.stagingRoot = stagingRoot ?? Path.Combine(appData, "EzPocket", "firmware-staging");
         this.backupRoot = backupRoot ?? Path.Combine(appData, "EzPocket", "backups", "firmware");
+        this.diagnostics = diagnostics ?? NullAppDiagnostics.Instance;
     }
 
     public async Task<FirmwareRelease> GetLatestReleaseAsync(CancellationToken cancellationToken = default)
     {
+        diagnostics.Info("FirmwareReleaseCheckStarted");
         string index = await client.GetStringAsync(FirmwarePage, cancellationToken);
         Match versionMatch = VersionPattern.Match(index);
         if (!versionMatch.Success) throw new InvalidDataException("Analogue's firmware page did not include a supported latest-version value.");
@@ -38,6 +41,7 @@ public sealed class FirmwareUpdateService
         string releaseDetails = await client.GetStringAsync(releasePage, cancellationToken);
         string md5 = ExtractPublishedMd5(releaseDetails);
 
+        diagnostics.Info("FirmwareReleaseFound", new Dictionary<string, string?> { ["Version"] = version });
         return new FirmwareRelease(version, md5, new Uri($"https://www.analogue.co/support/pocket/firmware/{version}/download"));
     }
 
@@ -50,6 +54,7 @@ public sealed class FirmwareUpdateService
 
     public async Task<FirmwareUpdatePreview> PrepareAsync(PocketDrive pocket, CancellationToken cancellationToken = default)
     {
+        diagnostics.Info("FirmwarePrepareStarted", new Dictionary<string, string?> { ["TargetId"] = AppDiagnosticsService.TargetId(pocket.RootPath) });
         if (!Directory.Exists(pocket.RootPath)) throw new DirectoryNotFoundException("The selected Pocket is no longer available.");
 
         FirmwareRelease release = await GetLatestReleaseAsync(cancellationToken);
@@ -72,17 +77,21 @@ public sealed class FirmwareUpdateService
             if (!string.Equals(actualMd5, release.Md5, StringComparison.OrdinalIgnoreCase))
                 throw new InvalidDataException("The downloaded firmware did not match Analogue's published MD5 checksum.");
 
-            return new FirmwareUpdatePreview(pocket.RootPath, release, stagingPath, firmwarePath, fileName, new FileInfo(firmwarePath).Length, targetCheck.ExistingFirmwareFiles);
+            FirmwareUpdatePreview preview = new(pocket.RootPath, release, stagingPath, firmwarePath, fileName, new FileInfo(firmwarePath).Length, targetCheck.ExistingFirmwareFiles);
+            diagnostics.Info("FirmwarePrepared", new Dictionary<string, string?> { ["Version"] = release.Version, ["Bytes"] = preview.SizeBytes.ToString() });
+            return preview;
         }
-        catch
+        catch (Exception exception)
         {
             Cleanup(stagingPath);
+            diagnostics.Error("FirmwarePrepareFailed", exception);
             throw;
         }
     }
 
     public Task<FirmwareUpdateResult> ApplyAsync(FirmwareUpdatePreview preview, CancellationToken cancellationToken = default)
     {
+        diagnostics.Info("FirmwareApplyStarted", new Dictionary<string, string?> { ["TargetId"] = AppDiagnosticsService.TargetId(preview.PocketPath), ["Version"] = preview.Release.Version });
         try
         {
             if (!Directory.Exists(preview.PocketPath)) throw new DirectoryNotFoundException("The selected Pocket is no longer available.");
@@ -122,6 +131,7 @@ public sealed class FirmwareUpdateService
                 File.Move(temporaryDestination, destination, true);
                 Cleanup(preview.StagingPath);
                 PruneBackups();
+                diagnostics.Info("FirmwareApplied", new Dictionary<string, string?> { ["Version"] = preview.Release.Version, ["ReplacedFileCount"] = existingFiles.Length.ToString() });
                 return Task.FromResult(new FirmwareUpdateResult(true, $"Firmware {preview.Release.Version} is ready on your Pocket SD card.", backupPath));
             }
             catch
@@ -136,6 +146,7 @@ public sealed class FirmwareUpdateService
         }
         catch (Exception exception) when (exception is IOException or UnauthorizedAccessException or OperationCanceledException)
         {
+            diagnostics.Error("FirmwareApplyFailed", exception);
             return Task.FromResult(new FirmwareUpdateResult(false, $"Firmware was not staged: {exception.Message}"));
         }
     }

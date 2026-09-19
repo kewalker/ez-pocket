@@ -9,20 +9,38 @@ public sealed class CoreInventoryService
 {
     private const string InventoryUrl = "https://openfpga-cores-inventory.github.io/analogue-pocket/api/v2/cores.json";
     private readonly HttpClient client;
+    private readonly IAppDiagnostics diagnostics;
 
-    public CoreInventoryService(HttpClient? client = null)
+    public CoreInventoryService(HttpClient? client = null, IAppDiagnostics? diagnostics = null)
     {
         this.client = client ?? new HttpClient { Timeout = TimeSpan.FromSeconds(20) };
+        this.diagnostics = diagnostics ?? NullAppDiagnostics.Instance;
     }
 
     public async Task<IReadOnlyList<AvailableCore>> GetAvailableAsync(CancellationToken cancellationToken = default)
     {
-        InventoryResponse? response = await client.GetFromJsonAsync<InventoryResponse>(InventoryUrl, cancellationToken);
-        return response?.Data?
+        diagnostics.Info("CoreInventoryRequested");
+        try
+        {
+            InventoryResponse? response = await client.GetFromJsonAsync<InventoryResponse>(InventoryUrl, cancellationToken);
+            IReadOnlyList<AvailableCore> cores = response?.Data?
             .Where(core => !string.IsNullOrWhiteSpace(core.Identifier))
             .Select(core => new AvailableCore(core.Identifier!, core.Version ?? "Unknown", core.Platform?.Name ?? core.Identifier!, core.Platform?.Category ?? "Other", core.DownloadUrl, core.RequiresLicense ?? false))
             .OrderBy(core => core.Name)
             .ToArray() ?? [];
+            diagnostics.Info("CoreInventoryReceived", new Dictionary<string, string?> { ["CoreCount"] = cores.Count.ToString() });
+            return cores;
+        }
+        catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
+        {
+            diagnostics.Info("CoreInventoryCancelled");
+            throw;
+        }
+        catch (Exception exception) when (exception is HttpRequestException or JsonException)
+        {
+            diagnostics.Error("CoreInventoryFailed", exception);
+            throw;
+        }
     }
 
     public static IReadOnlyList<CoreComparison> Compare(PocketDrive pocket, IReadOnlyList<AvailableCore> available)

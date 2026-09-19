@@ -16,13 +16,15 @@ public sealed class CoreSyncService
     private readonly HttpClient client;
     private readonly string workingRoot;
     private readonly string backupRoot;
+    private readonly IAppDiagnostics diagnostics;
 
-    public CoreSyncService(HttpClient? client = null, string? workingRoot = null, string? backupRoot = null)
+    public CoreSyncService(HttpClient? client = null, string? workingRoot = null, string? backupRoot = null, IAppDiagnostics? diagnostics = null)
     {
         this.client = client ?? new HttpClient { Timeout = TimeSpan.FromMinutes(2) };
         string appData = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
         this.workingRoot = workingRoot ?? Path.Combine(appData, "EzPocket", "staging");
         this.backupRoot = backupRoot ?? Path.Combine(appData, "EzPocket", "backups");
+        this.diagnostics = diagnostics ?? NullAppDiagnostics.Instance;
     }
 
     public Task<CoreSyncPreview> PrepareAsync(PocketDrive pocket, IReadOnlyList<CoreComparison> cores, CancellationToken cancellationToken = default) =>
@@ -30,6 +32,12 @@ public sealed class CoreSyncService
 
     public async Task<CoreSyncPreview> PrepareAsync(PocketDrive pocket, IReadOnlyList<CoreComparison> cores, IReadOnlyList<CoreComparison> coresToRemove, CancellationToken cancellationToken = default)
     {
+        diagnostics.Info("CoreSyncPrepareStarted", new Dictionary<string, string?>
+        {
+            ["TargetId"] = AppDiagnosticsService.TargetId(pocket.RootPath),
+            ["SelectedCoreCount"] = cores.Count.ToString(),
+            ["RemovalCandidateCount"] = coresToRemove.Count.ToString()
+        });
         string stagingPath = Path.Combine(workingRoot, Guid.NewGuid().ToString("N"));
         Directory.CreateDirectory(stagingPath);
         var blockers = new List<string>();
@@ -58,6 +66,7 @@ public sealed class CoreSyncService
             {
                 await DownloadPackageAsync(url, archivePath, cancellationToken);
                 ExtractArchive(archivePath, extractPath);
+                diagnostics.Info("CorePackageStaged", new Dictionary<string, string?> { ["CoreId"] = core.Identifier });
 
                 foreach (string file in Directory.EnumerateFiles(extractPath, "*", SearchOption.AllDirectories))
                 {
@@ -74,6 +83,7 @@ public sealed class CoreSyncService
             }
             catch (Exception exception) when (exception is HttpRequestException or IOException or InvalidDataException or TimeoutException)
             {
+                diagnostics.Error("CorePackageStageFailed", exception, new Dictionary<string, string?> { ["CoreId"] = core.Identifier });
                 blockers.Add($"{core.FriendlyName} could not be staged: {exception.Message}");
             }
         }
@@ -93,7 +103,15 @@ public sealed class CoreSyncService
             .Where(removal => removal is not null)
             .Cast<CoreSyncRemoval>()
             .ToArray();
-        return new CoreSyncPreview(pocket.RootPath, stagingPath, cores, changes, removals, overrides, blockers);
+        CoreSyncPreview preview = new(pocket.RootPath, stagingPath, cores, changes, removals, overrides, blockers);
+        diagnostics.Info("CoreSyncPrepared", new Dictionary<string, string?>
+        {
+            ["ChangeCount"] = changes.Count.ToString(),
+            ["RemovalCount"] = removals.Count.ToString(),
+            ["BlockerCount"] = blockers.Count.ToString(),
+            ["OverrideCount"] = overrides.Count.ToString()
+        });
+        return preview;
     }
 
     private async Task DownloadPackageAsync(Uri url, string archivePath, CancellationToken cancellationToken)
@@ -132,8 +150,17 @@ public sealed class CoreSyncService
 
     public Task<CoreSyncResult> ApplyAsync(CoreSyncPreview preview, CancellationToken cancellationToken = default)
     {
+        diagnostics.Info("CoreSyncApplyStarted", new Dictionary<string, string?>
+        {
+            ["TargetId"] = AppDiagnosticsService.TargetId(preview.PocketPath),
+            ["ChangeCount"] = preview.Changes.Count.ToString(),
+            ["RemovalCount"] = preview.Removals.Count.ToString()
+        });
         if (!preview.CanSync)
+        {
+            diagnostics.Warning("CoreSyncApplyBlocked");
             return Task.FromResult(new CoreSyncResult(false, 0, 0, null, "Resolve the package issues before syncing."));
+        }
 
         string backupPath = Path.Combine(GetPocketBackupRoot(preview.PocketPath), $"core-sync-{DateTimeOffset.UtcNow.Ticks:D19}-{Guid.NewGuid():N}");
         var addedFiles = new List<string>();
@@ -183,11 +210,23 @@ public sealed class CoreSyncService
             try { Cleanup(preview); }
             catch (IOException) { }
             string message = FormatSuccessfulSyncMessage(preview.Cores, removedDirectories.Count);
+            diagnostics.Info("CoreSyncApplied", new Dictionary<string, string?>
+            {
+                ["FilesWritten"] = preview.Changes.Count.ToString(),
+                ["CoresRemoved"] = removedDirectories.Count.ToString(),
+                ["BackupsPruned"] = backupsPruned.ToString()
+            });
             return Task.FromResult(new CoreSyncResult(true, preview.Changes.Count, removedDirectories.Count, Directory.Exists(backupPath) ? backupPath : null, message, backupsPruned));
         }
         catch (Exception exception) when (exception is IOException or UnauthorizedAccessException or OperationCanceledException)
         {
             Restore(backupPath, preview.PocketPath, replacedFiles, addedFiles, removedDirectories);
+            diagnostics.Error("CoreSyncApplyFailed", exception, new Dictionary<string, string?>
+            {
+                ["ReplacedFileCount"] = replacedFiles.Count.ToString(),
+                ["AddedFileCount"] = addedFiles.Count.ToString(),
+                ["RemovedCoreCount"] = removedDirectories.Count.ToString()
+            });
             return Task.FromResult(new CoreSyncResult(false, 0, 0, Directory.Exists(backupPath) ? backupPath : null, $"Sync stopped and restored changed files: {exception.Message}"));
         }
     }

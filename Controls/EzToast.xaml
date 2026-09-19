@@ -9,7 +9,7 @@
     <Border BackgroundColor="#FFFFFF" Stroke="#151515" StrokeThickness="1" StrokeShape="RoundRectangle 2" Padding="0">
         <Grid RowDefinitions="Auto,3">
             <Grid ColumnDefinitions="Auto,*,44" ColumnSpacing="10" Padding="14,10">
-                <Label Text="✓" FontSize="16" TextColor="#19734E" VerticalOptions="Center" />
+                <Label Text="&#x2713;" FontSize="16" TextColor="#19734E" VerticalOptions="Center" />
                 <Label x:Name="MessageLabel" Grid.Column="1" TextColor="#151515" FontAttributes="Bold" VerticalOptions="Center" LineBreakMode="TailTruncation" />
                 <controls:EzButton Grid.Column="2" Text="&#x00D7;" FontSize="20" MinimumHeight="36" WidthRequest="44" ButtonPadding="0" CornerRadius="0" ButtonBackgroundColor="#F4F4F0" ButtonTextColor="#151515" Clicked="OnDismissClicked" VerticalOptions="Center" HorizontalOptions="Fill" SemanticProperties.Description="Dismiss success message" />
             </Grid>

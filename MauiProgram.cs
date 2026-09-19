@@ -16,6 +16,7 @@ public static class MauiProgram
                 fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
             });
 
+        builder.Services.AddSingleton<IAppDiagnostics, AppDiagnosticsService>();
         builder.Services.AddSingleton<PocketScanner>();
         builder.Services.AddSingleton<PocketSelectionService>();
         builder.Services.AddSingleton<PocketInitializationService>();

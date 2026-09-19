@@ -64,7 +64,7 @@
                         <VerticalStackLayout Spacing="7">
                             <Label Text="HANDHELD ESSENTIALS" FontSize="14" FontAttributes="Bold" TextColor="#151515" />
                             <Label Text="GB, GBC, GBA, Game Gear, NGPC, Lynx, PC Engine" FontSize="12" TextColor="#60605C" />
-                            <Label Text="ADD TO REVIEW  →" FontSize="11" FontAttributes="Bold" TextColor="#151515" Margin="0,4,0,0" />
+                            <Label Text="ADD TO REVIEW  &#x2192;" FontSize="11" FontAttributes="Bold" TextColor="#151515" Margin="0,4,0,0" />
                         </VerticalStackLayout>
                     </Border>
                     <Border Grid.Column="1" StyleId="console-classics" HeightRequest="138" BackgroundColor="White" Stroke="#151515" StrokeThickness="1" StrokeShape="RoundRectangle 2" Padding="16" SemanticProperties.Description="Review the Console classics core setup">
@@ -75,7 +75,7 @@
                         <VerticalStackLayout Spacing="7">
                             <Label Text="CONSOLE CLASSICS" FontSize="14" FontAttributes="Bold" TextColor="#151515" />
                             <Label Text="NES, SNES, Genesis, Master System, Atari 2600" FontSize="12" TextColor="#60605C" />
-                            <Label Text="ADD TO REVIEW  →" FontSize="11" FontAttributes="Bold" TextColor="#151515" Margin="0,4,0,0" />
+                            <Label Text="ADD TO REVIEW  &#x2192;" FontSize="11" FontAttributes="Bold" TextColor="#151515" Margin="0,4,0,0" />
                         </VerticalStackLayout>
                     </Border>
                     <Border Grid.Column="2" StyleId="arcade-starter" HeightRequest="138" BackgroundColor="White" Stroke="#151515" StrokeThickness="1" StrokeShape="RoundRectangle 2" Padding="16" SemanticProperties.Description="Review the Arcade starter core setup">
@@ -86,7 +86,7 @@
                         <VerticalStackLayout Spacing="7">
                             <Label Text="ARCADE STARTER" FontSize="14" FontAttributes="Bold" TextColor="#151515" />
                             <Label Text="Five classic arcade platforms. Games not included." FontSize="12" TextColor="#60605C" />
-                            <Label Text="ADD TO REVIEW  →" FontSize="11" FontAttributes="Bold" TextColor="#151515" Margin="0,4,0,0" />
+                            <Label Text="ADD TO REVIEW  &#x2192;" FontSize="11" FontAttributes="Bold" TextColor="#151515" Margin="0,4,0,0" />
                         </VerticalStackLayout>
                     </Border>
                 </Grid>
@@ -94,10 +94,20 @@
             </VerticalStackLayout>
             <Label Text="TARGET OVERVIEW" FontSize="11" FontAttributes="Bold" TextColor="#151515" />
             <Grid ColumnDefinitions="*,*,*" ColumnSpacing="12">
-                <Border BackgroundColor="White" Stroke="#C9C9C2" StrokeShape="RoundRectangle 2" Padding="14"><VerticalStackLayout Spacing="4"><Label Text="INSTALLED CORES" TextColor="#60605C" FontSize="11" FontAttributes="Bold" /><Label x:Name="CoreCountValue" Text="—" FontSize="24" FontAttributes="Bold" TextColor="#151515" /><Label x:Name="CoreCountDetail" Text="Select a target first" TextColor="#60605C" FontSize="12" /></VerticalStackLayout></Border>
+                <Border BackgroundColor="White" Stroke="#C9C9C2" StrokeShape="RoundRectangle 2" Padding="14"><VerticalStackLayout Spacing="4"><Label Text="INSTALLED CORES" TextColor="#60605C" FontSize="11" FontAttributes="Bold" /><Label x:Name="CoreCountValue" Text="&#x2014;" FontSize="24" FontAttributes="Bold" TextColor="#151515" /><Label x:Name="CoreCountDetail" Text="Select a target first" TextColor="#60605C" FontSize="12" /></VerticalStackLayout></Border>
                 <Border Grid.Column="1" BackgroundColor="White" Stroke="#C9C9C2" StrokeShape="RoundRectangle 2" Padding="14"><VerticalStackLayout Spacing="4"><Label Text="CURRENT TARGET" TextColor="#60605C" FontSize="11" FontAttributes="Bold" /><Label x:Name="TargetValue" Text="None" FontSize="18" FontAttributes="Bold" TextColor="#151515" LineBreakMode="TailTruncation" /><Label x:Name="TargetDetail" Text="No folder selected" TextColor="#60605C" FontSize="12" LineBreakMode="TailTruncation" /></VerticalStackLayout></Border>
                 <Border Grid.Column="2" BackgroundColor="White" Stroke="#C9C9C2" StrokeShape="RoundRectangle 2" Padding="14"><VerticalStackLayout Spacing="4"><Label Text="CHANGES" TextColor="#60605C" FontSize="11" FontAttributes="Bold" /><Label Text="REVIEW FIRST" FontSize="16" FontAttributes="Bold" TextColor="#151515" /><Label Text="You approve each install, update, and removal." TextColor="#60605C" FontSize="12" /></VerticalStackLayout></Border>
             </Grid>
+            <Border BackgroundColor="#F4F4F0" Stroke="#C9C9C2" StrokeShape="RoundRectangle 2" Padding="14">
+                <Grid ColumnDefinitions="*,Auto" ColumnSpacing="16">
+                    <VerticalStackLayout Spacing="4">
+                        <Label Text="DIAGNOSTICS" FontSize="11" FontAttributes="Bold" TextColor="#151515" />
+                        <Label Text="Export local operation logs" FontSize="16" FontAttributes="Bold" TextColor="#151515" />
+                        <Label x:Name="DiagnosticsStatus" Text="Logs exclude target paths and exception messages." FontSize="12" TextColor="#60605C" LineBreakMode="TailTruncation" />
+                    </VerticalStackLayout>
+                    <controls:EzButton x:Name="ExportDiagnosticsButton" Grid.Column="1" Text="EXPORT DIAGNOSTICS" Clicked="OnExportDiagnosticsClicked" ButtonBackgroundColor="White" ButtonTextColor="#151515" CornerRadius="2" VerticalOptions="Center" />
+                </Grid>
+            </Border>
             <Label Text="Changes are always reviewed before they are applied. ez-pocket is independent and not affiliated with, endorsed by, or sponsored by Analogue." FontSize="11" TextColor="#60605C" />
         </VerticalStackLayout>
     </ScrollView>

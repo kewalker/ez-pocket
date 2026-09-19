@@ -12,6 +12,7 @@ public partial class MainPage : ContentPage
     private readonly FeaturedCoreSetService featuredCoreSets;
     private readonly CoreInventoryService inventory;
     private readonly CoreSelectionService coreSelection;
+    private readonly IAppDiagnostics diagnostics;
     private bool preparingFeaturedSet;
     private List<PocketDrive> candidates = [];
 
@@ -25,6 +26,7 @@ public partial class MainPage : ContentPage
         featuredCoreSets = IPlatformApplication.Current?.Services.GetService<FeaturedCoreSetService>() ?? new FeaturedCoreSetService();
         inventory = IPlatformApplication.Current?.Services.GetService<CoreInventoryService>() ?? new CoreInventoryService();
         coreSelection = IPlatformApplication.Current?.Services.GetService<CoreSelectionService>() ?? new CoreSelectionService();
+        diagnostics = IPlatformApplication.Current?.Services.GetService<IAppDiagnostics>() ?? NullAppDiagnostics.Instance;
     }
 
     protected override void OnAppearing()
@@ -86,6 +88,25 @@ public partial class MainPage : ContentPage
             return;
         }
         await Shell.Current.GoToAsync("FirmwarePage");
+    }
+
+    private async void OnExportDiagnosticsClicked(object? sender, EventArgs e)
+    {
+        ExportDiagnosticsButton.IsEnabled = false;
+        DiagnosticsStatus.Text = "Preparing a local diagnostics bundle\u2026";
+        try
+        {
+            string bundlePath = await diagnostics.CreateBundleAsync();
+            DiagnosticsStatus.Text = $"Diagnostics bundle created: {bundlePath}";
+        }
+        catch (Exception exception) when (exception is IOException or UnauthorizedAccessException or OperationCanceledException)
+        {
+            DiagnosticsStatus.Text = "Could not create a diagnostics bundle.";
+        }
+        finally
+        {
+            ExportDiagnosticsButton.IsEnabled = true;
+        }
     }
 
     private async void OnFeaturedSetTapped(object? sender, TappedEventArgs e)
@@ -202,7 +223,7 @@ public partial class MainPage : ContentPage
         NextStepTitle.Text = "Review your cores";
         NextStepDetail.Text = "Choose a target first. Nothing changes until you approve it.";
         NextStepButton.Text = "CHOOSE TARGET";
-        CoreCountValue.Text = "—";
+        CoreCountValue.Text = "\u2014";
         CoreCountDetail.Text = "Select a Pocket first";
         TargetValue.Text = "None";
         TargetDetail.Text = "No folder selected";
