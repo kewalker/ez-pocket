@@ -78,7 +78,9 @@ Selecting a folder never writes to it by itself. Core and firmware writes requir
 
 ## Releases
 
-Version tags build an unsigned x64 MSIX artifact in CI for maintainer validation and signing. Unsigned artifacts are **not** normal public downloads. The intended public release path uses trusted signing; see [docs/RELEASING.md](docs/RELEASING.md) for the release process and signing requirements.
+A downloadable, self-contained Windows preview ZIP containing `EzPocket.exe` is available from tagged builds. Extract the ZIP and run `EzPocket.exe`; it does not require installation. The executable is currently unsigned, so Windows may show a SmartScreen warning or an organization policy may block it.
+
+MSIX packaging and trusted signing are on the release roadmap. Tagged builds also produce an unsigned x64 MSIX for maintainer validation and eventual signing, but it is not the normal public download yet. See [docs/RELEASING.md](docs/RELEASING.md) for the artifact and signing details.
 
 ## Project layout
 
