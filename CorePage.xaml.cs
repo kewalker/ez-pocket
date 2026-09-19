@@ -231,7 +231,7 @@ public partial class CorePage : ContentPage
         RefreshButton.IsEnabled = false;
         LoadingState.IsVisible = true;
         OfflineState.IsVisible = false;
-        InventoryState.Text = "Checking live inventory…";
+        InventoryState.Text = "Checking live inventory\u2026";
 
         try
         {
@@ -252,7 +252,7 @@ public partial class CorePage : ContentPage
                 StatusFilter.SelectedItem = StatusFilter.Items[0];
             });
             InventoryState.Text = "Live inventory updated";
-            Summary.Text = $"{pocket.CoreCount} installed · {available.Count} available";
+            Summary.Text = $"{pocket.CoreCount} installed \u00B7 {available.Count} available";
             OnFilterChanged(this, EventArgs.Empty);
         }
         catch (HttpRequestException)

@@ -9,7 +9,7 @@
     <ScrollView>
         <VerticalStackLayout Padding="28,20,28,28" Spacing="14">
             <Grid ColumnDefinitions="Auto,Auto,Auto,Auto" ColumnSpacing="6">
-                <controls:EzButton Text="←" FontSize="16" MinimumHeight="24" Clicked="OnBackClicked" ButtonPadding="10,1" CornerRadius="2" ButtonBackgroundColor="#151515" ButtonTextColor="White" SemanticProperties.Description="Back to dashboard" />
+                <controls:EzButton Text="&#x2190;" FontSize="16" MinimumHeight="24" Clicked="OnBackClicked" ButtonPadding="10,1" CornerRadius="2" ButtonBackgroundColor="#151515" ButtonTextColor="White" SemanticProperties.Description="Back to dashboard" />
                 <Label Grid.Column="1" Text="EZ-POCKET" TextDecorations="Underline" TextColor="#151515" FontSize="11" FontAttributes="Bold" VerticalOptions="Center">
                     <Label.GestureRecognizers><TapGestureRecognizer Tapped="OnBackClicked" /></Label.GestureRecognizers>
                 </Label>

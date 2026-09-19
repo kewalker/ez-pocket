@@ -81,8 +81,8 @@ public partial class CoreReviewPage : ContentPage
                 ? $"1 shared-file override: {preview.Overrides[0].RelativePath}. {preview.Overrides[0].Summary}"
                 : $"{preview.Overrides.Count} shared-file overrides will use the first package's version in this plan.";
             OverrideSummary.IsVisible = preview.Overrides.Count > 0;
-            AddSummary.Text = $"{preview.Cores.Count} core(s) · {preview.AddOrReplaceFileCount} file(s) to add or replace";
-            RemoveSummary.Text = $"{preview.Removals.Count} core(s) · {preview.RemoveFileCount} file(s) to remove";
+            AddSummary.Text = $"{preview.Cores.Count} core(s) \u00B7 {preview.AddOrReplaceFileCount} file(s) to add or replace";
+            RemoveSummary.Text = $"{preview.Removals.Count} core(s) \u00B7 {preview.RemoveFileCount} file(s) to remove";
             ChangeList.IsVisible = preview.Changes.Count > 0;
             RemovalList.IsVisible = preview.Removals.Count > 0;
             ChangeDetails.IsVisible = preview.Changes.Count > 0 || preview.Removals.Count > 0;

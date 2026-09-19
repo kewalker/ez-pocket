@@ -38,6 +38,6 @@ public sealed record CoreComparison(
     };
 
     public string VersionLabel => IsInstalled && IsAvailable
-        ? $"Installed {InstalledVersion} · Latest {AvailableVersion}"
+        ? $"Installed {InstalledVersion} \u00B7 Latest {AvailableVersion}"
         : AvailableVersion;
 }

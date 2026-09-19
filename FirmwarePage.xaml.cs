@@ -42,12 +42,12 @@ public partial class FirmwarePage : ContentPage
         PreviewCard.IsVisible = false;
         PreparingIndicator.IsVisible = true;
         PreparingIndicator.IsRunning = true;
-        FirmwareStatus.Text = "Downloading and verifying the latest official Pocket firmware…";
+        FirmwareStatus.Text = "Downloading and verifying the latest official Pocket firmware\u2026";
         try
         {
             preview = await firmware.PrepareAsync(pocket);
             ReleaseTitle.Text = $"Pocket firmware {preview.Release.Version}";
-            ReleaseDetail.Text = $"{preview.FileName} · {preview.SizeLabel} · will be placed at the SD-card root";
+            ReleaseDetail.Text = $"{preview.FileName} \u00B7 {preview.SizeLabel} \u00B7 will be placed at the SD-card root";
             ChecksumDetail.Text = $"Verified against Analogue's MD5: {preview.Release.Md5}";
             ReplacementDetail.Text = preview.ExistingFirmwareFiles.Count switch
             {

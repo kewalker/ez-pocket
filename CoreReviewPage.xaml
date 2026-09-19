@@ -8,7 +8,7 @@
              Title="Sync changes">
     <Grid Padding="28,20,28,24" RowDefinitions="Auto,Auto,Auto,Auto,*" RowSpacing="12">
         <Grid ColumnDefinitions="Auto,Auto,Auto,Auto,Auto,Auto" ColumnSpacing="6">
-            <controls:EzButton Text="←" FontSize="16" MinimumHeight="24" Clicked="OnBackClicked" ButtonPadding="10,1" CornerRadius="2" ButtonBackgroundColor="#151515" ButtonTextColor="White" SemanticProperties.Description="Back to previous page" />
+            <controls:EzButton Text="&#x2190;" FontSize="16" MinimumHeight="24" Clicked="OnBackClicked" ButtonPadding="10,1" CornerRadius="2" ButtonBackgroundColor="#151515" ButtonTextColor="White" SemanticProperties.Description="Back to previous page" />
             <Label Grid.Column="1" Text="EZ-POCKET" TextDecorations="Underline" TextColor="#151515" FontSize="11" FontAttributes="Bold" VerticalOptions="Center">
                 <Label.GestureRecognizers><TapGestureRecognizer Tapped="OnHomeClicked" /></Label.GestureRecognizers>
             </Label>
@@ -37,14 +37,14 @@
             <ActivityIndicator x:Name="PreparingIndicator" Grid.Column="2" IsVisible="False" IsRunning="False" Color="#151515" HorizontalOptions="Start" VerticalOptions="Center" />
         </Grid>
         <Grid Grid.Row="4" RowDefinitions="Auto,*" RowSpacing="10">
-            <Label x:Name="SyncStatus" Text="Calculating planned changes…" TextColor="#60605C" />
+            <Label x:Name="SyncStatus" Text="Calculating planned changes&#x2026;" TextColor="#60605C" />
             <Grid x:Name="ChangeDetails" Grid.Row="1" IsVisible="False" RowDefinitions="Auto,Auto,Auto,*" RowSpacing="10">
             <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
                 <Border BackgroundColor="#F4F4F0" Stroke="#151515" StrokeShape="RoundRectangle 2" Padding="10,7">
-                    <Label x:Name="AddSummary" Text="0 cores · 0 files to add or replace" TextColor="#151515" FontSize="12" FontAttributes="Bold" />
+                    <Label x:Name="AddSummary" Text="0 cores &#x00B7; 0 files to add or replace" TextColor="#151515" FontSize="12" FontAttributes="Bold" />
                 </Border>
                 <Border Grid.Column="1" BackgroundColor="#FFFFFF" Stroke="#151515" StrokeShape="RoundRectangle 2" Padding="10,7">
-                    <Label x:Name="RemoveSummary" Text="0 cores · 0 files to remove" TextColor="#151515" FontSize="12" FontAttributes="Bold" />
+                    <Label x:Name="RemoveSummary" Text="0 cores &#x00B7; 0 files to remove" TextColor="#151515" FontSize="12" FontAttributes="Bold" />
                 </Border>
             </Grid>
             <Border Grid.Row="1" BackgroundColor="White" Stroke="#151515" StrokeShape="RoundRectangle 2" Padding="12,10">

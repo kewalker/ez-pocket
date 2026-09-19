@@ -100,7 +100,7 @@ public partial class MainPage : ContentPage
 
         preparingFeaturedSet = true;
         FeaturedSetupCards.IsEnabled = false;
-        FeaturedSetupStatus.Text = "Loading the current core lineup…";
+        FeaturedSetupStatus.Text = "Loading the current core lineup\u2026";
         FeaturedSetupStatus.IsVisible = true;
         try
         {
@@ -173,7 +173,7 @@ public partial class MainPage : ContentPage
     {
         StatusTitle.Text = pocket.LooksLikePocket ? pocket.Name : "New Pocket target";
         StatusDetail.Text = pocket.LooksLikePocket
-            ? $"{pocket.RootPath} · {pocket.CapacitySummary}"
+            ? $"{pocket.RootPath} \u00B7 {pocket.CapacitySummary}"
             : $"{pocket.RootPath} | Blank folder target | {pocket.CapacitySummary}";
         ReadyBadgeText.Text = pocket.LooksLikePocket ? "CONNECTED" : "NEW TARGET";
         ScanButton.Text = "RESCAN";
@@ -186,9 +186,9 @@ public partial class MainPage : ContentPage
         TargetValue.Text = pocket.LooksLikePocket ? pocket.Name : "New target";
         TargetDetail.Text = pocket.CapacitySummary;
         FirmwareButton.IsEnabled = true;
-        FirmwareActionTitle.Text = "Checking Pocket firmware…";
+        FirmwareActionTitle.Text = "Checking Pocket firmware\u2026";
         FirmwareActionDetail.Text = "Checking the official release and this target's staged firmware.";
-        FirmwareButton.Text = "Checking…";
+        FirmwareButton.Text = "Checking\u2026";
         _ = CheckFirmwareAsync(pocket);
     }
 

@@ -7,7 +7,7 @@
     <ScrollView>
         <VerticalStackLayout Padding="28,20,28,28" Spacing="12">
             <Grid ColumnDefinitions="Auto,Auto,Auto,Auto,Auto,Auto" ColumnSpacing="5">
-                <controls:EzButton xmlns:controls="clr-namespace:EzPocket.Controls" Text="←" FontSize="16" MinimumHeight="24" Clicked="OnBackClicked" ButtonPadding="10,1" CornerRadius="2" ButtonBackgroundColor="#151515" ButtonTextColor="White" SemanticProperties.Description="Back to Core Manager" />
+                <controls:EzButton xmlns:controls="clr-namespace:EzPocket.Controls" Text="&#x2190;" FontSize="16" MinimumHeight="24" Clicked="OnBackClicked" ButtonPadding="10,1" CornerRadius="2" ButtonBackgroundColor="#151515" ButtonTextColor="White" SemanticProperties.Description="Back to Core Manager" />
                 <Label Grid.Column="1" Text="EZ-POCKET" TextDecorations="Underline" TextColor="#151515" FontSize="11" FontAttributes="Bold" VerticalOptions="Center">
                     <Label.GestureRecognizers><TapGestureRecognizer Tapped="OnHomeClicked" /></Label.GestureRecognizers>
                 </Label>
