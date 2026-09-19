@@ -92,3 +92,31 @@ jobs:
           path: bin/Release/**/AppPackages/**/*.msix
           if-no-files-found: error
           retention-days: 14
+
+      - name: Publish self-contained Windows preview
+        run: >
+          dotnet publish EzPocket.csproj
+          -f net9.0-windows10.0.19041.0
+          -c Release
+          --no-restore
+          --self-contained true
+          -p:RuntimeIdentifierOverride=win10-x64
+          -p:WindowsPackageType=None
+          -p:WindowsAppSDKSelfContained=true
+          -p:PublishDir=${{ github.workspace }}\artifacts\ez-pocket-win-x64\
+
+      - name: Create Windows preview ZIP
+        shell: pwsh
+        run: >
+          Compress-Archive
+          -Path artifacts\ez-pocket-win-x64\*
+          -DestinationPath artifacts\ez-pocket-${{ github.ref_name }}-win-x64.zip
+          -CompressionLevel Optimal
+
+      - name: Upload unsigned Windows preview ZIP
+        uses: actions/upload-artifact@v4
+        with:
+          name: ez-pocket-${{ github.ref_name }}-win-x64-unsigned-zip
+          path: artifacts/ez-pocket-${{ github.ref_name }}-win-x64.zip
+          if-no-files-found: error
+          retention-days: 14
