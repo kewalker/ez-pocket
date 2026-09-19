@@ -3,49 +3,49 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:controls="clr-namespace:EzPocket.Controls"
              x:Class="EzPocket.FirmwarePage"
-             BackgroundColor="#F5F7FB"
+             BackgroundColor="#FFFFFF"
              Title="Update Pocket firmware">
     <Grid>
     <ScrollView>
-        <VerticalStackLayout Padding="24,16,24,24" Spacing="14">
+        <VerticalStackLayout Padding="28,20,28,28" Spacing="14">
             <Grid ColumnDefinitions="Auto,Auto,Auto,Auto" ColumnSpacing="6">
-                <controls:EzButton Text="&#x2190;" FontSize="16" MinimumHeight="24" Clicked="OnBackClicked" ButtonPadding="10,1" CornerRadius="8" ButtonBackgroundColor="#E8F0FF" ButtonTextColor="#1E3A8A" SemanticProperties.Description="Back to dashboard" />
-                <Label Grid.Column="1" Text="ez-pocket" TextDecorations="Underline" TextColor="#2563EB" FontSize="13" VerticalOptions="Center">
+                <controls:EzButton Text="←" FontSize="16" MinimumHeight="24" Clicked="OnBackClicked" ButtonPadding="10,1" CornerRadius="2" ButtonBackgroundColor="#151515" ButtonTextColor="White" SemanticProperties.Description="Back to dashboard" />
+                <Label Grid.Column="1" Text="EZ-POCKET" TextDecorations="Underline" TextColor="#151515" FontSize="11" FontAttributes="Bold" VerticalOptions="Center">
                     <Label.GestureRecognizers><TapGestureRecognizer Tapped="OnBackClicked" /></Label.GestureRecognizers>
                 </Label>
-                <Label Grid.Column="2" Text="/" FontSize="13" TextColor="#AAB3C4" VerticalOptions="Center" />
-                <Label Grid.Column="3" Text="Update Pocket firmware" FontSize="13" TextColor="#63708A" VerticalOptions="Center" />
+                <Label Grid.Column="2" Text="/" FontSize="13" TextColor="#90908B" VerticalOptions="Center" />
+                <Label Grid.Column="3" Text="FIRMWARE" FontSize="11" FontAttributes="Bold" TextColor="#60605C" VerticalOptions="Center" />
             </Grid>
             <VerticalStackLayout Spacing="4">
-                <Label Text="Update Pocket firmware" FontSize="26" FontAttributes="Bold" TextColor="#14213D" />
-                <Label Text="Firmware is handled separately from openFPGA core updates." FontSize="14" TextColor="#63708A" />
+                <Label Text="PocketOS firmware" FontSize="26" FontAttributes="Bold" TextColor="#151515" />
+                <Label Text="Official firmware is verified and staged separately from core updates." FontSize="13" TextColor="#60605C" />
             </VerticalStackLayout>
-            <Border BackgroundColor="#FFF7E6" Stroke="#F8D99A" StrokeShape="RoundRectangle 12" Padding="14,10">
+            <Border BackgroundColor="#151515" Stroke="#151515" StrokeShape="RoundRectangle 2" Padding="14,10">
                 <VerticalStackLayout Spacing="4">
-                    <Label Text="Your cores, assets, and saves will not be changed." FontAttributes="Bold" TextColor="#8A620F" />
-                    <Label Text="This workflow only places a verified official firmware file at the root of the selected target. To update a Pocket, safely eject its storage, power the Pocket off, insert the storage, then power it on." FontSize="13" TextColor="#8A620F" />
+                    <Label Text="CORES, ASSETS, AND SAVES ARE NOT CHANGED." FontSize="11" FontAttributes="Bold" TextColor="White" />
+                    <Label Text="This only stages a verified official firmware file at the root of the selected target. Safely eject storage before updating your Pocket." FontSize="13" TextColor="#D2D2CC" />
                 </VerticalStackLayout>
             </Border>
-            <Border BackgroundColor="White" Stroke="#E2E7F0" StrokeShape="RoundRectangle 12" Padding="16">
+            <Border BackgroundColor="White" Stroke="#151515" StrokeShape="RoundRectangle 2" Padding="16">
                 <VerticalStackLayout Spacing="6">
-                    <Label Text="TARGET" FontSize="11" FontAttributes="Bold" TextColor="#63708A" />
-                    <Label x:Name="TargetName" Text="No Pocket selected" FontSize="18" FontAttributes="Bold" TextColor="#14213D" />
-                    <Label x:Name="TargetPath" TextColor="#63708A" FontSize="13" LineBreakMode="TailTruncation" />
+                    <Label Text="TARGET" FontSize="11" FontAttributes="Bold" TextColor="#60605C" />
+                    <Label x:Name="TargetName" Text="No Pocket selected" FontSize="18" FontAttributes="Bold" TextColor="#151515" />
+                    <Label x:Name="TargetPath" TextColor="#60605C" FontSize="13" LineBreakMode="TailTruncation" />
                 </VerticalStackLayout>
             </Border>
-            <Border x:Name="PreviewCard" IsVisible="False" BackgroundColor="White" Stroke="#E2E7F0" StrokeShape="RoundRectangle 12" Padding="16">
+            <Border x:Name="PreviewCard" IsVisible="False" BackgroundColor="#F4F4F0" Stroke="#151515" StrokeShape="RoundRectangle 2" Padding="16">
                 <Grid RowDefinitions="Auto,Auto,Auto,Auto" RowSpacing="6">
-                    <Label x:Name="ReleaseTitle" FontSize="18" FontAttributes="Bold" TextColor="#14213D" />
-                    <Label x:Name="ReleaseDetail" Grid.Row="1" FontSize="13" TextColor="#63708A" />
-                    <Label x:Name="ChecksumDetail" Grid.Row="2" FontSize="12" TextColor="#19734E" />
-                    <Label x:Name="ReplacementDetail" Grid.Row="3" FontSize="12" TextColor="#8A620F" />
+                    <Label x:Name="ReleaseTitle" FontSize="18" FontAttributes="Bold" TextColor="#151515" />
+                    <Label x:Name="ReleaseDetail" Grid.Row="1" FontSize="13" TextColor="#60605C" />
+                    <Label x:Name="ChecksumDetail" Grid.Row="2" FontSize="12" TextColor="#137A49" />
+                    <Label x:Name="ReplacementDetail" Grid.Row="3" FontSize="12" TextColor="#60605C" />
                 </Grid>
             </Border>
-            <Label x:Name="FirmwareStatus" Text="Check Analogue's official firmware before staging anything on your Pocket." TextColor="#63708A" />
+            <Label x:Name="FirmwareStatus" Text="Check the official firmware source before staging anything on your Pocket." TextColor="#60605C" />
             <HorizontalStackLayout Spacing="10">
-                <controls:EzButton x:Name="PrepareButton" Text="Check and prepare firmware" Clicked="OnPrepareClicked" />
-                <controls:EzButton x:Name="ApplyButton" Text="Stage firmware" IsVisible="False" Clicked="OnApplyClicked" ButtonBackgroundColor="#19734E" />
-                <ActivityIndicator x:Name="PreparingIndicator" IsVisible="False" IsRunning="False" Color="#2563EB" VerticalOptions="Center" />
+                <controls:EzButton x:Name="PrepareButton" Text="CHECK FIRMWARE" Clicked="OnPrepareClicked" CornerRadius="2" />
+                <controls:EzButton x:Name="ApplyButton" Text="STAGE FIRMWARE" IsVisible="False" Clicked="OnApplyClicked" ButtonBackgroundColor="#151515" CornerRadius="2" />
+                <ActivityIndicator x:Name="PreparingIndicator" IsVisible="False" IsRunning="False" Color="#151515" VerticalOptions="Center" />
             </HorizontalStackLayout>
         </VerticalStackLayout>
     </ScrollView>

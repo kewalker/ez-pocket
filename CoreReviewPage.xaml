@@ -4,96 +4,96 @@
              xmlns:models="clr-namespace:EzPocket.Models"
              xmlns:controls="clr-namespace:EzPocket.Controls"
              x:Class="EzPocket.CoreReviewPage"
-             BackgroundColor="#F5F7FB"
+             BackgroundColor="#FFFFFF"
              Title="Sync changes">
-    <Grid Padding="24,16,24,20" RowDefinitions="Auto,Auto,Auto,Auto,*" RowSpacing="10">
+    <Grid Padding="28,20,28,24" RowDefinitions="Auto,Auto,Auto,Auto,*" RowSpacing="12">
         <Grid ColumnDefinitions="Auto,Auto,Auto,Auto,Auto,Auto" ColumnSpacing="6">
-            <controls:EzButton Text="&#x2190;" FontSize="16" MinimumHeight="24" Clicked="OnBackClicked" ButtonPadding="10,1" CornerRadius="8" ButtonBackgroundColor="#E8F0FF" ButtonTextColor="#1E3A8A" SemanticProperties.Description="Back to previous page" />
-            <Label Grid.Column="1" Text="ez-pocket" TextDecorations="Underline" TextColor="#2563EB" FontSize="13" VerticalOptions="Center">
+            <controls:EzButton Text="←" FontSize="16" MinimumHeight="24" Clicked="OnBackClicked" ButtonPadding="10,1" CornerRadius="2" ButtonBackgroundColor="#151515" ButtonTextColor="White" SemanticProperties.Description="Back to previous page" />
+            <Label Grid.Column="1" Text="EZ-POCKET" TextDecorations="Underline" TextColor="#151515" FontSize="11" FontAttributes="Bold" VerticalOptions="Center">
                 <Label.GestureRecognizers><TapGestureRecognizer Tapped="OnHomeClicked" /></Label.GestureRecognizers>
             </Label>
-            <Label Grid.Column="2" Text="/" FontSize="13" TextColor="#AAB3C4" VerticalOptions="Center" />
-            <Label Grid.Column="3" Text="Manage cores" TextDecorations="Underline" TextColor="#2563EB" FontSize="13" VerticalOptions="Center">
+            <Label Grid.Column="2" Text="/" FontSize="13" TextColor="#90908B" VerticalOptions="Center" />
+            <Label Grid.Column="3" Text="CORE INVENTORY" TextDecorations="Underline" TextColor="#151515" FontSize="11" FontAttributes="Bold" VerticalOptions="Center">
                 <Label.GestureRecognizers><TapGestureRecognizer Tapped="OnManageCoresClicked" /></Label.GestureRecognizers>
             </Label>
-            <Label Grid.Column="4" Text="/" FontSize="13" TextColor="#AAB3C4" VerticalOptions="Center" />
-            <Label Grid.Column="5" Text="Sync changes" FontSize="13" TextColor="#63708A" VerticalOptions="Center" />
+            <Label Grid.Column="4" Text="/" FontSize="13" TextColor="#90908B" VerticalOptions="Center" />
+            <Label Grid.Column="5" Text="REVIEW CHANGES" FontSize="11" FontAttributes="Bold" TextColor="#60605C" VerticalOptions="Center" />
         </Grid>
         <VerticalStackLayout Grid.Row="1" Spacing="5">
-            <Label Text="Sync changes" FontSize="26" FontAttributes="Bold" TextColor="#14213D" />
-            <Label Text="Review the planned changes, then apply them to your Pocket." FontSize="14" TextColor="#63708A" />
+            <Label Text="Review changes" FontSize="26" FontAttributes="Bold" TextColor="#151515" />
+            <Label Text="Inspect the plan before anything is written to your target." FontSize="13" TextColor="#60605C" />
         </VerticalStackLayout>
         <VerticalStackLayout Grid.Row="2" Spacing="8">
-            <Border BackgroundColor="#EEF6F1" Stroke="#CDE8D6" StrokeShape="RoundRectangle 12" Padding="14,10">
-                <Label Text="Only the additions, replacements, and removals listed below will change. Everything else on your Pocket stays as it is." FontSize="13" TextColor="#176B49" />
+            <Border BackgroundColor="#151515" Stroke="#151515" StrokeShape="RoundRectangle 2" Padding="14,10">
+                <Label Text="ONLY THE ADDITIONS, REPLACEMENTS, AND REMOVALS BELOW WILL CHANGE. EVERYTHING ELSE STAYS AS IT IS." FontSize="11" FontAttributes="Bold" TextColor="White" />
             </Border>
-            <Border x:Name="FeaturedSetSummary" IsVisible="False" BackgroundColor="#EEF4FF" Stroke="#C6D8F5" StrokeShape="RoundRectangle 10" Padding="12,8">
-                <Label x:Name="FeaturedSetSummaryText" TextColor="#1E3A8A" FontSize="13" />
+            <Border x:Name="FeaturedSetSummary" IsVisible="False" BackgroundColor="#F4F4F0" Stroke="#C9C9C2" StrokeShape="RoundRectangle 2" Padding="12,8">
+                <Label x:Name="FeaturedSetSummaryText" TextColor="#151515" FontSize="13" />
             </Border>
         </VerticalStackLayout>
         <Grid Grid.Row="3" ColumnDefinitions="Auto,Auto,*" ColumnSpacing="10">
-            <controls:EzButton x:Name="PrepareButton" Text="Try again" IsVisible="False" Clicked="OnPrepareClicked" ButtonPadding="14,8" />
-            <controls:EzButton x:Name="SyncButton" Grid.Column="1" Text="Apply changes" IsVisible="False" Clicked="OnSyncClicked" ButtonPadding="14,8" />
-            <ActivityIndicator x:Name="PreparingIndicator" Grid.Column="2" IsVisible="False" IsRunning="False" Color="#2563EB" HorizontalOptions="Start" VerticalOptions="Center" />
+            <controls:EzButton x:Name="PrepareButton" Text="PREPARE AGAIN" IsVisible="False" Clicked="OnPrepareClicked" ButtonPadding="14,8" CornerRadius="2" />
+            <controls:EzButton x:Name="SyncButton" Grid.Column="1" Text="APPLY CHANGES" IsVisible="False" Clicked="OnSyncClicked" ButtonPadding="14,8" CornerRadius="2" />
+            <ActivityIndicator x:Name="PreparingIndicator" Grid.Column="2" IsVisible="False" IsRunning="False" Color="#151515" HorizontalOptions="Start" VerticalOptions="Center" />
         </Grid>
         <Grid Grid.Row="4" RowDefinitions="Auto,*" RowSpacing="10">
-            <Label x:Name="SyncStatus" Text="Calculating planned changes…" TextColor="#63708A" />
+            <Label x:Name="SyncStatus" Text="Calculating planned changes…" TextColor="#60605C" />
             <Grid x:Name="ChangeDetails" Grid.Row="1" IsVisible="False" RowDefinitions="Auto,Auto,Auto,*" RowSpacing="10">
             <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
-                <Border BackgroundColor="#E8F7EE" Stroke="#B8E0C5" StrokeShape="RoundRectangle 10" Padding="10,7">
-                    <Label x:Name="AddSummary" Text="0 cores · 0 files to add or replace" TextColor="#19734E" FontSize="12" FontAttributes="Bold" />
+                <Border BackgroundColor="#F4F4F0" Stroke="#151515" StrokeShape="RoundRectangle 2" Padding="10,7">
+                    <Label x:Name="AddSummary" Text="0 cores · 0 files to add or replace" TextColor="#151515" FontSize="12" FontAttributes="Bold" />
                 </Border>
-                <Border Grid.Column="1" BackgroundColor="#FDEBEC" Stroke="#F2C1C5" StrokeShape="RoundRectangle 10" Padding="10,7">
-                    <Label x:Name="RemoveSummary" Text="0 cores · 0 files to remove" TextColor="#B42318" FontSize="12" FontAttributes="Bold" />
+                <Border Grid.Column="1" BackgroundColor="#FFFFFF" Stroke="#151515" StrokeShape="RoundRectangle 2" Padding="10,7">
+                    <Label x:Name="RemoveSummary" Text="0 cores · 0 files to remove" TextColor="#151515" FontSize="12" FontAttributes="Bold" />
                 </Border>
             </Grid>
-            <Border Grid.Row="1" BackgroundColor="White" Stroke="#D7E3F6" StrokeShape="RoundRectangle 10" Padding="12,10">
+            <Border Grid.Row="1" BackgroundColor="White" Stroke="#151515" StrokeShape="RoundRectangle 2" Padding="12,10">
                 <Grid RowDefinitions="Auto,*" RowSpacing="7">
                     <Grid ColumnDefinitions="*,Auto">
-                        <Label Text="Selected cores" TextColor="#14213D" FontAttributes="Bold" />
-                        <Label x:Name="SelectedCoreSummary" Grid.Column="1" TextColor="#52627A" FontSize="12" />
+                        <Label Text="SELECTED CORES" TextColor="#151515" FontSize="11" FontAttributes="Bold" />
+                        <Label x:Name="SelectedCoreSummary" Grid.Column="1" TextColor="#60605C" FontSize="12" />
                     </Grid>
                     <CollectionView Grid.Row="1" x:Name="SelectedCoreList" SelectionMode="None" HeightRequest="154">
                         <CollectionView.ItemTemplate>
                             <DataTemplate x:DataType="models:CoreComparison">
                                 <Grid ColumnDefinitions="*,Auto,Auto" RowDefinitions="Auto,Auto" ColumnSpacing="12">
-                                    <Label Text="{Binding FriendlyName}" FontSize="13" FontAttributes="Bold" TextColor="#14213D" LineBreakMode="TailTruncation" />
-                                    <Label Grid.Column="1" Text="{Binding InstalledVersion}" FontSize="12" TextColor="#52627A" />
-                                    <Label Grid.Column="2" Text="{Binding AvailableVersion}" FontSize="12" TextColor="#19734E" />
-                                    <Label Grid.Row="1" Text="{Binding Identifier}" FontSize="11" TextColor="#63708A" LineBreakMode="TailTruncation" />
-                                    <Label Grid.Column="1" Grid.Row="1" Grid.ColumnSpan="2" Text="{Binding StatusLabel}" FontSize="11" TextColor="#52627A" HorizontalOptions="End" />
+                                    <Label Text="{Binding FriendlyName}" FontSize="13" FontAttributes="Bold" TextColor="#151515" LineBreakMode="TailTruncation" />
+                                    <Label Grid.Column="1" Text="{Binding InstalledVersion}" FontSize="12" TextColor="#60605C" />
+                                    <Label Grid.Column="2" Text="{Binding AvailableVersion}" FontSize="12" TextColor="#137A49" />
+                                    <Label Grid.Row="1" Text="{Binding Identifier}" FontSize="11" TextColor="#60605C" LineBreakMode="TailTruncation" />
+                                    <Label Grid.Column="1" Grid.Row="1" Grid.ColumnSpan="2" Text="{Binding StatusLabel}" FontSize="11" TextColor="#60605C" HorizontalOptions="End" />
                                 </Grid>
                             </DataTemplate>
                         </CollectionView.ItemTemplate>
                     </CollectionView>
                 </Grid>
             </Border>
-            <Border Grid.Row="2" x:Name="OverrideSummary" IsVisible="False" BackgroundColor="#FFF7E6" Stroke="#F8D99A" StrokeShape="RoundRectangle 10" Padding="10,7">
-                <Label x:Name="OverrideSummaryText" TextColor="#8A620F" FontSize="12" FontAttributes="Bold" />
+            <Border Grid.Row="2" x:Name="OverrideSummary" IsVisible="False" BackgroundColor="#F4F4F0" Stroke="#151515" StrokeShape="RoundRectangle 2" Padding="10,7">
+                <Label x:Name="OverrideSummaryText" TextColor="#151515" FontSize="12" FontAttributes="Bold" />
             </Border>
             <Grid Grid.Row="3" ColumnDefinitions="*,*" ColumnSpacing="14">
                 <Grid RowDefinitions="Auto,*" RowSpacing="6">
-                    <Label Text="Add or replace" TextColor="#19734E" FontAttributes="Bold" />
+                    <Label Text="ADD OR REPLACE" TextColor="#151515" FontSize="11" FontAttributes="Bold" />
                     <CollectionView Grid.Row="1" x:Name="ChangeList" SelectionMode="None" IsVisible="False">
                         <CollectionView.ItemTemplate>
                             <DataTemplate x:DataType="models:CoreSyncFileChange">
                                 <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="10">
-                                    <Label Text="{Binding Action}" TextColor="#19734E" FontAttributes="Bold" />
-                                    <Label Grid.Column="1" Text="{Binding RelativePath}" TextColor="#14213D" LineBreakMode="TailTruncation" />
-                                    <Label Grid.Column="2" Text="{Binding SizeLabel}" TextColor="#63708A" />
+                                    <Label Text="{Binding Action}" TextColor="#137A49" FontAttributes="Bold" />
+                                    <Label Grid.Column="1" Text="{Binding RelativePath}" TextColor="#151515" LineBreakMode="TailTruncation" />
+                                    <Label Grid.Column="2" Text="{Binding SizeLabel}" TextColor="#60605C" />
                                 </Grid>
                             </DataTemplate>
                         </CollectionView.ItemTemplate>
                     </CollectionView>
                 </Grid>
                 <Grid Grid.Column="1" RowDefinitions="Auto,*" RowSpacing="6">
-                    <Label Text="Remove" TextColor="#B42318" FontAttributes="Bold" />
+                    <Label Text="REMOVE" TextColor="#151515" FontSize="11" FontAttributes="Bold" />
                     <CollectionView Grid.Row="1" x:Name="RemovalList" SelectionMode="None" IsVisible="False">
                         <CollectionView.ItemTemplate>
                             <DataTemplate x:DataType="models:CoreSyncRemoval">
                                 <Grid ColumnDefinitions="*,Auto" ColumnSpacing="10">
-                                    <Label Text="{Binding FriendlyName}" TextColor="#14213D" LineBreakMode="TailTruncation" />
-                                    <Label Grid.Column="1" Text="{Binding Summary}" TextColor="#B42318" />
+                                    <Label Text="{Binding FriendlyName}" TextColor="#151515" LineBreakMode="TailTruncation" />
+                                    <Label Grid.Column="1" Text="{Binding Summary}" TextColor="#60605C" />
                                 </Grid>
                             </DataTemplate>
                         </CollectionView.ItemTemplate>

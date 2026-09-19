@@ -10,6 +10,14 @@
 ## UI conventions
 
 - Use MAUI/WinUI native controls and theme colors as the baseline.
+- Follow a restrained, retro-technical desktop visual language: near-black and white are the primary surfaces, with cool grays for hierarchy and a single restrained signal color only for state such as verification, selection, or focus.
+- Keep geometry crisp. Prefer 0–4px corner radii, 1px rules, and flat surfaces; avoid soft shadows, large rounded cards, gradients, and multi-color "SaaS dashboard" treatments.
+- Establish hierarchy with generous whitespace, contrast, weight, and compact all-caps labels such as `TARGET`, `CORE INVENTORY`, and `FIRMWARE`. Use friendly names as the primary content and technical identifiers/versions as quieter diagnostic text.
+- Design inventory and detail views like an organized hardware catalog or specification sheet: clear columns, hairline dividers, concise metadata, and only the controls needed for the task.
+- Use rectangular, action-led button labels (`SCAN TARGET`, `MANAGE CORES`, `REVIEW CHANGES`). Primary actions are near-black; secondary actions are high-contrast outlined or neutral controls.
+- Successful, verified, and staged states should be quiet inline indicators or small status markers. Do not make green a secondary brand color or use large celebratory success cards.
+- The visual direction may take broad inspiration from premium retro-hardware presentation, but ez-pocket must always look and read as an independent application. Do not copy Analogue wordmarks, product imagery, distinctive typography, product naming conventions, or other source-identifying trade dress.
+- Do not imply endorsement or affiliation. Use factual compatibility language, reserve `official` for firmware or material actually obtained from its official source, and keep an independent-project notice available in relevant product-facing surfaces.
 - MAUI `PointerOver` visual states are unreliable or visually ineffective on Windows in this app. For important desktop buttons, use MAUI `PointerGestureRecognizer` hover feedback plus `Pressed`/`Released` button events.
 - Interactive controls must have clear hover, pressed, focused, and disabled feedback.
 - Detail pages need an obvious in-page breadcrumb and a clickable Back action; do not rely only on the Windows title-bar back affordance.

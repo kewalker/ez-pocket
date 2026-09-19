@@ -3,102 +3,102 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:controls="clr-namespace:EzPocket.Controls"
              x:Class="EzPocket.MainPage"
-             BackgroundColor="#F5F7FB"
+             BackgroundColor="#FFFFFF"
              Title="ez-pocket">
     <Grid>
     <ScrollView>
-        <VerticalStackLayout Padding="24,16,24,24" Spacing="16">
+        <VerticalStackLayout Padding="28,20,28,28" Spacing="16">
             <Grid ColumnDefinitions="*,Auto">
                 <VerticalStackLayout Spacing="4">
-                    <Label Text="ez-pocket" FontSize="32" FontAttributes="Bold" TextColor="#14213D" />
-                    <Label Text="Your Analogue Pocket, up to date." FontSize="15" TextColor="#63708A" />
+                    <Label Text="EZ-POCKET" FontSize="28" FontAttributes="Bold" TextColor="#151515" />
+                    <Label Text="Pocket management made easy" FontSize="13" TextColor="#60605C" />
                 </VerticalStackLayout>
-                <Border Grid.Column="1" BackgroundColor="#E4F7EF" StrokeThickness="0" Padding="12,8" StrokeShape="RoundRectangle 16" VerticalOptions="Start">
+                <Border Grid.Column="1" BackgroundColor="#FFFFFF" Stroke="#151515" StrokeThickness="1" Padding="10,7" StrokeShape="RoundRectangle 2" VerticalOptions="Start">
                     <Grid ColumnDefinitions="8,Auto" ColumnSpacing="6" VerticalOptions="Center">
-                        <BoxView Color="#2EB67D" WidthRequest="8" HeightRequest="8" CornerRadius="4" VerticalOptions="Center" />
-                        <Label x:Name="ReadyBadgeText" Grid.Column="1" Text="Ready" FontSize="13" FontAttributes="Bold" TextColor="#19734E" VerticalOptions="Center" />
+                        <BoxView Color="#25B46B" WidthRequest="7" HeightRequest="7" CornerRadius="0" VerticalOptions="Center" />
+                        <Label x:Name="ReadyBadgeText" Grid.Column="1" Text="READY" FontSize="11" FontAttributes="Bold" TextColor="#151515" VerticalOptions="Center" />
                     </Grid>
                 </Border>
             </Grid>
-            <Border BackgroundColor="#14213D" StrokeThickness="0" Padding="20" StrokeShape="RoundRectangle 16">
+            <Border BackgroundColor="#151515" StrokeThickness="0" Padding="20" StrokeShape="RoundRectangle 2">
                 <Grid RowDefinitions="Auto,Auto,Auto" ColumnDefinitions="*,Auto,Auto,Auto" ColumnSpacing="10" RowSpacing="16">
-                    <Label Text="Pocket status" TextColor="#AEBBD4" FontSize="13" />
+                    <Label Text="TARGET" TextColor="#AFAFAA" FontSize="11" FontAttributes="Bold" />
                     <Label x:Name="StatusTitle" Grid.Row="1" Text="No Pocket connected" TextColor="White" FontSize="24" FontAttributes="Bold" />
-                    <Label x:Name="StatusDetail" Grid.Row="2" Text="Connect an SD card or USB Pocket to begin." TextColor="#C8D2E4" FontSize="14" />
-                    <controls:EzButton x:Name="ScanButton" Grid.Column="1" Grid.RowSpan="3" Text="Scan" Clicked="OnScanClicked" FontAttributes="Bold" CornerRadius="14" ButtonPadding="22,10" VerticalOptions="Center" />
-                    <controls:EzButton Grid.Column="2" Grid.RowSpan="3" Text="Choose folder" Clicked="OnChooseFolderClicked" FontAttributes="Bold" CornerRadius="14" ButtonPadding="16,10" VerticalOptions="Center" />
+                    <Label x:Name="StatusDetail" Grid.Row="2" Text="Connect an SD card or choose a storage folder to begin." TextColor="#D2D2CC" FontSize="13" />
+                    <controls:EzButton x:Name="ScanButton" Grid.Column="1" Grid.RowSpan="3" Text="SCAN TARGET" Clicked="OnScanClicked" FontAttributes="Bold" CornerRadius="2" ButtonPadding="18,10" ButtonBackgroundColor="#FFFFFF" ButtonTextColor="#151515" VerticalOptions="Center" />
+                    <controls:EzButton Grid.Column="2" Grid.RowSpan="3" Text="CHANGE TARGET" Clicked="OnChooseFolderClicked" FontAttributes="Bold" CornerRadius="2" ButtonPadding="16,10" ButtonBackgroundColor="#343434" ButtonTextColor="White" VerticalOptions="Center" />
                 </Grid>
             </Border>
-            <Border BackgroundColor="#EEF6F1" Stroke="#CDE8D6" StrokeShape="RoundRectangle 12" Padding="16">
+            <Border BackgroundColor="#F4F4F0" Stroke="#C9C9C2" StrokeShape="RoundRectangle 2" Padding="16">
                 <Grid ColumnDefinitions="*,Auto" ColumnSpacing="16">
                     <VerticalStackLayout Spacing="4">
-                        <Label Text="POCKETOS" FontSize="11" FontAttributes="Bold" TextColor="#19734E" />
-                        <Label x:Name="FirmwareActionTitle" Text="Update Pocket firmware" FontSize="18" FontAttributes="Bold" TextColor="#14213D" />
-                        <Label x:Name="FirmwareActionDetail" Text="Download, verify, and stage official firmware separately from core updates." FontSize="13" TextColor="#52627A" />
+                        <Label Text="FIRMWARE" FontSize="11" FontAttributes="Bold" TextColor="#151515" />
+                        <Label x:Name="FirmwareActionTitle" Text="Update PocketOS firmware" FontSize="18" FontAttributes="Bold" TextColor="#151515" />
+                        <Label x:Name="FirmwareActionDetail" Text="Check, verify, and stage official firmware separately from core updates." FontSize="13" TextColor="#60605C" />
                     </VerticalStackLayout>
-                    <controls:EzButton x:Name="FirmwareButton" Grid.Column="1" Text="Update firmware" IsEnabled="False" Clicked="OnFirmwareClicked" ButtonBackgroundColor="#19734E" VerticalOptions="Center" />
+                    <controls:EzButton x:Name="FirmwareButton" Grid.Column="1" Text="VIEW FIRMWARE" IsEnabled="False" Clicked="OnFirmwareClicked" ButtonBackgroundColor="#151515" CornerRadius="2" VerticalOptions="Center" />
                 </Grid>
             </Border>
-            <Border BackgroundColor="White" Stroke="#E2E7F0" StrokeShape="RoundRectangle 12" Padding="16">
+            <Border BackgroundColor="White" Stroke="#151515" StrokeThickness="1" StrokeShape="RoundRectangle 2" Padding="16">
                 <Grid ColumnDefinitions="*,Auto" ColumnSpacing="16">
                     <VerticalStackLayout Spacing="4">
-                        <Label x:Name="NextStepEyebrow" Text="GET STARTED" FontSize="11" FontAttributes="Bold" TextColor="#2563EB" />
-                        <Label x:Name="NextStepTitle" Text="Select your Pocket" FontSize="18" FontAttributes="Bold" TextColor="#14213D" />
-                        <Label x:Name="NextStepDetail" Text="Choose an SD card, connected Pocket, or a folder target. Nothing will be changed." FontSize="13" TextColor="#63708A" />
+                        <Label x:Name="NextStepEyebrow" Text="CORE INVENTORY" FontSize="11" FontAttributes="Bold" TextColor="#151515" />
+                        <Label x:Name="NextStepTitle" Text="Review your cores" FontSize="18" FontAttributes="Bold" TextColor="#151515" />
+                        <Label x:Name="NextStepDetail" Text="Compare your target with the live inventory. Nothing changes until you approve it." FontSize="13" TextColor="#60605C" />
                     </VerticalStackLayout>
-                    <controls:EzButton x:Name="NextStepButton" Grid.Column="1" Text="Choose folder" Clicked="OnNextStepClicked" VerticalOptions="Center" />
+                    <controls:EzButton x:Name="NextStepButton" Grid.Column="1" Text="MANAGE CORES" Clicked="OnNextStepClicked" CornerRadius="2" VerticalOptions="Center" />
                 </Grid>
             </Border>
             <VerticalStackLayout Spacing="10">
                 <VerticalStackLayout Spacing="2">
-                    <Label Text="FEATURED SETUPS" FontSize="11" FontAttributes="Bold" TextColor="#2563EB" />
-                    <Label Text="Start with a thoughtfully chosen group of cores" FontSize="20" FontAttributes="Bold" TextColor="#14213D" />
-                    <Label Text="Choose a setup to add its core lineup directly into a review. Existing installed cores stay selected; you will still approve every change before applying it." FontSize="13" TextColor="#63708A" />
+                    <Label Text="STARTING POINTS" FontSize="11" FontAttributes="Bold" TextColor="#151515" />
+                    <Label Text="Core collections" FontSize="20" FontAttributes="Bold" TextColor="#151515" />
+                    <Label Text="Add a collection to your review. Installed cores remain selected, and you approve every change before it is applied." FontSize="13" TextColor="#60605C" />
                 </VerticalStackLayout>
                 <Grid x:Name="FeaturedSetupCards" ColumnDefinitions="*,*,*" ColumnSpacing="12">
-                    <Border StyleId="handheld-essentials" HeightRequest="158" BackgroundColor="White" Stroke="#B8CDEB" StrokeThickness="1.5" StrokeShape="RoundRectangle 12" Padding="16" SemanticProperties.Description="Review the Handheld essentials core setup">
+                    <Border StyleId="handheld-essentials" HeightRequest="138" BackgroundColor="White" Stroke="#151515" StrokeThickness="1" StrokeShape="RoundRectangle 2" Padding="16" SemanticProperties.Description="Review the Handheld essentials core setup">
                         <Border.GestureRecognizers>
                             <TapGestureRecognizer Tapped="OnFeaturedSetTapped" />
                             <PointerGestureRecognizer PointerEntered="OnFeaturedSetPointerEntered" PointerExited="OnFeaturedSetPointerExited" />
                         </Border.GestureRecognizers>
                         <VerticalStackLayout Spacing="7">
-                            <Label Text="Handheld essentials" FontSize="16" FontAttributes="Bold" TextColor="#14213D" />
-                            <Label Text="GB, GBC, GBA, Game Gear, NGPC, Lynx, and PC Engine." FontSize="12" TextColor="#63708A" />
-                            <Label Text="Review this setup →" FontSize="13" FontAttributes="Bold" TextColor="#2563EB" Margin="0,4,0,0" />
+                            <Label Text="HANDHELD ESSENTIALS" FontSize="14" FontAttributes="Bold" TextColor="#151515" />
+                            <Label Text="GB, GBC, GBA, Game Gear, NGPC, Lynx, PC Engine" FontSize="12" TextColor="#60605C" />
+                            <Label Text="ADD TO REVIEW  →" FontSize="11" FontAttributes="Bold" TextColor="#151515" Margin="0,4,0,0" />
                         </VerticalStackLayout>
                     </Border>
-                    <Border Grid.Column="1" StyleId="console-classics" HeightRequest="158" BackgroundColor="White" Stroke="#B8CDEB" StrokeThickness="1.5" StrokeShape="RoundRectangle 12" Padding="16" SemanticProperties.Description="Review the Console classics core setup">
+                    <Border Grid.Column="1" StyleId="console-classics" HeightRequest="138" BackgroundColor="White" Stroke="#151515" StrokeThickness="1" StrokeShape="RoundRectangle 2" Padding="16" SemanticProperties.Description="Review the Console classics core setup">
                         <Border.GestureRecognizers>
                             <TapGestureRecognizer Tapped="OnFeaturedSetTapped" />
                             <PointerGestureRecognizer PointerEntered="OnFeaturedSetPointerEntered" PointerExited="OnFeaturedSetPointerExited" />
                         </Border.GestureRecognizers>
                         <VerticalStackLayout Spacing="7">
-                            <Label Text="Console classics" FontSize="16" FontAttributes="Bold" TextColor="#14213D" />
-                            <Label Text="Handheld favorites plus NES, SNES, Genesis, Master System, and Atari 2600." FontSize="12" TextColor="#63708A" />
-                            <Label Text="Review this setup →" FontSize="13" FontAttributes="Bold" TextColor="#2563EB" Margin="0,4,0,0" />
+                            <Label Text="CONSOLE CLASSICS" FontSize="14" FontAttributes="Bold" TextColor="#151515" />
+                            <Label Text="NES, SNES, Genesis, Master System, Atari 2600" FontSize="12" TextColor="#60605C" />
+                            <Label Text="ADD TO REVIEW  →" FontSize="11" FontAttributes="Bold" TextColor="#151515" Margin="0,4,0,0" />
                         </VerticalStackLayout>
                     </Border>
-                    <Border Grid.Column="2" StyleId="arcade-starter" HeightRequest="158" BackgroundColor="White" Stroke="#B8CDEB" StrokeThickness="1.5" StrokeShape="RoundRectangle 12" Padding="16" SemanticProperties.Description="Review the Arcade starter core setup">
+                    <Border Grid.Column="2" StyleId="arcade-starter" HeightRequest="138" BackgroundColor="White" Stroke="#151515" StrokeThickness="1" StrokeShape="RoundRectangle 2" Padding="16" SemanticProperties.Description="Review the Arcade starter core setup">
                         <Border.GestureRecognizers>
                             <TapGestureRecognizer Tapped="OnFeaturedSetTapped" />
                             <PointerGestureRecognizer PointerEntered="OnFeaturedSetPointerEntered" PointerExited="OnFeaturedSetPointerExited" />
                         </Border.GestureRecognizers>
                         <VerticalStackLayout Spacing="7">
-                            <Label Text="Arcade starter" FontSize="16" FontAttributes="Bold" TextColor="#14213D" />
-                            <Label Text="Five classic arcade platforms. Game ROMs are not included." FontSize="12" TextColor="#63708A" />
-                            <Label Text="Review this setup →" FontSize="13" FontAttributes="Bold" TextColor="#2563EB" Margin="0,4,0,0" />
+                            <Label Text="ARCADE STARTER" FontSize="14" FontAttributes="Bold" TextColor="#151515" />
+                            <Label Text="Five classic arcade platforms. Games not included." FontSize="12" TextColor="#60605C" />
+                            <Label Text="ADD TO REVIEW  →" FontSize="11" FontAttributes="Bold" TextColor="#151515" Margin="0,4,0,0" />
                         </VerticalStackLayout>
                     </Border>
                 </Grid>
                 <Label x:Name="FeaturedSetupStatus" IsVisible="False" TextColor="#52627A" FontSize="13" />
             </VerticalStackLayout>
-            <Label Text="Pocket overview" FontSize="20" FontAttributes="Bold" TextColor="#14213D" />
+            <Label Text="TARGET OVERVIEW" FontSize="11" FontAttributes="Bold" TextColor="#151515" />
             <Grid ColumnDefinitions="*,*,*" ColumnSpacing="12">
-                <Border BackgroundColor="White" Stroke="#E2E7F0" StrokeShape="RoundRectangle 12" Padding="14"><VerticalStackLayout Spacing="4"><Label Text="Installed cores" TextColor="#63708A" FontSize="13" /><Label x:Name="CoreCountValue" Text="—" FontSize="24" FontAttributes="Bold" TextColor="#14213D" /><Label x:Name="CoreCountDetail" Text="Select a Pocket first" TextColor="#63708A" FontSize="12" /></VerticalStackLayout></Border>
-                <Border Grid.Column="1" BackgroundColor="White" Stroke="#E2E7F0" StrokeShape="RoundRectangle 12" Padding="14"><VerticalStackLayout Spacing="4"><Label Text="Current target" TextColor="#63708A" FontSize="13" /><Label x:Name="TargetValue" Text="None" FontSize="18" FontAttributes="Bold" TextColor="#14213D" LineBreakMode="TailTruncation" /><Label x:Name="TargetDetail" Text="No folder selected" TextColor="#63708A" FontSize="12" LineBreakMode="TailTruncation" /></VerticalStackLayout></Border>
-                <Border Grid.Column="2" BackgroundColor="White" Stroke="#E2E7F0" StrokeShape="RoundRectangle 12" Padding="14"><VerticalStackLayout Spacing="4"><Label Text="Changes" TextColor="#63708A" FontSize="13" /><Label Text="Review first" FontSize="18" FontAttributes="Bold" TextColor="#14213D" /><Label Text="Unselected installed cores are listed for removal" TextColor="#63708A" FontSize="12" /></VerticalStackLayout></Border>
+                <Border BackgroundColor="White" Stroke="#C9C9C2" StrokeShape="RoundRectangle 2" Padding="14"><VerticalStackLayout Spacing="4"><Label Text="INSTALLED CORES" TextColor="#60605C" FontSize="11" FontAttributes="Bold" /><Label x:Name="CoreCountValue" Text="—" FontSize="24" FontAttributes="Bold" TextColor="#151515" /><Label x:Name="CoreCountDetail" Text="Select a target first" TextColor="#60605C" FontSize="12" /></VerticalStackLayout></Border>
+                <Border Grid.Column="1" BackgroundColor="White" Stroke="#C9C9C2" StrokeShape="RoundRectangle 2" Padding="14"><VerticalStackLayout Spacing="4"><Label Text="CURRENT TARGET" TextColor="#60605C" FontSize="11" FontAttributes="Bold" /><Label x:Name="TargetValue" Text="None" FontSize="18" FontAttributes="Bold" TextColor="#151515" LineBreakMode="TailTruncation" /><Label x:Name="TargetDetail" Text="No folder selected" TextColor="#60605C" FontSize="12" LineBreakMode="TailTruncation" /></VerticalStackLayout></Border>
+                <Border Grid.Column="2" BackgroundColor="White" Stroke="#C9C9C2" StrokeShape="RoundRectangle 2" Padding="14"><VerticalStackLayout Spacing="4"><Label Text="CHANGES" TextColor="#60605C" FontSize="11" FontAttributes="Bold" /><Label Text="REVIEW FIRST" FontSize="16" FontAttributes="Bold" TextColor="#151515" /><Label Text="You approve each install, update, and removal." TextColor="#60605C" FontSize="12" /></VerticalStackLayout></Border>
             </Grid>
-            <Label Text="Changes are always reviewed before they are applied." FontSize="13" TextColor="#63708A" />
+            <Label Text="Changes are always reviewed before they are applied. ez-pocket is independent and not affiliated with, endorsed by, or sponsored by Analogue." FontSize="11" TextColor="#60605C" />
         </VerticalStackLayout>
     </ScrollView>
     <controls:EzToast x:Name="SuccessToast" ZIndex="10" WidthRequest="440" HorizontalOptions="Center" VerticalOptions="Start" Margin="0,16,0,0" />

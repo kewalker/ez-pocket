@@ -129,8 +129,8 @@ public partial class MainPage : ContentPage
     {
         if (sender is Border card)
         {
-            card.BackgroundColor = Color.FromArgb("#EEF6FF");
-            card.Stroke = Color.FromArgb("#2563EB");
+            card.BackgroundColor = Color.FromArgb("#F4F4F0");
+            card.Stroke = Color.FromArgb("#151515");
         }
     }
 
@@ -139,7 +139,7 @@ public partial class MainPage : ContentPage
         if (sender is Border card)
         {
             card.BackgroundColor = Colors.White;
-            card.Stroke = Color.FromArgb("#B8CDEB");
+            card.Stroke = Color.FromArgb("#151515");
         }
     }
 
@@ -175,12 +175,12 @@ public partial class MainPage : ContentPage
         StatusDetail.Text = pocket.LooksLikePocket
             ? $"{pocket.RootPath} · {pocket.CapacitySummary}"
             : $"{pocket.RootPath} | Blank folder target | {pocket.CapacitySummary}";
-        ReadyBadgeText.Text = pocket.LooksLikePocket ? "Connected" : "New target";
-        ScanButton.Text = "Rescan";
-        NextStepEyebrow.Text = "NEXT STEP";
-        NextStepTitle.Text = "Manage your cores";
-        NextStepDetail.Text = "Compare installed cores with the live inventory, then prepare a safe sync.";
-        NextStepButton.Text = "Manage cores";
+        ReadyBadgeText.Text = pocket.LooksLikePocket ? "CONNECTED" : "NEW TARGET";
+        ScanButton.Text = "RESCAN";
+        NextStepEyebrow.Text = "CORE INVENTORY";
+        NextStepTitle.Text = "Review your cores";
+        NextStepDetail.Text = "Compare this target with the live inventory. Nothing changes until you approve it.";
+        NextStepButton.Text = "MANAGE CORES";
         CoreCountValue.Text = pocket.CoreCount.ToString();
         CoreCountDetail.Text = pocket.CoreCount == 1 ? "core installed" : "cores installed";
         TargetValue.Text = pocket.LooksLikePocket ? pocket.Name : "New target";
@@ -196,20 +196,20 @@ public partial class MainPage : ContentPage
     {
         StatusTitle.Text = "No Pocket selected";
         StatusDetail.Text = "Connect an SD card or USB Pocket, or choose a folder target to begin.";
-        ReadyBadgeText.Text = "Ready";
-        ScanButton.Text = "Scan";
-        NextStepEyebrow.Text = "GET STARTED";
-        NextStepTitle.Text = "Select your Pocket";
-        NextStepDetail.Text = "Choose an SD card, connected Pocket, or a folder target. Nothing will be changed.";
-        NextStepButton.Text = "Choose folder";
+        ReadyBadgeText.Text = "READY";
+        ScanButton.Text = "SCAN TARGET";
+        NextStepEyebrow.Text = "CORE INVENTORY";
+        NextStepTitle.Text = "Review your cores";
+        NextStepDetail.Text = "Choose a target first. Nothing changes until you approve it.";
+        NextStepButton.Text = "CHOOSE TARGET";
         CoreCountValue.Text = "—";
         CoreCountDetail.Text = "Select a Pocket first";
         TargetValue.Text = "None";
         TargetDetail.Text = "No folder selected";
         FirmwareButton.IsEnabled = false;
-        FirmwareActionTitle.Text = "Update Pocket firmware";
+        FirmwareActionTitle.Text = "POCKETOS FIRMWARE";
         FirmwareActionDetail.Text = "Select a target to check the latest official firmware.";
-        FirmwareButton.Text = "Update firmware";
+        FirmwareButton.Text = "VIEW FIRMWARE";
     }
 
     private async Task CheckFirmwareAsync(PocketDrive pocket)
@@ -221,25 +221,25 @@ public partial class MainPage : ContentPage
 
             if (check.IsLatestFirmwareStaged)
             {
-                FirmwareActionTitle.Text = $"Firmware {check.Release.Version} is staged";
+                FirmwareActionTitle.Text = $"FIRMWARE {check.Release.Version} IS STAGED";
                 FirmwareActionDetail.Text = "The latest official firmware is verified on this target. Installed PocketOS version cannot be read from storage.";
-                FirmwareButton.Text = "View firmware";
+                FirmwareButton.Text = "VIEW FIRMWARE";
             }
             else
             {
-                FirmwareActionTitle.Text = $"Firmware {check.Release.Version} is available";
+                FirmwareActionTitle.Text = $"FIRMWARE {check.Release.Version} IS AVAILABLE";
                 FirmwareActionDetail.Text = check.ExistingFirmwareFiles.Count == 0
                     ? "No verified latest firmware is staged on this target."
                     : "An older or unverified firmware file is staged and can be safely replaced.";
-                FirmwareButton.Text = "Stage firmware";
+                FirmwareButton.Text = "STAGE FIRMWARE";
             }
         }
         catch (Exception exception) when (exception is HttpRequestException or IOException or InvalidDataException or OperationCanceledException)
         {
             if (!string.Equals(selection.SelectedPocket?.RootPath, pocket.RootPath, StringComparison.OrdinalIgnoreCase)) return;
-            FirmwareActionTitle.Text = "Could not check firmware";
+            FirmwareActionTitle.Text = "FIRMWARE CHECK UNAVAILABLE";
             FirmwareActionDetail.Text = "Check your connection, then retry from the firmware page.";
-            FirmwareButton.Text = "Check firmware";
+            FirmwareButton.Text = "CHECK FIRMWARE";
         }
     }
 

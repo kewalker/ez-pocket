@@ -2,40 +2,40 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="EzPocket.CoreDetailsPage"
-             BackgroundColor="#F5F7FB"
+             BackgroundColor="#FFFFFF"
              Title="Core details">
     <ScrollView>
-        <VerticalStackLayout Padding="24,16,24,24" Spacing="12">
+        <VerticalStackLayout Padding="28,20,28,28" Spacing="12">
             <Grid ColumnDefinitions="Auto,Auto,Auto,Auto,Auto,Auto" ColumnSpacing="5">
-                <controls:EzButton xmlns:controls="clr-namespace:EzPocket.Controls" Text="&#x2190;" FontSize="16" MinimumHeight="24" Clicked="OnBackClicked" ButtonPadding="10,1" CornerRadius="8" ButtonBackgroundColor="#E8F0FF" ButtonTextColor="#1E3A8A" SemanticProperties.Description="Back to Core Manager" />
-                <Label Grid.Column="1" Text="ez-pocket" TextDecorations="Underline" TextColor="#2563EB" FontSize="13" VerticalOptions="Center">
+                <controls:EzButton xmlns:controls="clr-namespace:EzPocket.Controls" Text="←" FontSize="16" MinimumHeight="24" Clicked="OnBackClicked" ButtonPadding="10,1" CornerRadius="2" ButtonBackgroundColor="#151515" ButtonTextColor="White" SemanticProperties.Description="Back to Core Manager" />
+                <Label Grid.Column="1" Text="EZ-POCKET" TextDecorations="Underline" TextColor="#151515" FontSize="11" FontAttributes="Bold" VerticalOptions="Center">
                     <Label.GestureRecognizers><TapGestureRecognizer Tapped="OnHomeClicked" /></Label.GestureRecognizers>
                 </Label>
-                <Label Grid.Column="2" Text="/" FontSize="13" TextColor="#AAB3C4" VerticalOptions="Center" />
-                <Label Grid.Column="3" Text="Manage cores" TextDecorations="Underline" TextColor="#2563EB" FontSize="13" VerticalOptions="Center">
+                <Label Grid.Column="2" Text="/" FontSize="13" TextColor="#90908B" VerticalOptions="Center" />
+                <Label Grid.Column="3" Text="CORE INVENTORY" TextDecorations="Underline" TextColor="#151515" FontSize="11" FontAttributes="Bold" VerticalOptions="Center">
                     <Label.GestureRecognizers><TapGestureRecognizer Tapped="OnManageCoresClicked" /></Label.GestureRecognizers>
                 </Label>
-                <Label Grid.Column="4" Text="/" FontSize="13" TextColor="#AAB3C4" VerticalOptions="Center" />
-                <Label Grid.Column="5" Text="Details" FontSize="13" TextColor="#63708A" VerticalOptions="Center" />
+                <Label Grid.Column="4" Text="/" FontSize="13" TextColor="#90908B" VerticalOptions="Center" />
+                <Label Grid.Column="5" Text="DETAILS" FontSize="11" FontAttributes="Bold" TextColor="#60605C" VerticalOptions="Center" />
             </Grid>
             <VerticalStackLayout Spacing="2">
-                <Label x:Name="FriendlyName" Text="Core details" FontSize="26" FontAttributes="Bold" TextColor="#14213D" />
-                <Label x:Name="Identifier" Text="-" FontSize="12" TextColor="#63708A" />
+                <Label x:Name="FriendlyName" Text="Core details" FontSize="26" FontAttributes="Bold" TextColor="#151515" />
+                <Label x:Name="Identifier" Text="-" FontSize="12" TextColor="#60605C" />
             </VerticalStackLayout>
-            <Border BackgroundColor="White" Stroke="#E2E7F0" StrokeShape="RoundRectangle 12" Padding="16">
+            <Border BackgroundColor="White" Stroke="#151515" StrokeShape="RoundRectangle 2" Padding="16">
                 <Grid RowDefinitions="Auto,Auto,Auto,Auto" ColumnDefinitions="*,*" RowSpacing="12" ColumnSpacing="20">
-                    <Label Text="Status" FontSize="12" TextColor="#63708A" />
-                    <Label x:Name="Status" Grid.Column="1" FontSize="15" FontAttributes="Bold" TextColor="#19734E" HorizontalTextAlignment="End" />
-                    <Label Grid.Row="1" Text="Category" FontSize="12" TextColor="#63708A" />
-                    <Label x:Name="Category" Grid.Row="1" Grid.Column="1" FontSize="15" TextColor="#14213D" HorizontalTextAlignment="End" />
-                    <Label Grid.Row="2" Text="Installed version" FontSize="12" TextColor="#63708A" />
-                    <Label x:Name="InstalledVersion" Grid.Row="2" Grid.Column="1" FontSize="15" TextColor="#14213D" HorizontalTextAlignment="End" />
-                    <Label Grid.Row="3" Text="Available version" FontSize="12" TextColor="#63708A" />
-                    <Label x:Name="AvailableVersion" Grid.Row="3" Grid.Column="1" FontSize="15" TextColor="#14213D" HorizontalTextAlignment="End" />
+                    <Label Text="STATUS" FontSize="11" FontAttributes="Bold" TextColor="#60605C" />
+                    <Label x:Name="Status" Grid.Column="1" FontSize="15" FontAttributes="Bold" TextColor="#137A49" HorizontalTextAlignment="End" />
+                    <Label Grid.Row="1" Text="CATEGORY" FontSize="11" FontAttributes="Bold" TextColor="#60605C" />
+                    <Label x:Name="Category" Grid.Row="1" Grid.Column="1" FontSize="15" TextColor="#151515" HorizontalTextAlignment="End" />
+                    <Label Grid.Row="2" Text="INSTALLED" FontSize="11" FontAttributes="Bold" TextColor="#60605C" />
+                    <Label x:Name="InstalledVersion" Grid.Row="2" Grid.Column="1" FontSize="15" TextColor="#151515" HorizontalTextAlignment="End" />
+                    <Label Grid.Row="3" Text="LATEST" FontSize="11" FontAttributes="Bold" TextColor="#60605C" />
+                    <Label x:Name="AvailableVersion" Grid.Row="3" Grid.Column="1" FontSize="15" TextColor="#151515" HorizontalTextAlignment="End" />
                 </Grid>
             </Border>
-            <Border BackgroundColor="#EEF6F1" Stroke="#CDE8D6" StrokeShape="RoundRectangle 12" Padding="14,10">
-                <Label x:Name="StatusSummary" FontSize="13" TextColor="#176B49" />
+            <Border BackgroundColor="#F4F4F0" Stroke="#C9C9C2" StrokeShape="RoundRectangle 2" Padding="14,10">
+                <Label x:Name="StatusSummary" FontSize="13" TextColor="#151515" />
             </Border>
         </VerticalStackLayout>
     </ScrollView>

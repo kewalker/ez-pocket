@@ -4,37 +4,37 @@
              xmlns:models="clr-namespace:EzPocket.Models"
              xmlns:controls="clr-namespace:EzPocket.Controls"
              x:Class="EzPocket.CorePage"
-             BackgroundColor="#F5F7FB"
+             BackgroundColor="#FFFFFF"
              Title="Core Manager">
     <Grid Padding="24,16,24,20" RowDefinitions="Auto,Auto,Auto,Auto,Auto,*" RowSpacing="10">
         <Grid ColumnDefinitions="Auto,Auto,Auto,Auto" ColumnSpacing="6">
-            <controls:EzButton Text="&#x2190;" FontSize="16" MinimumHeight="24" Clicked="OnBackClicked" ButtonPadding="10,1" CornerRadius="8" ButtonBackgroundColor="#E8F0FF" ButtonTextColor="#1E3A8A" SemanticProperties.Description="Back to dashboard" />
-            <Label Grid.Column="1" Text="ez-pocket" TextDecorations="Underline" TextColor="#2563EB" FontSize="13" VerticalOptions="Center">
+            <controls:EzButton Text="←" FontSize="16" MinimumHeight="24" Clicked="OnBackClicked" ButtonPadding="10,1" CornerRadius="2" ButtonBackgroundColor="#151515" ButtonTextColor="White" SemanticProperties.Description="Back to dashboard" />
+            <Label Grid.Column="1" Text="EZ-POCKET" TextDecorations="Underline" TextColor="#151515" FontSize="11" FontAttributes="Bold" VerticalOptions="Center">
                 <Label.GestureRecognizers>
                     <TapGestureRecognizer Tapped="OnBackClicked" />
                     <PointerGestureRecognizer PointerEntered="OnBreadcrumbPointerEntered" PointerExited="OnBreadcrumbPointerExited" />
                 </Label.GestureRecognizers>
             </Label>
-            <Label Grid.Column="2" Text="/" FontSize="13" TextColor="#AAB3C4" VerticalOptions="Center" />
-            <Label Grid.Column="3" Text="Manage cores" FontSize="13" TextColor="#63708A" VerticalOptions="Center" />
+            <Label Grid.Column="2" Text="/" FontSize="13" TextColor="#90908B" VerticalOptions="Center" />
+            <Label Grid.Column="3" Text="CORE INVENTORY" FontSize="11" FontAttributes="Bold" TextColor="#60605C" VerticalOptions="Center" />
         </Grid>
         <Grid Grid.Row="1" ColumnDefinitions="*,Auto,Auto" ColumnSpacing="10">
-            <Label x:Name="Summary" Text="-" FontSize="16" FontAttributes="Bold" TextColor="#14213D" VerticalOptions="Center" />
-            <Label x:Name="InventoryState" Grid.Column="1" Text="" FontSize="13" TextColor="#63708A" VerticalOptions="Center" />
-            <controls:EzButton x:Name="RefreshButton" Grid.Column="2" Text="Refresh" Clicked="OnRefreshClicked" />
+            <Label x:Name="Summary" Text="-" FontSize="16" FontAttributes="Bold" TextColor="#151515" VerticalOptions="Center" />
+            <Label x:Name="InventoryState" Grid.Column="1" Text="" FontSize="12" TextColor="#60605C" VerticalOptions="Center" />
+            <controls:EzButton x:Name="RefreshButton" Grid.Column="2" Text="REFRESH" Clicked="OnRefreshClicked" CornerRadius="2" />
         </Grid>
         <Grid Grid.Row="2" ColumnDefinitions="*,180,180" ColumnSpacing="12">
             <VerticalStackLayout Spacing="4">
-                <Label Text="Search" FontSize="12" FontAttributes="Bold" TextColor="#52627A" />
-                <Border BackgroundColor="White" Stroke="#B8C4D6" StrokeThickness="1" StrokeShape="RoundRectangle 8" Padding="4,0">
-                    <SearchBar x:Name="Search" Placeholder="Search cores" PlaceholderColor="#718096" TextColor="#14213D" BackgroundColor="Transparent" HeightRequest="46" TextChanged="OnFilterChanged" />
+                <Label Text="SEARCH" FontSize="11" FontAttributes="Bold" TextColor="#60605C" />
+                <Border BackgroundColor="White" Stroke="#151515" StrokeThickness="1" StrokeShape="RoundRectangle 2" Padding="4,0">
+                    <SearchBar x:Name="Search" Placeholder="Search cores" PlaceholderColor="#777772" TextColor="#151515" BackgroundColor="Transparent" HeightRequest="46" TextChanged="OnFilterChanged" />
                 </Border>
             </VerticalStackLayout>
             <VerticalStackLayout Grid.Column="1" Spacing="4">
-                <Label Text="Status" FontSize="12" FontAttributes="Bold" TextColor="#52627A" />
-                <Border BackgroundColor="White" Stroke="#B8C4D6" StrokeThickness="1" StrokeShape="RoundRectangle 8" Padding="10,0">
+                <Label Text="STATUS" FontSize="11" FontAttributes="Bold" TextColor="#60605C" />
+                <Border BackgroundColor="White" Stroke="#151515" StrokeThickness="1" StrokeShape="RoundRectangle 2" Padding="10,0">
                     <Grid ColumnDefinitions="*,Auto">
-                        <Picker Grid.ColumnSpan="2" x:Name="StatusFilter" TextColor="#14213D" BackgroundColor="Transparent" FontSize="14" HeightRequest="46" HorizontalOptions="Fill" SelectedIndex="0" SelectedIndexChanged="OnFilterChanged" SemanticProperties.Description="Status filter dropdown">
+                        <Picker Grid.ColumnSpan="2" x:Name="StatusFilter" TextColor="#151515" BackgroundColor="Transparent" FontSize="14" HeightRequest="46" HorizontalOptions="Fill" SelectedIndex="0" SelectedIndexChanged="OnFilterChanged" SemanticProperties.Description="Status filter dropdown">
                             <Picker.Items>
                                 <x:String>All cores</x:String><x:String>Updates</x:String><x:String>Installed</x:String><x:String>Available</x:String>
                             </Picker.Items>
@@ -43,22 +43,22 @@
                 </Border>
             </VerticalStackLayout>
             <VerticalStackLayout Grid.Column="2" Spacing="4">
-                <Label Text="Category" FontSize="12" FontAttributes="Bold" TextColor="#52627A" />
-                <Border BackgroundColor="White" Stroke="#B8C4D6" StrokeThickness="1" StrokeShape="RoundRectangle 8" Padding="10,0">
+                <Label Text="CATEGORY" FontSize="11" FontAttributes="Bold" TextColor="#60605C" />
+                <Border BackgroundColor="White" Stroke="#151515" StrokeThickness="1" StrokeShape="RoundRectangle 2" Padding="10,0">
                     <Grid ColumnDefinitions="*,Auto">
-                        <Picker Grid.ColumnSpan="2" x:Name="CategoryFilter" TextColor="#14213D" BackgroundColor="Transparent" FontSize="14" HeightRequest="46" HorizontalOptions="Fill" SelectedIndexChanged="OnFilterChanged" SemanticProperties.Description="Category filter dropdown">
+                        <Picker Grid.ColumnSpan="2" x:Name="CategoryFilter" TextColor="#151515" BackgroundColor="Transparent" FontSize="14" HeightRequest="46" HorizontalOptions="Fill" SelectedIndexChanged="OnFilterChanged" SemanticProperties.Description="Category filter dropdown">
                             <Picker.Items><x:String>All categories</x:String></Picker.Items>
                         </Picker>
                     </Grid>
                 </Border>
             </VerticalStackLayout>
         </Grid>
-        <Border Grid.Row="3" x:Name="FeaturedSetNotice" IsVisible="False" BackgroundColor="#EEF6F1" Stroke="#CDE8D6" StrokeShape="RoundRectangle 8" Padding="12,8">
-            <Label x:Name="FeaturedSetNoticeText" TextColor="#176B49" FontSize="13" />
+        <Border Grid.Row="3" x:Name="FeaturedSetNotice" IsVisible="False" BackgroundColor="#F4F4F0" Stroke="#151515" StrokeShape="RoundRectangle 2" Padding="12,8">
+            <Label x:Name="FeaturedSetNoticeText" TextColor="#151515" FontSize="13" />
         </Border>
-        <Grid Grid.Row="4" ColumnDefinitions="*,Auto" x:Name="SelectionBar" BackgroundColor="#E8F0FF" Padding="12,8" ColumnSpacing="14">
-            <Label x:Name="SelectionSummary" Text="Choose the cores to keep on this Pocket" TextColor="#1E3A8A" VerticalOptions="Center" />
-            <controls:EzButton x:Name="ReviewButton" Grid.Column="1" Text="Sync changes" Clicked="OnReviewClicked" ButtonPadding="14,8" />
+        <Grid Grid.Row="4" ColumnDefinitions="*,Auto" x:Name="SelectionBar" BackgroundColor="#151515" Padding="12,8" ColumnSpacing="14">
+            <Label x:Name="SelectionSummary" Text="Choose the cores to keep on this target" TextColor="White" VerticalOptions="Center" />
+            <controls:EzButton x:Name="ReviewButton" Grid.Column="1" Text="REVIEW CHANGES" Clicked="OnReviewClicked" ButtonPadding="14,8" CornerRadius="2" ButtonBackgroundColor="White" ButtonTextColor="#151515" />
         </Grid>
         <Grid Grid.Row="5">
             <CollectionView x:Name="CoreList" SelectionMode="None">
@@ -66,16 +66,16 @@
             <CollectionView.Header>
                 <Grid ColumnDefinitions="44,2*,1.05*,.8*,.8*,1.1*,70" Padding="12,4" ColumnSpacing="10">
                     <CheckBox x:Name="SelectVisibleCheckBox" VerticalOptions="Center" HorizontalOptions="Center" Color="#2563EB" CheckedChanged="OnSelectVisibleChanged" SemanticProperties.Description="Select or clear all visible cores" />
-                    <controls:EzButton x:Name="CoreSortButton" Grid.Column="1" HorizontalOptions="Start" Text="CORE" FontSize="11" FontAttributes="Bold" MinimumHeight="26" ButtonPadding="4,2" CornerRadius="5" ButtonBackgroundColor="#F5F7FB" ButtonTextColor="#52627A" Clicked="OnCoreSortClicked" SemanticProperties.Description="Sort cores ascending" />
-                    <controls:EzButton x:Name="CategorySortButton" Grid.Column="2" HorizontalOptions="Start" Text="CATEGORY" FontSize="11" FontAttributes="Bold" MinimumHeight="26" ButtonPadding="4,2" CornerRadius="5" ButtonBackgroundColor="#F5F7FB" ButtonTextColor="#52627A" Clicked="OnCategorySortClicked" SemanticProperties.Description="Sort categories ascending" />
-                    <controls:EzButton x:Name="InstalledSortButton" Grid.Column="3" HorizontalOptions="Start" Text="INSTALLED" FontSize="11" FontAttributes="Bold" MinimumHeight="26" ButtonPadding="4,2" CornerRadius="5" ButtonBackgroundColor="#F5F7FB" ButtonTextColor="#52627A" Clicked="OnInstalledSortClicked" SemanticProperties.Description="Sort installed versions ascending" />
-                    <controls:EzButton x:Name="LatestSortButton" Grid.Column="4" HorizontalOptions="Start" Text="LATEST" FontSize="11" FontAttributes="Bold" MinimumHeight="26" ButtonPadding="4,2" CornerRadius="5" ButtonBackgroundColor="#F5F7FB" ButtonTextColor="#52627A" Clicked="OnLatestSortClicked" SemanticProperties.Description="Sort latest versions ascending" />
-                    <controls:EzButton x:Name="StatusSortButton" Grid.Column="5" HorizontalOptions="Start" Text="STATUS" FontSize="11" FontAttributes="Bold" MinimumHeight="26" ButtonPadding="4,2" CornerRadius="5" ButtonBackgroundColor="#F5F7FB" ButtonTextColor="#52627A" Clicked="OnStatusSortClicked" SemanticProperties.Description="Sort statuses ascending" />
+                    <controls:EzButton x:Name="CoreSortButton" Grid.Column="1" HorizontalOptions="Start" Text="CORE" FontSize="11" FontAttributes="Bold" MinimumHeight="26" ButtonPadding="4,2" CornerRadius="0" ButtonBackgroundColor="White" ButtonTextColor="#60605C" Clicked="OnCoreSortClicked" SemanticProperties.Description="Sort cores ascending" />
+                    <controls:EzButton x:Name="CategorySortButton" Grid.Column="2" HorizontalOptions="Start" Text="CATEGORY" FontSize="11" FontAttributes="Bold" MinimumHeight="26" ButtonPadding="4,2" CornerRadius="0" ButtonBackgroundColor="White" ButtonTextColor="#60605C" Clicked="OnCategorySortClicked" SemanticProperties.Description="Sort categories ascending" />
+                    <controls:EzButton x:Name="InstalledSortButton" Grid.Column="3" HorizontalOptions="Start" Text="INSTALLED" FontSize="11" FontAttributes="Bold" MinimumHeight="26" ButtonPadding="4,2" CornerRadius="0" ButtonBackgroundColor="White" ButtonTextColor="#60605C" Clicked="OnInstalledSortClicked" SemanticProperties.Description="Sort installed versions ascending" />
+                    <controls:EzButton x:Name="LatestSortButton" Grid.Column="4" HorizontalOptions="Start" Text="LATEST" FontSize="11" FontAttributes="Bold" MinimumHeight="26" ButtonPadding="4,2" CornerRadius="0" ButtonBackgroundColor="White" ButtonTextColor="#60605C" Clicked="OnLatestSortClicked" SemanticProperties.Description="Sort latest versions ascending" />
+                    <controls:EzButton x:Name="StatusSortButton" Grid.Column="5" HorizontalOptions="Start" Text="STATUS" FontSize="11" FontAttributes="Bold" MinimumHeight="26" ButtonPadding="4,2" CornerRadius="0" ButtonBackgroundColor="White" ButtonTextColor="#60605C" Clicked="OnStatusSortClicked" SemanticProperties.Description="Sort statuses ascending" />
                 </Grid>
             </CollectionView.Header>
             <CollectionView.ItemTemplate>
                 <DataTemplate x:DataType="models:CoreComparison">
-                    <Border BackgroundColor="White" Stroke="#E2E7F0" StrokeShape="RoundRectangle 10" Padding="12,8" Margin="0,0,0,4">
+                    <Border BackgroundColor="White" Stroke="#D0D0CA" StrokeShape="RoundRectangle 0" Padding="12,8" Margin="0,0,0,0">
                         <Grid ColumnDefinitions="44,2*,1.05*,.8*,.8*,1.1*,70" RowDefinitions="Auto,Auto" RowSpacing="0" ColumnSpacing="10">
                             <CheckBox Grid.RowSpan="2" IsChecked="{Binding IsSelected, Mode=TwoWay}" VerticalOptions="Center" Color="#2563EB" CheckedChanged="OnCoreSelectionChanged" />
                             <Grid Grid.Column="1" Grid.RowSpan="2">
@@ -83,15 +83,15 @@
                                     <TapGestureRecognizer Tapped="OnCoreRowTapped" />
                                 </Grid.GestureRecognizers>
                                 <Grid RowDefinitions="Auto,Auto" RowSpacing="0">
-                                    <Label Text="{Binding FriendlyName}" FontSize="15" FontAttributes="Bold" TextColor="#14213D" LineBreakMode="TailTruncation" />
-                                    <Label Grid.Row="1" Text="{Binding Identifier}" FontSize="11" TextColor="#63708A" LineBreakMode="TailTruncation" />
+                                    <Label Text="{Binding FriendlyName}" FontSize="15" FontAttributes="Bold" TextColor="#151515" LineBreakMode="TailTruncation" />
+                                    <Label Grid.Row="1" Text="{Binding Identifier}" FontSize="11" TextColor="#60605C" LineBreakMode="TailTruncation" />
                                 </Grid>
                             </Grid>
-                            <Label Grid.Column="2" Grid.RowSpan="2" Text="{Binding Category}" FontSize="12" TextColor="#52627A" VerticalOptions="Center" LineBreakMode="TailTruncation" />
-                            <Label Grid.Column="3" Grid.RowSpan="2" Text="{Binding InstalledVersion}" FontSize="12" TextColor="#52627A" VerticalOptions="Center" LineBreakMode="TailTruncation" />
-                            <Label Grid.Column="4" Grid.RowSpan="2" Text="{Binding AvailableVersion}" FontSize="12" TextColor="#52627A" VerticalOptions="Center" LineBreakMode="TailTruncation" />
-                            <Label Grid.Column="5" Grid.RowSpan="2" Text="{Binding StatusLabel}" FontSize="12" FontAttributes="Bold" TextColor="#19734E" VerticalOptions="Center" LineBreakMode="TailTruncation" />
-                            <controls:EzButton Grid.Column="6" Grid.RowSpan="2" Text="Details" FontSize="11" ButtonPadding="8,3" ButtonBackgroundColor="#EEF2F7" ButtonTextColor="#1E3A8A" Clicked="OnDetailsClicked" VerticalOptions="Center" />
+                            <Label Grid.Column="2" Grid.RowSpan="2" Text="{Binding Category}" FontSize="12" TextColor="#60605C" VerticalOptions="Center" LineBreakMode="TailTruncation" />
+                            <Label Grid.Column="3" Grid.RowSpan="2" Text="{Binding InstalledVersion}" FontSize="12" TextColor="#60605C" VerticalOptions="Center" LineBreakMode="TailTruncation" />
+                            <Label Grid.Column="4" Grid.RowSpan="2" Text="{Binding AvailableVersion}" FontSize="12" TextColor="#60605C" VerticalOptions="Center" LineBreakMode="TailTruncation" />
+                            <Label Grid.Column="5" Grid.RowSpan="2" Text="{Binding StatusLabel}" FontSize="11" FontAttributes="Bold" TextColor="#151515" VerticalOptions="Center" LineBreakMode="TailTruncation" />
+                            <controls:EzButton Grid.Column="6" Grid.RowSpan="2" Text="DETAILS" FontSize="11" ButtonPadding="8,3" CornerRadius="2" ButtonBackgroundColor="#F4F4F0" ButtonTextColor="#151515" Clicked="OnDetailsClicked" VerticalOptions="Center" />
                         </Grid>
                     </Border>
                 </DataTemplate>
