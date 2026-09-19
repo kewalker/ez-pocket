@@ -1,0 +1,38 @@
+name: Windows CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build-and-test:
+    name: Build and test (Windows)
+    runs-on: windows-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v7
+
+      - name: Set up .NET 9
+        uses: actions/setup-dotnet@v6
+        with:
+          dotnet-version: 9.0.x
+
+      - name: Install .NET MAUI Windows workload
+        run: dotnet workload install maui-windows
+
+      - name: Restore dependencies
+        run: dotnet restore EzPocket.sln -p:TargetFramework=net9.0-windows10.0.19041.0
+
+      - name: Build Windows app and tests
+        run: dotnet build EzPocket.sln -f net9.0-windows10.0.19041.0 --no-restore
+
+      - name: Run tests
+        run: dotnet test Tests/EzPocket.Tests.csproj -f net9.0-windows10.0.19041.0 --no-build --no-restore
