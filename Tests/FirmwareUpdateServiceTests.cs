@@ -16,7 +16,7 @@ public sealed class FirmwareUpdateServiceTests
         {
             byte[] firmware = [1, 2, 3, 4];
             string md5 = Convert.ToHexString(MD5.HashData(firmware)).ToLowerInvariant();
-            var service = new FirmwareUpdateService(new FirmwareHandler(firmware, md5), Path.Combine(root, "staging"), Path.Combine(root, "backups"));
+            var service = new FirmwareUpdateService(new HttpClient(new FirmwareHandler(firmware, md5)), Path.Combine(root, "staging"), Path.Combine(root, "backups"));
             string pocketPath = Path.Combine(root, "Pocket");
             Directory.CreateDirectory(pocketPath);
             var pocket = new PocketDrive(pocketPath, "Pocket", DriveType.Unknown, 0, 0, 0, [], 0, []);
