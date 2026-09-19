@@ -51,7 +51,7 @@ public sealed class FirmwareUpdateServiceTests
             if (path.EndsWith("/firmware", StringComparison.Ordinal))
                 return Task.FromResult(new HttpResponseMessage(System.Net.HttpStatusCode.OK) { Content = new StringContent("<h3>Firmware v2.7</h3>") });
             if (path.EndsWith("/firmware/2.7", StringComparison.Ordinal))
-                return Task.FromResult(new HttpResponseMessage(System.Net.HttpStatusCode.OK) { Content = new StringContent($"<p>MD5 {md5}</p>") });
+                return Task.FromResult(new HttpResponseMessage(System.Net.HttpStatusCode.OK) { Content = new StringContent($"<section data-release=\"2.7\"><h3>MD5</h3><p data-row=\"2\">{md5}</p></section>") });
 
             var content = new ByteArrayContent(firmware);
             content.Headers.ContentDisposition = new ContentDispositionHeaderValue("attachment") { FileName = "pocket_firmware_2.7.bin" };

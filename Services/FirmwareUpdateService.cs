@@ -1,4 +1,5 @@
 using System.Net.Http.Headers;
+using System.Net;
 using System.Security.Cryptography;
 using System.Text.RegularExpressions;
 using EzPocket.Models;
@@ -11,7 +12,9 @@ public sealed class FirmwareUpdateService
     private const string FirmwarePageUrl = "https://www.analogue.co/support/pocket/firmware";
     private static readonly Uri FirmwarePage = new(FirmwarePageUrl);
     private static readonly Regex VersionPattern = new(@"Firmware\s+v(?<version>[0-9][0-9A-Za-z.\-]*)", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
-    private static readonly Regex Md5Pattern = new(@"MD5\D{0,80}(?<md5>[a-f0-9]{32})", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
+    private static readonly Regex Md5Pattern = new(@"\bMD5\b\s*(?<md5>[a-f0-9]{32})", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
+    private static readonly Regex HtmlTagPattern = new(@"<[^>]+>", RegexOptions.CultureInvariant);
+    private const int MaximumFirmwareBackups = 5;
     private readonly HttpClient client;
     private readonly string stagingRoot;
     private readonly string backupRoot;
@@ -33,10 +36,9 @@ public sealed class FirmwareUpdateService
         string version = versionMatch.Groups["version"].Value;
         Uri releasePage = new($"https://www.analogue.co/support/pocket/firmware/{version}");
         string releaseDetails = await client.GetStringAsync(releasePage, cancellationToken);
-        Match md5Match = Md5Pattern.Match(releaseDetails);
-        if (!md5Match.Success) throw new InvalidDataException("Analogue's firmware release notes did not include an MD5 checksum.");
+        string md5 = ExtractPublishedMd5(releaseDetails);
 
-        return new FirmwareRelease(version, md5Match.Groups["md5"].Value.ToLowerInvariant(), new Uri($"https://www.analogue.co/support/pocket/firmware/{version}/download"));
+        return new FirmwareRelease(version, md5, new Uri($"https://www.analogue.co/support/pocket/firmware/{version}/download"));
     }
 
     public async Task<FirmwareUpdatePreview> PrepareAsync(PocketDrive pocket, CancellationToken cancellationToken = default)
@@ -116,6 +118,7 @@ public sealed class FirmwareUpdateService
                     File.Delete(existingFile);
                 File.Move(temporaryDestination, destination, true);
                 Cleanup(preview.StagingPath);
+                PruneBackups();
                 return Task.FromResult(new FirmwareUpdateResult(true, $"Firmware {preview.Release.Version} is ready on your Pocket SD card.", backupPath));
             }
             catch
@@ -145,6 +148,14 @@ public sealed class FirmwareUpdateService
         return fileName;
     }
 
+    private static string ExtractPublishedMd5(string releaseDetails)
+    {
+        string plainText = WebUtility.HtmlDecode(HtmlTagPattern.Replace(releaseDetails, " "));
+        Match match = Md5Pattern.Match(plainText);
+        if (!match.Success) throw new InvalidDataException("Analogue's firmware release notes did not include an MD5 checksum. Firmware was not downloaded.");
+        return match.Groups["md5"].Value.ToLowerInvariant();
+    }
+
     private static async Task<string> GetMd5Async(string filePath, CancellationToken cancellationToken)
     {
         await using FileStream stream = File.OpenRead(filePath);
@@ -157,6 +168,18 @@ public sealed class FirmwareUpdateService
         string root = Path.GetFullPath(rootPath).TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar) + Path.DirectorySeparatorChar;
         if (!string.Equals(Path.GetDirectoryName(Path.GetFullPath(destination)) + Path.DirectorySeparatorChar, root, StringComparison.OrdinalIgnoreCase))
             throw new IOException("Firmware can only be staged at the root of the selected Pocket.");
+    }
+
+    private void PruneBackups()
+    {
+        if (!Directory.Exists(backupRoot)) return;
+        foreach (DirectoryInfo backup in new DirectoryInfo(backupRoot)
+            .GetDirectories("firmware-*")
+            .OrderByDescending(directory => directory.Name, StringComparer.Ordinal)
+            .Skip(MaximumFirmwareBackups))
+        {
+            backup.Delete(true);
+        }
     }
 
     private static void Cleanup(string stagingPath)
