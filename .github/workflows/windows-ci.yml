@@ -25,8 +25,16 @@ jobs:
         with:
           dotnet-version: 9.0.x
 
+      - name: Cache NuGet packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.nuget/packages
+          key: ${{ runner.os }}-nuget-${{ hashFiles('**/*.csproj', '**/Directory.Packages.props', '**/NuGet.config', 'global.json') }}
+          restore-keys: |
+            ${{ runner.os }}-nuget-
+
       - name: Install .NET MAUI Windows workload
-        run: dotnet workload install maui-windows
+        run: dotnet workload install maui-windows --skip-manifest-update
 
       - name: Restore dependencies
         run: dotnet restore EzPocket.sln -p:TargetFramework=net9.0-windows10.0.19041.0
