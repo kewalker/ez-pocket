@@ -6,7 +6,7 @@
              x:Class="EzPocket.CorePage"
              BackgroundColor="#FFFFFF"
              Title="Core Manager">
-    <Grid Padding="24,16,24,20" RowDefinitions="Auto,Auto,Auto,Auto,Auto,*" RowSpacing="10">
+    <Grid Padding="24,16,24,20" RowDefinitions="Auto,Auto,Auto,Auto,*,Auto" RowSpacing="10">
         <Grid ColumnDefinitions="Auto,Auto,Auto,Auto" ColumnSpacing="6">
             <controls:EzButton Text="&#x2190;" FontSize="16" MinimumHeight="24" Clicked="OnBackClicked" ButtonPadding="10,1" CornerRadius="2" ButtonBackgroundColor="#151515" ButtonTextColor="White" SemanticProperties.Description="Back to dashboard" />
             <Label Grid.Column="1" Text="EZ-POCKET" TextDecorations="Underline" TextColor="#151515" FontSize="11" FontAttributes="Bold" VerticalOptions="Center">
@@ -56,11 +56,7 @@
         <Border Grid.Row="3" x:Name="FeaturedSetNotice" IsVisible="False" BackgroundColor="#F4F4F0" Stroke="#151515" StrokeShape="RoundRectangle 2" Padding="12,8">
             <Label x:Name="FeaturedSetNoticeText" TextColor="#151515" FontSize="13" />
         </Border>
-        <Grid Grid.Row="4" ColumnDefinitions="*,Auto" x:Name="SelectionBar" BackgroundColor="#151515" Padding="12,8" ColumnSpacing="14">
-            <Label x:Name="SelectionSummary" Text="Choose the cores to keep on this target" TextColor="White" VerticalOptions="Center" />
-            <controls:EzButton x:Name="ReviewButton" Grid.Column="1" Text="REVIEW CHANGES" Clicked="OnReviewClicked" ButtonPadding="14,8" CornerRadius="2" ButtonBackgroundColor="White" ButtonTextColor="#151515" />
-        </Grid>
-        <Grid Grid.Row="5">
+        <Grid Grid.Row="4">
             <CollectionView x:Name="CoreList" SelectionMode="None">
             <CollectionView.EmptyView><Label Text="No cores found yet." TextColor="#60605C" HorizontalOptions="Center" VerticalOptions="Center" /></CollectionView.EmptyView>
             <CollectionView.Header>
@@ -106,6 +102,13 @@
                 <Label Text="Showing installed cores. Check your connection and try again." TextColor="#60605C" HorizontalTextAlignment="Center" />
                 <controls:EzButton Text="Retry" Clicked="OnRefreshClicked" HorizontalOptions="Center" />
             </VerticalStackLayout>
+        </Grid>
+        <Grid Grid.Row="5" ColumnDefinitions="*,Auto" x:Name="SelectionBar" BackgroundColor="#151515" Padding="12,8" ColumnSpacing="14">
+            <VerticalStackLayout Spacing="1" VerticalOptions="Center">
+                <Label x:Name="SelectionSummary" Text="Choose the cores to keep on this target" TextColor="White" />
+                <Label Text="Changes are previewed before anything is written." TextColor="#D2D2CC" FontSize="11" />
+            </VerticalStackLayout>
+            <controls:EzButton x:Name="ReviewButton" Grid.Column="1" Text="REVIEW CHANGES" Clicked="OnReviewClicked" ButtonPadding="14,8" CornerRadius="2" ButtonBackgroundColor="White" ButtonTextColor="#151515" VerticalOptions="Center" />
         </Grid>
         <controls:EzToast x:Name="SuccessToast" Grid.RowSpan="6" ZIndex="10" WidthRequest="440" HorizontalOptions="Center" VerticalOptions="Start" Margin="0,16,0,0" />
     </Grid>
