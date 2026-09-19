@@ -21,7 +21,7 @@ public sealed class AppDiagnosticsService : IAppDiagnostics
 
     public AppDiagnosticsService(string? appDataDirectory = null, string? exportDirectory = null)
     {
-        string appData = appDataDirectory ?? FileSystem.AppDataDirectory;
+        string appData = appDataDirectory ?? Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
         logDirectory = Path.Combine(appData, "EzPocket", "diagnostics");
         this.exportDirectory = exportDirectory ?? FileSystem.CacheDirectory;
     }
