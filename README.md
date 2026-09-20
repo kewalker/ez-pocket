@@ -23,7 +23,7 @@ Core updates and PocketOS firmware are intentionally separate workflows. Neither
 
 Windows is the current supported development target. The project also contains .NET MAUI targets for macOS (Mac Catalyst), iOS, and Android, but Windows is the first-release focus; folder picking and target management are currently implemented for Windows.
 
-The application is currently version `0.1.0` and remains under active development. See [PLAN.md](PLAN.md) for the roadmap and known hardening work.
+The application is currently version `0.1.0` and remains under active development. Open an issue to report a bug, discuss an improvement, or ask about planned work.
 
 ## Requirements
 
