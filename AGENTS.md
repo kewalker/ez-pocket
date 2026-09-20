@@ -30,5 +30,4 @@ Thanks for helping improve ez-pocket. These conventions keep the project safe, c
 - Keep platform-specific filesystem/device code behind services so macOS support remains possible.
 - Build the Windows target after changes: `dotnet build EzPocket.sln -f net9.0-windows10.0.19041.0 --no-restore`.
 - If the WinUI XAML compiler cannot write `obj/.../input.json`, first run `dotnet build-server shutdown`, then rerun the normal build. This releases stale MSBuild/C# compiler hosts without closing Visual Studio.
-- Do not create temporary `verify-bin` or `verify-obj` folders inside the project directory: MAUI's default globbing can compile their generated `.cs` files. Put any isolated build outputs outside the repository instead.
 - Keep commits focused, with a clear message describing the change.
