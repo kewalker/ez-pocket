@@ -78,9 +78,9 @@ Selecting a folder never writes to it by itself. Core and firmware writes requir
 
 ## Releases
 
-A downloadable, self-contained Windows preview ZIP containing `EzPocket.exe` is available from tagged builds. Extract the ZIP and run `EzPocket.exe`; it does not require installation. The executable is currently unsigned, so Windows may show a SmartScreen warning or an organization policy may block it.
+Tagged builds produce unsigned Windows artifacts for maintainer validation and technical preview testing. They are not yet normal public downloads: Windows may show SmartScreen warnings or organization policies may block unsigned executables.
 
-MSIX packaging and trusted signing are on the release roadmap. Tagged builds also produce an unsigned x64 MSIX for maintainer validation and eventual signing, but it is not the normal public download yet. See [docs/RELEASING.md](docs/RELEASING.md) for the artifact and signing details.
+MSIX packaging and trusted signing are planned before a normal public download is offered. See [docs/RELEASING.md](docs/RELEASING.md) for artifact and signing details.
 
 ## Project layout
 
