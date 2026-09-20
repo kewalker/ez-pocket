@@ -74,7 +74,7 @@ jobs:
         run: dotnet workload install maui-windows --skip-manifest-update
 
       - name: Restore dependencies
-        run: dotnet restore EzPocket.sln -p:TargetFramework=net9.0-windows10.0.19041.0
+        run: dotnet restore EzPocket.sln -p:TargetFramework=net9.0-windows10.0.19041.0 -r win-x64 -p:PublishReadyToRun=true
 
       - name: Create unsigned MSIX
         run: >
@@ -82,7 +82,7 @@ jobs:
           -f net9.0-windows10.0.19041.0
           -c Release
           --no-restore
-          -p:RuntimeIdentifierOverride=win10-x64
+          -p:RuntimeIdentifierOverride=win-x64
           -p:AppxPackageSigningEnabled=false
 
       - name: Upload unsigned package for signing and tester validation
@@ -100,7 +100,7 @@ jobs:
           -c Release
           --no-restore
           --self-contained true
-          -p:RuntimeIdentifierOverride=win10-x64
+          -p:RuntimeIdentifierOverride=win-x64
           -p:WindowsPackageType=None
           -p:WindowsAppSDKSelfContained=true
           -p:PublishDir=${{ github.workspace }}\artifacts\ez-pocket-win-x64\

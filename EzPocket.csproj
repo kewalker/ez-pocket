@@ -45,7 +45,7 @@
 	<!-- Keep local Debug runs unpackaged, but create an unsigned MSIX during Release.
 		A trusted signing service signs the resulting package in CI before public distribution. -->
 	<PropertyGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows' and '$(Configuration)' == 'Release'">
-		<WindowsPackageType>Package</WindowsPackageType>
+		<WindowsPackageType>MSIX</WindowsPackageType>
 		<AppxPackageSigningEnabled>false</AppxPackageSigningEnabled>
 	</PropertyGroup>
 
