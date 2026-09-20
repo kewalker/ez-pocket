@@ -14,3 +14,6 @@ obj/
 ## Local OS files
 .DS_Store
 Thumbs.db
+
+## Private project notes
+PLAN.md
