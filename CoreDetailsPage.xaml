@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:controls="clr-namespace:EzPocket.Controls"
              x:Class="EzPocket.CoreDetailsPage"
              BackgroundColor="#FFFFFF"
              Title="Core details">
@@ -37,6 +38,13 @@
             <Border BackgroundColor="#F4F4F0" Stroke="#C9C9C2" StrokeShape="RoundRectangle 2" Padding="14,10">
                 <Label x:Name="StatusSummary" FontSize="13" TextColor="#151515" />
             </Border>
+            <Grid ColumnDefinitions="*,Auto" ColumnSpacing="16" Margin="0,6,0,0">
+                <VerticalStackLayout Spacing="3">
+                    <Label Text="CORE ASSETS" FontSize="11" FontAttributes="Bold" TextColor="#151515" />
+                    <Label Text="Optional files are managed separately from core packages. Game Boy palettes are available now; library art and other core assets will appear here as their mappings are verified." FontSize="12" TextColor="#60605C" />
+                </VerticalStackLayout>
+                <controls:EzButton Grid.Column="1" Text="MANAGE ASSETS" FontSize="11" MinimumHeight="32" ButtonPadding="10,5" CornerRadius="0" ButtonBackgroundColor="White" ButtonTextColor="#151515" Clicked="OnManageAssetsClicked" VerticalOptions="Center" />
+            </Grid>
         </VerticalStackLayout>
     </ScrollView>
 </ContentPage>

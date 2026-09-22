@@ -10,6 +10,8 @@ public partial class EzButton : ContentView
     public static readonly BindableProperty MinimumHeightProperty = BindableProperty.Create(nameof(MinimumHeight), typeof(double), typeof(EzButton), 44d);
     public static readonly BindableProperty ButtonBackgroundColorProperty = BindableProperty.Create(nameof(ButtonBackgroundColor), typeof(Color), typeof(EzButton), Color.FromArgb("#151515"));
     public static readonly BindableProperty ButtonTextColorProperty = BindableProperty.Create(nameof(ButtonTextColor), typeof(Color), typeof(EzButton), Colors.White);
+    public static readonly BindableProperty IsBusyProperty = BindableProperty.Create(nameof(IsBusy), typeof(bool), typeof(EzButton), false);
+    public static readonly BindableProperty BusyIndicatorColorProperty = BindableProperty.Create(nameof(BusyIndicatorColor), typeof(Color), typeof(EzButton), Color.FromArgb("#151515"));
 
     public event EventHandler? Clicked;
 
@@ -59,6 +61,18 @@ public partial class EzButton : ContentView
     {
         get => (Color)GetValue(ButtonTextColorProperty);
         set => SetValue(ButtonTextColorProperty, value);
+    }
+
+    public bool IsBusy
+    {
+        get => (bool)GetValue(IsBusyProperty);
+        set => SetValue(IsBusyProperty, value);
+    }
+
+    public Color BusyIndicatorColor
+    {
+        get => (Color)GetValue(BusyIndicatorColorProperty);
+        set => SetValue(BusyIndicatorColorProperty, value);
     }
 
     public EzButton()

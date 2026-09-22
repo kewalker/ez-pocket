@@ -49,6 +49,16 @@
                     <controls:EzButton x:Name="NextStepButton" Grid.Column="1" Text="MANAGE CORES" Clicked="OnNextStepClicked" CornerRadius="2" VerticalOptions="Center" />
                 </Grid>
             </Border>
+            <Border BackgroundColor="#F4F4F0" Stroke="#C9C9C2" StrokeShape="RoundRectangle 2" Padding="16">
+                <Grid ColumnDefinitions="*,Auto" ColumnSpacing="16">
+                    <VerticalStackLayout Spacing="4">
+                        <Label Text="ASSET LIBRARY" FontSize="11" FontAttributes="Bold" TextColor="#151515" />
+                        <Label x:Name="AssetsActionTitle" Text="Palettes and optional core files" FontSize="18" FontAttributes="Bold" TextColor="#151515" />
+                        <Label x:Name="AssetsActionDetail" Text="Select a target to inspect shared palettes and other verified, opt-in core assets." FontSize="13" TextColor="#60605C" />
+                    </VerticalStackLayout>
+                    <controls:EzButton x:Name="AssetsButton" Grid.Column="1" Text="VIEW ASSETS" IsEnabled="False" Clicked="OnAssetsClicked" CornerRadius="2" VerticalOptions="Center" />
+                </Grid>
+            </Border>
             <VerticalStackLayout Spacing="10">
                 <VerticalStackLayout Spacing="2">
                     <Label Text="STARTING POINTS" FontSize="11" FontAttributes="Bold" TextColor="#151515" />

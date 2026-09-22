@@ -5,6 +5,7 @@
              x:Name="Root"
              x:DataType="controls:EzButton"
              x:Class="EzPocket.Controls.EzButton">
+    <Grid>
     <Button x:Name="NativeButton"
             Text="{Binding Text, Source={x:Reference Root}}"
             FontSize="{Binding FontSize, Source={x:Reference Root}}"
@@ -14,13 +15,28 @@
             MinimumHeightRequest="{Binding MinimumHeight, Source={x:Reference Root}}"
             BackgroundColor="{Binding ButtonBackgroundColor, Source={x:Reference Root}}"
             TextColor="{Binding ButtonTextColor, Source={x:Reference Root}}"
+            IsEnabled="{Binding IsEnabled, Source={x:Reference Root}}"
             Clicked="OnNativeClicked"
             Pressed="OnNativePressed"
             Released="OnNativeReleased"
             Focused="OnNativeFocused"
             Unfocused="OnNativeUnfocused">
+        <Button.Triggers>
+            <DataTrigger TargetType="Button" Binding="{Binding IsBusy, Source={x:Reference Root}}" Value="True">
+                <Setter Property="TextColor" Value="Transparent" />
+            </DataTrigger>
+        </Button.Triggers>
         <Button.GestureRecognizers>
             <PointerGestureRecognizer PointerEntered="OnPointerEntered" PointerExited="OnPointerExited" />
         </Button.GestureRecognizers>
     </Button>
+    <ActivityIndicator IsVisible="{Binding IsBusy, Source={x:Reference Root}}"
+                       IsRunning="{Binding IsBusy, Source={x:Reference Root}}"
+                       Color="{Binding BusyIndicatorColor, Source={x:Reference Root}}"
+                       InputTransparent="True"
+                       HorizontalOptions="Center"
+                       VerticalOptions="Center"
+                       HeightRequest="18"
+                       WidthRequest="18" />
+    </Grid>
 </ContentView>

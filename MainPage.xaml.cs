@@ -90,6 +90,16 @@ public partial class MainPage : ContentPage
         await Shell.Current.GoToAsync("FirmwarePage");
     }
 
+    private async void OnAssetsClicked(object? sender, EventArgs e)
+    {
+        if (selection.SelectedPocket is null)
+        {
+            await ChooseFolderAsync();
+            if (selection.SelectedPocket is null) return;
+        }
+        await Shell.Current.GoToAsync("AssetsPage");
+    }
+
     private async void OnExportDiagnosticsClicked(object? sender, EventArgs e)
     {
         ExportDiagnosticsButton.IsEnabled = false;
@@ -207,6 +217,9 @@ public partial class MainPage : ContentPage
         TargetValue.Text = pocket.LooksLikePocket ? pocket.Name : "New target";
         TargetDetail.Text = pocket.CapacitySummary;
         FirmwareButton.IsEnabled = true;
+        AssetsButton.IsEnabled = true;
+        AssetsActionTitle.Text = "Palettes and optional core files";
+        AssetsActionDetail.Text = "Inspect and import shared Game Boy palettes now. Library art and other verified asset types stay opt-in.";
         FirmwareActionTitle.Text = "Checking Pocket firmware\u2026";
         FirmwareActionDetail.Text = "Checking the official release and this target's staged firmware.";
         FirmwareButton.Text = "Checking\u2026";
@@ -228,6 +241,9 @@ public partial class MainPage : ContentPage
         TargetValue.Text = "None";
         TargetDetail.Text = "No folder selected";
         FirmwareButton.IsEnabled = false;
+        AssetsButton.IsEnabled = false;
+        AssetsActionTitle.Text = "Palettes and optional core files";
+        AssetsActionDetail.Text = "Select a target to inspect shared palettes and other verified, opt-in core assets.";
         FirmwareActionTitle.Text = "POCKETOS FIRMWARE";
         FirmwareActionDetail.Text = "Select a target to check the latest official firmware.";
         FirmwareButton.Text = "VIEW FIRMWARE";

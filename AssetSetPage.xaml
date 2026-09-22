@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:controls="clr-namespace:EzPocket.Controls"
+             x:Class="EzPocket.AssetSetPage"
+             BackgroundColor="#FFFFFF"
+             Title="Manage asset set">
+    <ScrollView>
+        <VerticalStackLayout Padding="28,20,28,28" Spacing="14">
+            <Grid ColumnDefinitions="Auto,Auto,Auto" ColumnSpacing="5">
+                <controls:EzButton Text="&#x2190;" FontSize="16" MinimumHeight="24" Clicked="OnBackClicked" ButtonPadding="10,1" CornerRadius="2" ButtonBackgroundColor="#151515" ButtonTextColor="White" SemanticProperties.Description="Back to asset library" />
+                <Label Grid.Column="1" Text="ASSET LIBRARY" TextDecorations="Underline" FontSize="11" FontAttributes="Bold" TextColor="#151515" VerticalOptions="Center"><Label.GestureRecognizers><TapGestureRecognizer Tapped="OnBackClicked" /></Label.GestureRecognizers></Label>
+                <Label Grid.Column="2" Text="/ MANAGE" FontSize="11" FontAttributes="Bold" TextColor="#60605C" VerticalOptions="Center" />
+            </Grid>
+            <VerticalStackLayout Spacing="3">
+                <Label x:Name="SetName" Text="Asset set" FontSize="26" FontAttributes="Bold" TextColor="#151515" />
+                <Label x:Name="SetSummary" Text="Preparing inventory…" FontSize="13" TextColor="#60605C" />
+            </VerticalStackLayout>
+            <Border BackgroundColor="White" Stroke="#151515" StrokeThickness="1" StrokeShape="RoundRectangle 2" Padding="16">
+                <VerticalStackLayout Spacing="9">
+                    <Label x:Name="SetKind" Text="OPTIONAL ASSET SET" FontSize="11" FontAttributes="Bold" TextColor="#151515" />
+                    <Label Text="This resource is independent of cores, saves, and other asset sets. Changes are scoped to its Pocket folder only." FontSize="13" TextColor="#60605C" />
+                    <Grid ColumnDefinitions="Auto,Auto,*" ColumnSpacing="8" Margin="0,4,0,0">
+                        <controls:EzButton x:Name="ReplaceButton" Text="UPDATE FROM SOURCE" FontSize="11" MinimumHeight="34" ButtonPadding="11,5" CornerRadius="2" ButtonBackgroundColor="#F4F4F0" ButtonTextColor="#151515" Clicked="OnReplaceClicked" />
+                        <controls:EzButton x:Name="RemoveButton" Grid.Column="1" Text="REMOVE SET" FontSize="11" MinimumHeight="34" ButtonPadding="11,5" CornerRadius="2" ButtonBackgroundColor="#F4F4F0" ButtonTextColor="#151515" Clicked="OnRemoveClicked" />
+                    </Grid>
+                </VerticalStackLayout>
+            </Border>
+            <Border BackgroundColor="#F4F4F0" Stroke="#C9C9C2" StrokeShape="RoundRectangle 2" Padding="14,11">
+                <VerticalStackLayout Spacing="3">
+                    <Label Text="SAFE CHANGE FLOW" FontSize="11" FontAttributes="Bold" TextColor="#151515" />
+                    <Label Text="Replace downloads to temporary staging and shows the exact changes. Remove shows every file and keeps a backup before deletion." FontSize="12" TextColor="#60605C" />
+                </VerticalStackLayout>
+            </Border>
+            <Grid ColumnDefinitions="Auto,*" ColumnSpacing="8">
+                <ActivityIndicator x:Name="DownloadActivity" IsVisible="False" IsRunning="False" Color="#52627A" HeightRequest="16" WidthRequest="16" />
+                <Label x:Name="Status" Grid.Column="1" FontSize="12" TextColor="#52627A" VerticalOptions="Center" />
+            </Grid>
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

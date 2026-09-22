@@ -47,4 +47,9 @@ public partial class CoreDetailsPage : ContentPage
     {
         await Shell.Current.GoToAsync("//MainPage");
     }
+
+    private async void OnManageAssetsClicked(object? sender, EventArgs e)
+    {
+        await Shell.Current.GoToAsync("AssetsPage");
+    }
 }

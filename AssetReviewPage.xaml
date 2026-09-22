@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:controls="clr-namespace:EzPocket.Controls"
+             xmlns:models="clr-namespace:EzPocket.Models"
+             x:Class="EzPocket.AssetReviewPage"
+             BackgroundColor="#FFFFFF"
+             Title="Review asset import">
+    <ScrollView>
+        <VerticalStackLayout Padding="28,20,28,28" Spacing="14">
+            <Grid ColumnDefinitions="Auto,Auto,Auto" ColumnSpacing="5">
+                <controls:EzButton Text="&#x2190;" FontSize="16" MinimumHeight="24" Clicked="OnBackClicked" ButtonPadding="10,1" CornerRadius="2" ButtonBackgroundColor="#151515" ButtonTextColor="White" />
+                <Label Grid.Column="1" Text="ASSET LIBRARY" TextDecorations="Underline" FontSize="11" FontAttributes="Bold" TextColor="#151515" VerticalOptions="Center"><Label.GestureRecognizers><TapGestureRecognizer Tapped="OnBackClicked" /></Label.GestureRecognizers></Label>
+                <Label Grid.Column="2" Text="/ REVIEW" FontSize="11" FontAttributes="Bold" TextColor="#60605C" VerticalOptions="Center" />
+            </Grid>
+            <VerticalStackLayout Spacing="3"><Label Text="Review asset import" FontSize="26" FontAttributes="Bold" TextColor="#151515" /><Label x:Name="Summary" Text="Preparing review…" FontSize="13" TextColor="#60605C" /></VerticalStackLayout>
+            <Grid x:Name="ApplyProgressPanel" IsVisible="False" ColumnDefinitions="Auto,*" ColumnSpacing="8" Padding="0,2">
+                <ActivityIndicator x:Name="ApplyActivity" IsRunning="False" Color="#52627A" HeightRequest="16" WidthRequest="16" />
+                <Label x:Name="ApplyStatus" Grid.Column="1" FontSize="12" FontAttributes="Bold" TextColor="#52627A" VerticalOptions="Center" LineBreakMode="TailTruncation" />
+            </Grid>
+            <Border BackgroundColor="White" Stroke="#151515" StrokeThickness="1" StrokeShape="RoundRectangle 2" Padding="16">
+                <VerticalStackLayout Spacing="8">
+                    <Label Text="FILES TO ADD OR REPLACE" FontSize="11" FontAttributes="Bold" TextColor="#151515" />
+                    <CollectionView x:Name="ChangeList" SelectionMode="None" HeightRequest="250"><CollectionView.ItemTemplate><DataTemplate x:DataType="models:AssetFileChange"><Grid ColumnDefinitions="*,Auto" Padding="0,7"><VerticalStackLayout Spacing="1"><Label Text="{Binding Name}" FontSize="14" FontAttributes="Bold" TextColor="#151515" /><Label Text="{Binding RelativePath}" FontSize="11" TextColor="#60605C" /></VerticalStackLayout><Label Grid.Column="1" Text="{Binding Format}" FontSize="11" FontAttributes="Bold" TextColor="#60605C" VerticalOptions="Center" /></Grid></DataTemplate></CollectionView.ItemTemplate></CollectionView>
+                </VerticalStackLayout>
+            </Border>
+            <Border x:Name="BlockerPanel" IsVisible="False" BackgroundColor="#F4F4F0" Stroke="#C9C9C2" StrokeShape="RoundRectangle 2" Padding="14"><VerticalStackLayout Spacing="4"><Label Text="REVIEW REQUIRED" FontSize="11" FontAttributes="Bold" TextColor="#151515" /><Label x:Name="Blockers" FontSize="12" TextColor="#151515" /></VerticalStackLayout></Border>
+            <Label Text="Existing files are backed up before replacement. Imported assets remain independent of core packages." FontSize="12" TextColor="#60605C" />
+            <Grid ColumnDefinitions="Auto,*" ColumnSpacing="10"><controls:EzButton x:Name="CancelButton" Text="CANCEL" ButtonBackgroundColor="#F4F4F0" ButtonTextColor="#151515" CornerRadius="2" MinimumHeight="34" ButtonPadding="12,5" Clicked="OnBackClicked" /><controls:EzButton x:Name="ApplyButton" Grid.Column="1" Text="APPLY IMPORT" CornerRadius="2" MinimumHeight="34" ButtonPadding="12,5" HorizontalOptions="End" Clicked="OnApplyClicked" /></Grid>
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

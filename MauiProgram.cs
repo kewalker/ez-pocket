@@ -24,6 +24,8 @@ public static class MauiProgram
         builder.Services.AddSingleton<CoreSelectionService>();
         builder.Services.AddSingleton<FeaturedCoreSetService>();
         builder.Services.AddSingleton<CoreSyncService>();
+        builder.Services.AddSingleton<AssetService>();
+        builder.Services.AddSingleton<AssetImportSelectionService>();
         builder.Services.AddSingleton<FirmwareUpdateService>();
 #if WINDOWS
         builder.Services.AddSingleton<IFolderPickerService, WindowsFolderPickerService>();
