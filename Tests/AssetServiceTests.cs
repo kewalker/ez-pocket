@@ -18,7 +18,9 @@ public sealed class AssetServiceTests
             File.WriteAllBytes(source, Apgb(0x22));
             string existing = Path.Combine(pocketPath, "Assets", "gb", "common", "palettes", "Forest.pal");
             File.WriteAllBytes(existing, Apgb(0x11));
-            var service = new AssetService(backupRoot: Path.Combine(root, "backups"));
+            var service = new AssetService(
+                backupRoot: Path.Combine(root, "backups"),
+                stagingRoot: Path.Combine(root, "staging"));
             var pocket = new PocketDrive(pocketPath, "Pocket", DriveType.Unknown, 0, 0, 2, ["Assets", "Cores"], 0, []);
 
             AssetImportPreview preview = service.PreparePaletteImport(pocket, [source]);
@@ -45,7 +47,9 @@ public sealed class AssetServiceTests
             string gbp = Path.Combine(root, "core.gbp");
             File.WriteAllBytes(invalid, [1, 2, 3]);
             File.WriteAllBytes(gbp, [1, 2, 3, 4]);
-            var service = new AssetService(backupRoot: Path.Combine(root, "backups"));
+            var service = new AssetService(
+                backupRoot: Path.Combine(root, "backups"),
+                stagingRoot: Path.Combine(root, "staging"));
             var pocket = new PocketDrive(pocketPath, "Pocket", DriveType.Unknown, 0, 0, 0, [], 0, []);
 
             AssetImportPreview preview = service.PreparePaletteImport(pocket, [invalid, gbp]);
