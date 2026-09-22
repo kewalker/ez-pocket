@@ -3,12 +3,12 @@
 ## Current Windows release status
 
 GitHub Actions builds and tests the Windows target on pull requests and `main`.
-Pushing a version tag such as `v0.1.0` also produces two **unsigned** x64 artifacts, retained for 14 days:
+Pushing a version tag such as `v0.1.0` produces two **unsigned** x64 artifacts, retained for 14 days, and creates or updates a clearly labelled GitHub **prerelease** with the technical-preview ZIP:
 
 - An MSIX package for eventual trusted signing.
 - A self-contained, unpackaged Windows publish folder compressed as a ZIP for technical preview testing.
 
-Neither artifact must be presented as the normal public download until trusted signing is configured.
+The prerelease is for technical-preview testing only; neither artifact is the normal public download until trusted signing is configured. The MSIX remains an Actions artifact and is not attached to the prerelease.
 
 ## Why an unsigned package is not a public release
 
@@ -23,15 +23,15 @@ The intended public-release route is SignPath Foundation, provided ez-pocket mee
 1. Update `ApplicationDisplayVersion` and `ApplicationVersion` in `EzPocket.csproj`.
 2. Update the MSIX four-part version in `Platforms/Windows/Package.appxmanifest`.
 3. Build and test the Windows target locally.
-4. Commit the version changes, then tag that commit as `v<display-version>`.
-5. Confirm the tag workflow uploaded the unsigned MSIX artifact.
+4. Commit the version changes, then tag that commit as `v<display-version>`. The workflow rejects a mismatched tag.
+5. Confirm the tag workflow uploaded the unsigned MSIX artifact and created or updated the technical-preview prerelease with its ZIP.
 
 ## After SignPath is configured
 
 1. Send only the CI-produced MSIX package through the approved SignPath workflow.
 2. Verify the signed result on a clean Windows machine using `Get-AuthenticodeSignature`.
-3. Attach the signed MSIX, a SHA-256 checksum, release notes, and an install/update guide to the GitHub Release.
-4. Never publish the unsigned artifact or a self-signed certificate as the primary release download.
+3. Promote or replace the technical-preview prerelease with the signed MSIX, a SHA-256 checksum, release notes, and an install/update guide.
+4. Never present an unsigned artifact or a self-signed certificate as the primary release download.
 
 ## Package identity
 
