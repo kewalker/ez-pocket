@@ -24,7 +24,7 @@ public sealed class AppDiagnosticsServiceTests
 
             Assert.True(File.Exists(bundle));
             using ZipArchive archive = ZipFile.OpenRead(bundle);
-            ZipArchiveEntry log = Assert.Single(archive.Entries.Where(entry => entry.Name.EndsWith(".jsonl", StringComparison.Ordinal)));
+            ZipArchiveEntry log = Assert.Single(archive.Entries, entry => entry.Name.EndsWith(".jsonl", StringComparison.Ordinal));
             using StreamReader reader = new(log.Open());
             string content = await reader.ReadToEndAsync();
             Assert.Contains("PocketSelected", content);
