@@ -97,7 +97,7 @@ public partial class CorePage : ContentPage
     {
         int count = coreSelection.SelectedCores.Count;
         SelectionBar.IsVisible = true;
-        int removals = coreSelection.Cores.Count(core => core.IsInstalled && !core.IsSelected);
+        int removals = coreSelection.Cores.Count(core => core.IsInstalled && core.IsAvailable && !core.IsSelected);
         string selectedSummary = count switch
         {
             0 => "No cores selected",

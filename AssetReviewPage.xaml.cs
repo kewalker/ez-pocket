@@ -7,6 +7,7 @@ public partial class AssetReviewPage : ContentPage
 {
     private readonly AssetService assets;
     private readonly AssetImportSelectionService imports;
+    private readonly PocketHealthService health;
     private bool isApplying;
 
     public AssetReviewPage()
@@ -14,6 +15,7 @@ public partial class AssetReviewPage : ContentPage
         InitializeComponent();
         assets = IPlatformApplication.Current?.Services.GetService<AssetService>() ?? new AssetService();
         imports = IPlatformApplication.Current?.Services.GetService<AssetImportSelectionService>() ?? new AssetImportSelectionService();
+        health = IPlatformApplication.Current?.Services.GetService<PocketHealthService>() ?? new PocketHealthService();
     }
 
     protected override void OnAppearing()
@@ -40,6 +42,13 @@ public partial class AssetReviewPage : ContentPage
             BlockerPanel.IsVisible = true;
             ApplyProgressPanel.IsVisible = true;
             ApplyStatus.Text = $"IMPORT BLOCKED · Resolve {preview.Blockers.Count:N0} review issue{(preview.Blockers.Count == 1 ? string.Empty : "s")} above.";
+            return;
+        }
+        if (!health.Inspect(preview.Pocket).CanWrite)
+        {
+            BlockerPanel.IsVisible = true;
+            ApplyProgressPanel.IsVisible = true;
+            ApplyStatus.Text = "IMPORT BLOCKED · The target is no longer available. Scan it again and prepare a new review.";
             return;
         }
         isApplying = true;

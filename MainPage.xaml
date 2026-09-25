@@ -21,12 +21,17 @@
                 </Border>
             </Grid>
             <Border BackgroundColor="#151515" StrokeThickness="0" Padding="20" StrokeShape="RoundRectangle 2">
-                <Grid RowDefinitions="Auto,Auto,Auto" ColumnDefinitions="*,Auto,Auto,Auto" ColumnSpacing="10" RowSpacing="16">
+                <Grid RowDefinitions="Auto,Auto,Auto,Auto" ColumnDefinitions="*,Auto,Auto,Auto" ColumnSpacing="10" RowSpacing="12">
                     <Label Text="TARGET" TextColor="#AFAFAA" FontSize="11" FontAttributes="Bold" />
                     <Label x:Name="StatusTitle" Grid.Row="1" Text="No Pocket connected" TextColor="White" FontSize="24" FontAttributes="Bold" />
                     <Label x:Name="StatusDetail" Grid.Row="2" Text="Connect an SD card or choose a storage folder to begin." TextColor="#D2D2CC" FontSize="13" />
-                    <controls:EzButton x:Name="ScanButton" Grid.Column="1" Grid.RowSpan="3" Text="SCAN TARGET" Clicked="OnScanClicked" FontAttributes="Bold" CornerRadius="2" ButtonPadding="18,10" ButtonBackgroundColor="#FFFFFF" ButtonTextColor="#151515" VerticalOptions="Center" />
-                    <controls:EzButton Grid.Column="2" Grid.RowSpan="3" Text="CHANGE TARGET" Clicked="OnChooseFolderClicked" FontAttributes="Bold" CornerRadius="2" ButtonPadding="16,10" ButtonBackgroundColor="#343434" ButtonTextColor="White" VerticalOptions="Center" />
+                    <HorizontalStackLayout Grid.Row="3" Spacing="6">
+                        <BoxView x:Name="HealthStatusMarker" Color="#AFAFAA" WidthRequest="7" HeightRequest="7" CornerRadius="0" VerticalOptions="Center" />
+                        <Label x:Name="HealthStatusText" Text="HEALTH · UNAVAILABLE" TextColor="#D2D2CC" FontSize="11" FontAttributes="Bold" VerticalOptions="Center" />
+                    </HorizontalStackLayout>
+                    <controls:EzButton x:Name="ScanButton" Grid.Column="1" Grid.RowSpan="4" Text="SCAN TARGET" Clicked="OnScanClicked" FontAttributes="Bold" CornerRadius="2" ButtonPadding="18,10" ButtonBackgroundColor="#FFFFFF" ButtonTextColor="#151515" VerticalOptions="Center" />
+                    <controls:EzButton Grid.Column="2" Grid.RowSpan="4" Text="CHANGE TARGET" Clicked="OnChooseFolderClicked" FontAttributes="Bold" CornerRadius="2" ButtonPadding="16,10" ButtonBackgroundColor="#343434" ButtonTextColor="White" VerticalOptions="Center" />
+                    <controls:EzButton x:Name="HealthButton" Grid.Column="3" Grid.RowSpan="4" Text="CHECK HEALTH" IsEnabled="False" Clicked="OnHealthClicked" FontAttributes="Bold" CornerRadius="2" ButtonPadding="14,10" ButtonBackgroundColor="#343434" ButtonTextColor="White" VerticalOptions="Center" />
                 </Grid>
             </Border>
             <Border BackgroundColor="#F4F4F0" Stroke="#C9C9C2" StrokeShape="RoundRectangle 2" Padding="16">
@@ -47,6 +52,16 @@
                         <Label x:Name="NextStepDetail" Text="Compare your target with the live inventory. Nothing changes until you approve it." FontSize="13" TextColor="#60605C" />
                     </VerticalStackLayout>
                     <controls:EzButton x:Name="NextStepButton" Grid.Column="1" Text="MANAGE CORES" Clicked="OnNextStepClicked" CornerRadius="2" VerticalOptions="Center" />
+                </Grid>
+            </Border>
+            <Border BackgroundColor="White" Stroke="#151515" StrokeThickness="1" StrokeShape="RoundRectangle 2" Padding="16">
+                <Grid ColumnDefinitions="*,Auto" ColumnSpacing="16">
+                    <VerticalStackLayout Spacing="4">
+                        <Label Text="SAVE VAULT" FontSize="11" FontAttributes="Bold" TextColor="#151515" />
+                        <Label x:Name="SaveVaultActionTitle" Text="Protect saves and memories" FontSize="18" FontAttributes="Bold" TextColor="#151515" />
+                        <Label x:Name="SaveVaultActionDetail" Text="Create local snapshots and restore selected saves through a review." FontSize="13" TextColor="#60605C" />
+                    </VerticalStackLayout>
+                    <controls:EzButton x:Name="SaveVaultButton" Grid.Column="1" Text="VIEW VAULT" IsEnabled="False" Clicked="OnSaveVaultClicked" CornerRadius="2" VerticalOptions="Center" />
                 </Grid>
             </Border>
             <Border BackgroundColor="#F4F4F0" Stroke="#C9C9C2" StrokeShape="RoundRectangle 2" Padding="16">

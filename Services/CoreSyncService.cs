@@ -51,7 +51,10 @@ public sealed class CoreSyncService
         var sources = new Dictionary<string, StagedSource>(StringComparer.OrdinalIgnoreCase);
         var overrides = new List<CoreSyncOverride>();
 
-        foreach (CoreComparison core in cores)
+        // Cores absent from the inventory may have been installed by the owner.
+        // They have no trusted package URL, so leave them entirely untouched.
+        IReadOnlyList<CoreComparison> managedCores = cores.Where(core => core.IsAvailable).ToArray();
+        foreach (CoreComparison core in managedCores)
         {
             if (!IsSafeCoreIdentifier(core.Identifier))
             {
@@ -111,12 +114,12 @@ public sealed class CoreSyncService
             changes.Add(new CoreSyncFileChange(relativePath, source.SourcePath, new FileInfo(source.SourcePath).Length, replacesExisting));
         }
         IReadOnlyList<CoreSyncRemoval> removals = coresToRemove
-            .Where(core => core.IsInstalled)
+            .Where(core => core.IsInstalled && core.IsAvailable)
             .Select(core => CreateRemoval(pocket, core))
             .Where(removal => removal is not null)
             .Cast<CoreSyncRemoval>()
             .ToArray();
-        CoreSyncPreview preview = new(pocket.RootPath, stagingPath, CreateTargetSnapshot(pocket, changes.Sum(change => change.SizeBytes)), cores, changes, removals, overrides, blockers);
+        CoreSyncPreview preview = new(pocket.RootPath, stagingPath, CreateTargetSnapshot(pocket, changes.Sum(change => change.SizeBytes)), managedCores, changes, removals, overrides, blockers);
         diagnostics.Info("CoreSyncPrepared", new Dictionary<string, string?>
         {
             ["ChangeCount"] = changes.Count.ToString(),

@@ -27,6 +27,8 @@ public static class MauiProgram
         builder.Services.AddSingleton<AssetService>();
         builder.Services.AddSingleton<AssetImportSelectionService>();
         builder.Services.AddSingleton<FirmwareUpdateService>();
+        builder.Services.AddSingleton<SaveVaultService>();
+        builder.Services.AddSingleton<PocketHealthService>();
 #if WINDOWS
         builder.Services.AddSingleton<IFolderPickerService, WindowsFolderPickerService>();
 #else

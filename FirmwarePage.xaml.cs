@@ -7,6 +7,7 @@ public partial class FirmwarePage : ContentPage
 {
     private readonly PocketSelectionService selection;
     private readonly FirmwareUpdateService firmware;
+    private readonly PocketHealthService health;
     private FirmwareUpdatePreview? preview;
 
     public FirmwarePage()
@@ -14,6 +15,7 @@ public partial class FirmwarePage : ContentPage
         InitializeComponent();
         selection = IPlatformApplication.Current?.Services.GetService<PocketSelectionService>() ?? new PocketSelectionService();
         firmware = IPlatformApplication.Current?.Services.GetService<FirmwareUpdateService>() ?? new FirmwareUpdateService();
+        health = IPlatformApplication.Current?.Services.GetService<PocketHealthService>() ?? new PocketHealthService();
     }
 
     protected override void OnAppearing()
@@ -78,6 +80,13 @@ public partial class FirmwarePage : ContentPage
     private async void OnApplyClicked(object? sender, EventArgs e)
     {
         if (preview is null) return;
+        PocketDrive? pocket = selection.SelectedPocket;
+        if (pocket is null || !string.Equals(pocket.RootPath, preview.PocketPath, StringComparison.OrdinalIgnoreCase) || !health.Inspect(pocket).CanWrite)
+        {
+            FirmwareStatus.Text = "STAGING BLOCKED · The selected target changed or is unavailable. Scan it again and prepare firmware once more.";
+            ApplyButton.IsVisible = false;
+            return;
+        }
         string replacementSummary = preview.ExistingFirmwareFiles.Count == 0
             ? "No existing firmware file will be replaced."
             : $"{preview.ExistingFirmwareFiles.Count} existing firmware file(s) will be backed up and replaced.";

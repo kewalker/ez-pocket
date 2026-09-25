@@ -30,4 +30,5 @@ Thanks for helping improve ez-pocket. These conventions keep the project safe, c
 - Keep platform-specific filesystem/device code behind services so macOS support remains possible.
 - Build the Windows target after changes: `dotnet build EzPocket.sln -f net9.0-windows10.0.19041.0 --no-restore`.
 - If the WinUI XAML compiler cannot write `obj/.../input.json`, first run `dotnet build-server shutdown`, then rerun the normal build. This releases stale MSBuild/C# compiler hosts without closing Visual Studio.
+- If solution or test-project build artifacts still report access denied after that, build serially without MSBuild node reuse: `dotnet build EzPocket.sln -f net9.0-windows10.0.19041.0 --no-restore -m:1 -nr:false`.
 - Keep commits focused, with a clear message describing the change.

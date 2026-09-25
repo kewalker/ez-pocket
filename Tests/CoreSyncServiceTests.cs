@@ -169,6 +169,39 @@ public sealed class CoreSyncServiceTests
     }
 
     [Fact]
+    public async Task SyncPreservesInstalledCoreMissingFromInventory()
+    {
+        string root = CreateTempFolder();
+        try
+        {
+            string pocketPath = Path.Combine(root, "Pocket");
+            string customCoreDirectory = Path.Combine(pocketPath, "Cores", "Custom.Core");
+            Directory.CreateDirectory(customCoreDirectory);
+            await File.WriteAllTextAsync(Path.Combine(customCoreDirectory, "core.json"), "custom core");
+            byte[] archive = CreateArchive([("Cores/Example.Core/core.json", CoreDefinition("example"))]);
+            var service = new CoreSyncService(new HttpClient(new ArchiveHandler(archive)), Path.Combine(root, "staging"), Path.Combine(root, "backups"));
+            var pocket = new PocketDrive(pocketPath, "Pocket", DriveType.Unknown, 0, 0, 2, ["Assets", "Cores"], 2, ["Custom.Core", "Example.Core"]);
+            var custom = new CoreComparison("Custom.Core", "Custom.Core", "Unknown", "Unknown", "-", true, false, "Unknown");
+            var available = new CoreComparison("Example.Core", "Example", "Test", "-", "1.0", false, true, "Available", "https://packages.example/core.zip");
+
+            CoreSyncPreview preview = await service.PrepareAsync(pocket, [custom, available], [custom]);
+            CoreSyncResult result = await service.ApplyAsync(preview);
+
+            Assert.True(preview.CanSync);
+            Assert.Single(preview.Cores);
+            Assert.Empty(preview.Removals);
+            Assert.True(result.Succeeded);
+            Assert.True(Directory.Exists(customCoreDirectory));
+            Assert.Equal("custom core", await File.ReadAllTextAsync(Path.Combine(customCoreDirectory, "core.json")));
+            Assert.True(File.Exists(Path.Combine(pocketPath, "Cores", "Example.Core", "core.json")));
+        }
+        finally
+        {
+            Directory.Delete(root, true);
+        }
+    }
+
+    [Fact]
     public async Task PrepareDeduplicatesIdenticalFilesSharedBySelectedPackages()
     {
         string root = CreateTempFolder();

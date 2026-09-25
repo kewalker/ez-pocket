@@ -28,8 +28,8 @@
 		<ApplicationId>com.bitbird.ezpocket</ApplicationId>
 
 		<!-- Versions -->
-		<ApplicationDisplayVersion>0.1.0</ApplicationDisplayVersion>
-		<ApplicationVersion>1</ApplicationVersion>
+		<ApplicationDisplayVersion>0.1.2</ApplicationDisplayVersion>
+		<ApplicationVersion>3</ApplicationVersion>
 
 		<!-- To develop, package, and publish an app to the Microsoft Store, see: https://aka.ms/MauiTemplateUnpackaged -->
 		<WindowsPackageType>None</WindowsPackageType>

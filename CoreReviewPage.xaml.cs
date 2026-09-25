@@ -9,6 +9,7 @@ public partial class CoreReviewPage : ContentPage
     private readonly PocketSelectionService pocketSelection;
     private readonly PocketScanner scanner;
     private readonly CoreSyncService coreSync;
+    private readonly PocketHealthService health;
     private CoreSyncPreview? preview;
     private bool hasPrepared;
     private bool returnsToDashboard;
@@ -20,6 +21,7 @@ public partial class CoreReviewPage : ContentPage
         pocketSelection = IPlatformApplication.Current?.Services.GetService<PocketSelectionService>() ?? new PocketSelectionService();
         scanner = IPlatformApplication.Current?.Services.GetService<PocketScanner>() ?? new PocketScanner();
         coreSync = IPlatformApplication.Current?.Services.GetService<CoreSyncService>() ?? new CoreSyncService();
+        health = IPlatformApplication.Current?.Services.GetService<PocketHealthService>() ?? new PocketHealthService();
     }
 
     protected override async void OnAppearing()
@@ -66,11 +68,11 @@ public partial class CoreReviewPage : ContentPage
         ChangeList.IsVisible = false;
         ChangeDetails.IsVisible = false;
         OverrideSummary.IsVisible = false;
-        SyncStatus.Text = "Preparing selected core packages and listing unselected installed cores for removal. Downloads are size-limited, package contents are validated, and each download times out after 45 seconds with one retry.";
+        SyncStatus.Text = "Preparing selected core packages and listing unselected inventory cores for removal. Cores not listed in the inventory are preserved. Downloads are size-limited, package contents are validated, and each download times out after 45 seconds with one retry.";
         try
         {
             IReadOnlyList<CoreComparison> coresToRemove = coreSelection.Cores
-                .Where(core => core.IsInstalled && !core.IsSelected)
+                .Where(core => core.IsInstalled && core.IsAvailable && !core.IsSelected)
                 .ToArray();
             preview = await coreSync.PrepareAsync(pocket, coreSelection.SelectedCores, coresToRemove);
             SelectedCoreList.ItemsSource = preview.Cores;
@@ -119,6 +121,12 @@ public partial class CoreReviewPage : ContentPage
     private async void OnSyncClicked(object? sender, EventArgs e)
     {
         if (preview is not { CanSync: true }) return;
+        PocketDrive? pocket = pocketSelection.SelectedPocket;
+        if (pocket is null || !string.Equals(pocket.RootPath, preview.PocketPath, StringComparison.OrdinalIgnoreCase) || !health.Inspect(pocket).CanWrite)
+        {
+            SyncStatus.Text = "SYNC BLOCKED · The selected target changed or is unavailable. Scan it again, then review a new plan.";
+            return;
+        }
         int coresToAdd = preview.Cores.Count(core => !core.IsInstalled);
         string summary = $"Apply changes on {preview.PocketPath}? {FormatCoreCount(coresToAdd)} will be added and {FormatCoreCount(preview.Removals.Count)} will be removed. Existing files affected by updates will be backed up first.";
         bool confirmed = await DisplayAlert("Apply core changes", summary, "Apply", "Cancel");

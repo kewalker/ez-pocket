@@ -6,7 +6,7 @@
   xmlns:rescap="http://schemas.microsoft.com/appx/manifest/foundation/windows10/restrictedcapabilities"
   IgnorableNamespaces="uap rescap">
 
-  <Identity Name="Bitbird.EzPocket" Publisher="CN=Bitbird" Version="0.1.0.0" />
+  <Identity Name="Bitbird.EzPocket" Publisher="CN=Bitbird" Version="0.1.2.0" />
 
   <mp:PhoneIdentity PhoneProductId="FB2A3316-60F7-4738-A147-487295CF5B26" PhonePublisherId="00000000-0000-0000-0000-000000000000"/>
 

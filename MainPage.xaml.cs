@@ -12,6 +12,7 @@ public partial class MainPage : ContentPage
     private readonly FeaturedCoreSetService featuredCoreSets;
     private readonly CoreInventoryService inventory;
     private readonly CoreSelectionService coreSelection;
+    private readonly PocketHealthService health;
     private readonly IAppDiagnostics diagnostics;
     private bool preparingFeaturedSet;
     private List<PocketDrive> candidates = [];
@@ -26,6 +27,7 @@ public partial class MainPage : ContentPage
         featuredCoreSets = IPlatformApplication.Current?.Services.GetService<FeaturedCoreSetService>() ?? new FeaturedCoreSetService();
         inventory = IPlatformApplication.Current?.Services.GetService<CoreInventoryService>() ?? new CoreInventoryService();
         coreSelection = IPlatformApplication.Current?.Services.GetService<CoreSelectionService>() ?? new CoreSelectionService();
+        health = IPlatformApplication.Current?.Services.GetService<PocketHealthService>() ?? new PocketHealthService();
         diagnostics = IPlatformApplication.Current?.Services.GetService<IAppDiagnostics>() ?? NullAppDiagnostics.Instance;
     }
 
@@ -98,6 +100,16 @@ public partial class MainPage : ContentPage
             if (selection.SelectedPocket is null) return;
         }
         await Shell.Current.GoToAsync("AssetsPage");
+    }
+
+    private async void OnSaveVaultClicked(object? sender, EventArgs e)
+    {
+        if (selection.SelectedPocket is not null) await Shell.Current.GoToAsync("SaveVaultPage");
+    }
+
+    private async void OnHealthClicked(object? sender, EventArgs e)
+    {
+        if (selection.SelectedPocket is not null) await Shell.Current.GoToAsync("PocketHealthPage");
     }
 
     private async void OnExportDiagnosticsClicked(object? sender, EventArgs e)
@@ -218,6 +230,13 @@ public partial class MainPage : ContentPage
         TargetDetail.Text = pocket.CapacitySummary;
         FirmwareButton.IsEnabled = true;
         AssetsButton.IsEnabled = true;
+        SaveVaultButton.IsEnabled = true;
+        HealthButton.IsEnabled = true;
+        PocketHealthReport healthReport = health.Inspect(pocket);
+        HealthStatusMarker.Color = healthReport.IsReady ? Color.FromArgb("#25B46B") : Color.FromArgb("#D2D2CC");
+        HealthStatusText.Text = healthReport.IsReady ? "HEALTH · READY" : $"HEALTH · {healthReport.AttentionCount} ATTENTION";
+        SaveVaultActionTitle.Text = "Protect saves and memories";
+        SaveVaultActionDetail.Text = "Create local snapshots and restore selected saves through a review.";
         AssetsActionTitle.Text = "Palettes and optional core files";
         AssetsActionDetail.Text = "Inspect and import shared Game Boy palettes now. Library art and other verified asset types stay opt-in.";
         FirmwareActionTitle.Text = "Checking Pocket firmware\u2026";
@@ -242,6 +261,12 @@ public partial class MainPage : ContentPage
         TargetDetail.Text = "No folder selected";
         FirmwareButton.IsEnabled = false;
         AssetsButton.IsEnabled = false;
+        SaveVaultButton.IsEnabled = false;
+        HealthButton.IsEnabled = false;
+        HealthStatusMarker.Color = Color.FromArgb("#AFAFAA");
+        HealthStatusText.Text = "HEALTH · UNAVAILABLE";
+        SaveVaultActionTitle.Text = "Protect saves and memories";
+        SaveVaultActionDetail.Text = "Select a target to inspect and snapshot its Saves and Memories locally.";
         AssetsActionTitle.Text = "Palettes and optional core files";
         AssetsActionDetail.Text = "Select a target to inspect shared palettes and other verified, opt-in core assets.";
         FirmwareActionTitle.Text = "POCKETOS FIRMWARE";
