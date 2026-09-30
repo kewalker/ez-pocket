@@ -112,6 +112,7 @@ jobs:
           --self-contained true
           -p:RuntimeIdentifierOverride=win-x64
           -p:WindowsPackageType=None
+          -p:WindowsAppSDKSelfContained=false
           -p:PublishDir=${{ github.workspace }}\artifacts\ez-pocket-win-x64\
 
       - name: Bundle Windows App Runtime installer
