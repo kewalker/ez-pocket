@@ -6,7 +6,7 @@ GitHub Actions builds and tests the Windows target on pull requests and `main`.
 Pushing a version tag such as `v0.1.0` produces two **unsigned** x64 artifacts, retained for 14 days, and creates or updates a clearly labelled GitHub **prerelease** with the technical-preview ZIP:
 
 - An MSIX package for eventual trusted signing.
-- A self-contained, unpackaged Windows publish folder compressed as a ZIP for technical preview testing.
+- An unpackaged Windows publish folder compressed as a ZIP for technical preview testing. The ZIP includes the Microsoft-signed Windows App Runtime x64 installer; testers run it once before launching `EzPocket.exe`.
 
 The prerelease is for technical-preview testing only; neither artifact is the normal public download until trusted signing is configured. The MSIX remains an Actions artifact and is not attached to the prerelease.
 

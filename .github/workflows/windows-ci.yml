@@ -112,8 +112,22 @@ jobs:
           --self-contained true
           -p:RuntimeIdentifierOverride=win-x64
           -p:WindowsPackageType=None
-          -p:WindowsAppSDKSelfContained=true
           -p:PublishDir=${{ github.workspace }}\artifacts\ez-pocket-win-x64\
+
+      - name: Bundle Windows App Runtime installer
+        shell: pwsh
+        run: |
+          Invoke-WebRequest `
+            -Uri https://aka.ms/windowsappsdk/1.7/1.7.250513003/windowsappruntimeinstall-x64.exe `
+            -OutFile artifacts\ez-pocket-win-x64\WindowsAppRuntimeInstall-x64.exe
+          @"
+          ez-pocket Windows Technical Preview
+
+          Before launching EzPocket.exe, run WindowsAppRuntimeInstall-x64.exe once.
+          This Microsoft-signed prerequisite installs the Windows App Runtime required by this unpackaged preview.
+
+          The preview remains unsigned. Windows may show a SmartScreen warning.
+          "@ | Set-Content artifacts\ez-pocket-win-x64\README.txt
 
       - name: Create Windows preview ZIP
         shell: pwsh
@@ -141,7 +155,7 @@ jobs:
           @"
           ## Windows Technical Preview
 
-          This prerelease contains an unsigned Windows preview ZIP for tester validation. Windows may show a SmartScreen warning or organization policy may block it.
+          This prerelease contains an unsigned Windows preview ZIP for tester validation. Extract it, run `WindowsAppRuntimeInstall-x64.exe` once, then launch `EzPocket.exe`. Windows may show a SmartScreen warning or organization policy may block it.
 
           Use only with a backed-up Pocket SD card. Review changes before writing, safely eject the card afterward, and report issues with the included diagnostics where possible.
 
