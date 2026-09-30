@@ -16,7 +16,18 @@ public partial class App : MauiWinUIApplication
 	/// </summary>
 	public App()
 	{
+		UnhandledException += (_, args) => WriteStartupException(args.Exception);
 		this.InitializeComponent();
+	}
+
+	private static void WriteStartupException(Exception exception)
+	{
+		// Opt-in diagnostic capture, including inner exceptions, before MAUI services exist.
+		string? path = Environment.GetEnvironmentVariable("EZPOCKET_STARTUP_LOG");
+		if (string.IsNullOrWhiteSpace(path)) return;
+		try { System.IO.File.AppendAllText(path, exception.ToString() + Environment.NewLine); }
+		catch (System.IO.IOException) { }
+		catch (UnauthorizedAccessException) { }
 	}
 
 	protected override MauiApp CreateMauiApp() => MauiProgram.CreateMauiApp();
