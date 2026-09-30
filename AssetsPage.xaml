@@ -47,6 +47,18 @@
                     </VerticalStackLayout>
                 </Border>
                 <Border BackgroundColor="White" Stroke="#C9C9C2" StrokeShape="RoundRectangle 2" Padding="16">
+                    <VerticalStackLayout Spacing="10">
+                        <Grid ColumnDefinitions="*,Auto" ColumnSpacing="16">
+                            <VerticalStackLayout Spacing="3">
+                                <Label Text="OPENFPGA GBA DISPLAY MODES" FontSize="11" FontAttributes="Bold" TextColor="#151515" />
+                                <Label x:Name="DisplayModeSummary" Text="Inspect installed GBA cores" FontSize="16" FontAttributes="Bold" TextColor="#151515" />
+                                <Label Text="Enables Pocket's built-in CRT, generic LCD, Original GBA, and GBA SP 101 modes in compatible core video.json files. Physical cartridges are unaffected." FontSize="12" TextColor="#60605C" />
+                            </VerticalStackLayout>
+                            <controls:EzButton x:Name="DisplayModesButton" Grid.Column="1" Text="REVIEW MODES" FontSize="11" MinimumHeight="34" ButtonPadding="11,5" ButtonBackgroundColor="#F4F4F0" ButtonTextColor="#151515" CornerRadius="2" Clicked="OnDisplayModesClicked" VerticalOptions="Center" />
+                        </Grid>
+                    </VerticalStackLayout>
+                </Border>
+                <Border BackgroundColor="White" Stroke="#C9C9C2" StrokeShape="RoundRectangle 2" Padding="16">
                     <VerticalStackLayout Spacing="12">
                         <Grid ColumnDefinitions="*,Auto" ColumnSpacing="16">
                             <VerticalStackLayout Spacing="3"><Label Text="POCKET LIBRARY ART" FontSize="11" FontAttributes="Bold" TextColor="#151515" /><Label Text="Box art for handheld and adapter systems" FontSize="16" FontAttributes="Bold" TextColor="#151515" /><Label Text="Select one system, then review every file before it is copied." FontSize="12" TextColor="#60605C" /></VerticalStackLayout>

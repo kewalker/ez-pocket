@@ -25,7 +25,10 @@ public partial class AssetSetPage : ContentPage
         SetName.Text = set.Name;
         SetKind.Text = set.Kind.ToUpperInvariant();
         SetSummary.Text = set.IsInstalled ? $"{set.Status} installed on the selected target." : "Not installed on the selected target.";
-        RemoveButton.IsEnabled = set.IsInstalled;
+        bool isDisplayModeConfiguration = set.Key == "gba-display-modes";
+        ReplaceButton.Text = isDisplayModeConfiguration ? "REVIEW MODES" : "UPDATE FROM SOURCE";
+        RemoveButton.IsEnabled = set.IsInstalled && !isDisplayModeConfiguration;
+        RemoveButton.IsVisible = !isDisplayModeConfiguration;
     }
 
     private void OnReplaceClicked(object? sender, EventArgs e)
@@ -55,6 +58,12 @@ public partial class AssetSetPage : ContentPage
                 AssetImportPreview downloaded = await Task.Run(() => assets.PreparePalettePackAsync(pocket, progress));
                 imports.SetPalettePack(new PalettePackCatalog(pocket, downloaded.Changes, downloaded.StagingPath!));
                 await Shell.Current.GoToAsync("PalettePackPage");
+                return;
+            }
+            else if (set.Key == "gba-display-modes")
+            {
+                imports.SetPreview(await Task.Run(() => assets.PrepareGbaDisplayModeConfiguration(pocket)));
+                await Shell.Current.GoToAsync("AssetReviewPage");
                 return;
             }
             else if (set.Key == "platform")

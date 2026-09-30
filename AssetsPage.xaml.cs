@@ -1,5 +1,6 @@
 using EzPocket.Models;
 using EzPocket.Services;
+using System.Text.Json;
 
 namespace EzPocket;
 
@@ -38,12 +39,14 @@ public partial class AssetsPage : ContentPage
         DownloadPackButton.IsEnabled = pocket is not null;
         LibraryArtButton.IsEnabled = pocket is not null;
         PlatformArtButton.IsEnabled = pocket is not null;
+        DisplayModesButton.IsEnabled = pocket is not null;
         if (pocket is null)
         {
             TargetSummary.Text = "Select a target to inspect optional core assets.";
             PaletteSummary.Text = "Target unavailable";
             PaletteList.ItemsSource = null;
             AssetSetList.ItemsSource = null;
+            DisplayModeSummary.Text = "Target unavailable";
             return;
         }
 
@@ -51,7 +54,10 @@ public partial class AssetsPage : ContentPage
         TargetSummary.Text = $"Target: {pocket.Name}. Assets are additive and reviewed separately from core packages.";
         PaletteSummary.Text = palettes.Count == 1 ? "1 palette installed" : $"{palettes.Count} palettes installed";
         PaletteList.ItemsSource = palettes;
-        AssetSetList.ItemsSource = assets.ScanAssetSets(pocket);
+        IReadOnlyList<AssetSetInventory> assetSets = assets.ScanAssetSets(pocket);
+        AssetSetList.ItemsSource = assetSets;
+        int modeFiles = assetSets.First(set => set.Key == "gba-display-modes").FileCount;
+        DisplayModeSummary.Text = modeFiles == 1 ? "1 GBA core configuration found" : $"{modeFiles} GBA core configurations found";
     }
 
     private async void OnImportClicked(object? sender, EventArgs e)
@@ -111,6 +117,24 @@ public partial class AssetsPage : ContentPage
 
     private async void OnPaletteEditorClicked(object? sender, EventArgs e) =>
         await OpenResourceAsync("https://www.nortakales.com/page/gbpEditor");
+
+    private async void OnDisplayModesClicked(object? sender, EventArgs e)
+    {
+        PocketDrive? pocket = selection.SelectedPocket;
+        if (pocket is null) return;
+        DisplayModesButton.IsEnabled = false;
+        DisplayModesButton.IsBusy = true;
+        try
+        {
+            imports.SetPreview(await Task.Run(() => assets.PrepareGbaDisplayModeConfiguration(pocket)));
+            await Shell.Current.GoToAsync("AssetReviewPage");
+        }
+        catch (Exception exception) when (exception is IOException or UnauthorizedAccessException or InvalidDataException or JsonException)
+        {
+            Status.Text = "Could not prepare the installed GBA core configurations for review.";
+        }
+        finally { DisplayModesButton.IsEnabled = true; DisplayModesButton.IsBusy = false; }
+    }
 
     private void OnLibraryArtClicked(object? sender, EventArgs e)
     {

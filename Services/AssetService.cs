@@ -1,5 +1,7 @@
 using EzPocket.Models;
 using System.IO.Compression;
+using System.Text.Json;
+using System.Text.Json.Nodes;
 
 namespace EzPocket.Services;
 
@@ -18,6 +20,7 @@ public sealed class AssetService
     private const string LynxBoxArtUrl = "https://github.com/g026r/pocket-lynx-library-images/releases/latest/download/BoxArt.zip";
     private const string PcEngineBoxArtUrl = "https://github.com/g026r/pocket-pce-library-images/releases/latest/download/BoxArt.zip";
     private const string PlatformArtUrl = "https://github.com/Shissa43/Analogue-Pocket-Platform-Art/archive/refs/heads/main.zip";
+    private static readonly string[] RecommendedGbaDisplayModes = ["0x10", "0x30", "0x40", "0x41", "0x42"];
     private readonly string backupRoot;
     private readonly string stagingRoot;
     private readonly HttpClient client;
@@ -74,7 +77,8 @@ public sealed class AssetService
             ("ngp", "Neo Geo Pocket / Color", "Library box art", "System/Library/Images/ngp"),
             ("lynx", "Atari Lynx", "Library box art", "System/Library/Images/lynx"),
             ("pce", "PC Engine", "Library box art", "System/Library/Images/pce"),
-            ("platform", "openFPGA launcher", "Platform art", "Platforms/_images")
+            ("platform", "openFPGA launcher", "Platform art", "Platforms/_images"),
+            ("gba-display-modes", "openFPGA GBA display modes", "Core configuration", "Cores")
         };
 
         return sets.Select(set => ScanAssetSet(pocket, set.Key, set.Name, set.Kind, set.Directory)).ToArray();
@@ -88,7 +92,7 @@ public sealed class AssetService
         try
         {
             IReadOnlyList<ManagedAsset> files = Directory.EnumerateFiles(directory, "*", SearchOption.AllDirectories)
-                .Where(path => set.Key == "palettes" ? IsPaletteFile(path) : string.Equals(Path.GetExtension(path), ".bin", StringComparison.OrdinalIgnoreCase))
+                .Where(path => IsAssetSetFile(set.Key, path))
                 .Select(path => new FileInfo(path))
                 .Select(file => new ManagedAsset(set.Kind, Path.GetFileNameWithoutExtension(file.Name), Path.GetRelativePath(pocket.RootPath, file.FullName), set.Key == "palettes" ? FormatForExtension(file.Extension) : "Library image (.bin)", file.Length, set.Name))
                 .OrderBy(file => file.RelativePath, StringComparer.OrdinalIgnoreCase)
@@ -142,7 +146,7 @@ public sealed class AssetService
         try
         {
             FileInfo[] files = Directory.EnumerateFiles(directory, "*", SearchOption.AllDirectories)
-                .Where(path => key == "palettes" ? IsPaletteFile(path) : string.Equals(Path.GetExtension(path), ".bin", StringComparison.OrdinalIgnoreCase))
+                .Where(path => IsAssetSetFile(key, path))
                 .Select(path => new FileInfo(path))
                 .ToArray();
             return new AssetSetInventory(key, name, kind, relativeDirectory, files.Length, files.Sum(file => file.Length));
@@ -163,6 +167,42 @@ public sealed class AssetService
     {
         return PreparePaletteSources(pocket, sourcePaths.Where(path => !string.IsNullOrWhiteSpace(path))
             .Select(path => new PaletteSource(path, Path.Combine(PaletteRelativeDirectory, Path.GetFileName(path)))));
+    }
+
+    /// <summary>Adds Pocket's built-in display modes to installed openFPGA GBA cores for explicit review.</summary>
+    public AssetImportPreview PrepareGbaDisplayModeConfiguration(PocketDrive pocket)
+    {
+        string stagingPath = Path.Combine(stagingRoot, Guid.NewGuid().ToString("N"));
+        Directory.CreateDirectory(stagingPath);
+        try
+        {
+            var sources = new List<PaletteSource>();
+            string coresPath = Path.Combine(pocket.RootPath, "Cores");
+            if (Directory.Exists(coresPath))
+            foreach (string videoPath in Directory.EnumerateFiles(coresPath, "video.json", SearchOption.AllDirectories)
+                         .Where(path => path.Contains("gba", StringComparison.OrdinalIgnoreCase)))
+            {
+                string relativePath = Path.GetRelativePath(pocket.RootPath, videoPath);
+                if (!IsSafeRelativePath(relativePath)) continue;
+                JsonObject root = JsonNode.Parse(File.ReadAllText(videoPath)) as JsonObject
+                    ?? throw new InvalidDataException($"{relativePath} is not a JSON object.");
+                JsonObject video = root["video"] as JsonObject ?? root;
+                JsonArray displayModes = video["display_modes"] as JsonArray ?? new JsonArray();
+                var enabledIds = displayModes.OfType<JsonObject>().Select(mode => mode["id"]?.GetValue<string>())
+                    .Where(id => !string.IsNullOrWhiteSpace(id)).ToHashSet(StringComparer.OrdinalIgnoreCase);
+                foreach (string id in RecommendedGbaDisplayModes)
+                    if (!enabledIds.Contains(id)) displayModes.Add(new JsonObject { ["id"] = id });
+                if (displayModes.Count > 16) throw new InvalidDataException($"{relativePath} would exceed Pocket's 16 display-mode limit.");
+                video["display_modes"] = displayModes;
+                string stagedPath = Path.Combine(stagingPath, relativePath);
+                Directory.CreateDirectory(Path.GetDirectoryName(stagedPath)!);
+                File.WriteAllText(stagedPath, root.ToJsonString(new JsonSerializerOptions { WriteIndented = true }));
+                if (!FilesMatch(videoPath, stagedPath)) sources.Add(new PaletteSource(stagedPath, relativePath));
+            }
+            AssetImportPreview preview = PrepareConfigurationSources(pocket, sources, "openFPGA GBA display modes");
+            return preview with { StagingPath = stagingPath, Kind = "openFPGA GBA display modes" };
+        }
+        catch { TryDeleteDirectory(stagingPath); throw; }
     }
 
     /// <summary>Downloads the maintained palette collection into temporary staging, then prepares the normal explicit-write review.</summary>
@@ -374,6 +414,27 @@ public sealed class AssetService
         return new AssetImportPreview(pocket, changes, blockers);
     }
 
+    private AssetImportPreview PrepareConfigurationSources(PocketDrive pocket, IEnumerable<PaletteSource> sourceFiles, string kind)
+    {
+        var changes = new List<AssetFileChange>();
+        var blockers = new List<string>();
+        foreach (PaletteSource source in sourceFiles)
+        {
+            try
+            {
+                if (!IsSafeRelativePath(source.TargetRelativePath) || !source.TargetRelativePath.StartsWith($"Cores{Path.DirectorySeparatorChar}", StringComparison.OrdinalIgnoreCase)) { blockers.Add("A display-mode configuration has an unsafe target path."); continue; }
+                string destination = Path.Combine(pocket.RootPath, source.TargetRelativePath);
+                if (!File.Exists(destination)) { blockers.Add($"{source.TargetRelativePath} is no longer available."); continue; }
+                var file = new FileInfo(source.SourcePath);
+                changes.Add(new AssetFileChange(source.SourcePath, source.TargetRelativePath, Path.GetDirectoryName(source.TargetRelativePath) ?? "Core", "Core video configuration (.json)", file.Length, true));
+            }
+            catch (IOException exception) { diagnostics.Error("DisplayModePrepareFailed", exception); blockers.Add("A core video configuration could not be read."); }
+            catch (UnauthorizedAccessException exception) { diagnostics.Error("DisplayModePrepareFailed", exception); blockers.Add("A core video configuration could not be read."); }
+        }
+        if (changes.Count == 0 && blockers.Count == 0) blockers.Add("No installed openFPGA GBA core needs these display modes.");
+        return new AssetImportPreview(pocket, changes, blockers, Kind: kind);
+    }
+
     public AssetImportResult Apply(AssetImportPreview preview, IProgress<AssetImportProgress>? progress = null)
     {
         if (!preview.CanApply) return new AssetImportResult(false, 0, 0, null, "Resolve the asset review before applying it.");
@@ -403,7 +464,8 @@ public sealed class AssetService
                 progress?.Report(new AssetImportProgress(index + 1, preview.Changes.Count, change.Name, change.ReplacesExisting));
             }
 
-            string message = $"Added {added.Count} palette file{(added.Count == 1 ? string.Empty : "s")}" +
+            string item = preview.Kind.Contains("display mode", StringComparison.OrdinalIgnoreCase) ? "core configuration" : "asset file";
+            string message = $"Added {added.Count} {item}{(added.Count == 1 ? string.Empty : "s")}" +
                 (replaced.Count > 0 ? $" and replaced {replaced.Count}." : ".");
             diagnostics.Info("AssetImportApplied", new Dictionary<string, string?> { ["ChangeCount"] = preview.Changes.Count.ToString() });
             return new AssetImportResult(true, added.Count, replaced.Count, Directory.Exists(backupPath) ? backupPath : null, message);
@@ -428,6 +490,13 @@ public sealed class AssetService
     private static bool IsPaletteFile(string path) =>
         string.Equals(Path.GetExtension(path), ".pal", StringComparison.OrdinalIgnoreCase) ||
         string.Equals(Path.GetExtension(path), ".gbp", StringComparison.OrdinalIgnoreCase);
+
+    private static bool IsAssetSetFile(string key, string path) => key switch
+    {
+        "palettes" => IsPaletteFile(path),
+        "gba-display-modes" => string.Equals(Path.GetFileName(path), "video.json", StringComparison.OrdinalIgnoreCase) && path.Contains("gba", StringComparison.OrdinalIgnoreCase),
+        _ => string.Equals(Path.GetExtension(path), ".bin", StringComparison.OrdinalIgnoreCase)
+    };
 
     private static bool IsValidApgb(string path)
     {

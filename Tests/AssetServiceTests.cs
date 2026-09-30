@@ -61,6 +61,32 @@ public sealed class AssetServiceTests
         finally { Directory.Delete(root, true); }
     }
 
+    [Fact]
+    public void PrepareGbaDisplayModesStagesOnlyOpenFpgaGbaVideoConfiguration()
+    {
+        string root = CreateTempFolder();
+        try
+        {
+            string pocketPath = Path.Combine(root, "Pocket");
+            string gbaVideo = Path.Combine(pocketPath, "Cores", "spiritualized.GBA", "video.json");
+            string gbcVideo = Path.Combine(pocketPath, "Cores", "spiritualized.GBC", "video.json");
+            Directory.CreateDirectory(Path.GetDirectoryName(gbaVideo)!);
+            Directory.CreateDirectory(Path.GetDirectoryName(gbcVideo)!);
+            File.WriteAllText(gbaVideo, "{\"video\":{\"magic\":\"APF_VER_1\",\"display_modes\":[{\"id\":\"0x41\"}]}}");
+            File.WriteAllText(gbcVideo, "{\"video\":{\"magic\":\"APF_VER_1\"}}");
+            var service = new AssetService(backupRoot: Path.Combine(root, "backups"), stagingRoot: Path.Combine(root, "staging"));
+            var pocket = new PocketDrive(pocketPath, "Pocket", DriveType.Unknown, 0, 0, 0, [], 0, []);
+
+            AssetImportPreview preview = service.PrepareGbaDisplayModeConfiguration(pocket);
+
+            AssetFileChange change = Assert.Single(preview.Changes);
+            Assert.Equal(Path.Combine("Cores", "spiritualized.GBA", "video.json"), change.RelativePath);
+            Assert.Contains("0x42", File.ReadAllText(change.SourcePath));
+            Assert.False(change.RelativePath.Contains("spiritualized.GBC", StringComparison.OrdinalIgnoreCase));
+        }
+        finally { Directory.Delete(root, true); }
+    }
+
     private static byte[] Apgb(byte color)
     {
         byte[] value = Enumerable.Repeat(color, 56).ToArray();
