@@ -183,7 +183,7 @@ jobs:
 
           This prerelease contains an unsigned, self-contained Windows preview ZIP for tester validation. Extract into a new folder and launch EzPocket.exe. No separate runtime installer is required. Windows may show a SmartScreen warning or organization policy may block it.
 
-          The experimental Linux x64 archive is uploaded by the Linux release job after the Windows preview passes its startup check. Extract it on a Linux desktop with GTK 4.12+ and launch EzPocket.Linux. The Linux build has not yet been runtime tested on a Linux desktop.
+          The experimental Linux x64 archive is uploaded by the Linux release job after the Windows preview passes its startup check. Extract it on a Linux desktop with GTK 4.12+ and launch EzPocket.Linux. CI checks Linux startup under a virtual display; desktop and device testing remain in progress.
 
           Use only with a backed-up Pocket SD card. Review changes before writing, safely eject the card afterward, and report issues with the included diagnostics where possible.
 
@@ -217,10 +217,13 @@ jobs:
       - name: Install GTK4 build dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y libgtk-4-dev gobject-introspection libgirepository1.0-dev gir1.2-gtk-4.0 pkg-config
+          sudo apt-get install -y libgtk-4-dev gobject-introspection libgirepository1.0-dev gir1.2-gtk-4.0 pkg-config xvfb xauth
 
       - name: Publish self-contained Linux preview
         run: dotnet publish Linux/EzPocket.Linux.csproj -c Release -r linux-x64 --self-contained true -o artifacts/ez-pocket-linux-x64
+
+      - name: Check packaged Linux startup
+        run: bash scripts/test-linux-startup.sh artifacts/ez-pocket-linux-x64/EzPocket.Linux
 
       - name: Write Linux preview instructions
         run: |

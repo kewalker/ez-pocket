@@ -1,6 +1,7 @@
 using EzPocket.Services;
 using Microsoft.Extensions.Logging;
 #if LINUX
+using Microsoft.Maui.Platforms.Linux.Gtk4.Essentials.Hosting;
 using Microsoft.Maui.Platforms.Linux.Gtk4.Hosting;
 #endif
 
@@ -12,7 +13,8 @@ public static class MauiProgram
     {
         var builder = MauiApp.CreateBuilder();
 #if LINUX
-        builder.UseMauiAppLinuxGtk4<App>();
+        builder.UseMauiAppLinuxGtk4<App>()
+            .AddLinuxGtk4Essentials();
 #else
         builder.UseMauiApp<App>();
 #endif

@@ -3,11 +3,11 @@
 ## Current desktop release status
 
 GitHub Actions builds and tests the Windows target on pull requests and `main`.
-Pushing a version tag such as `v0.1.7` produces two **unsigned** Windows x64 artifacts, retained for 14 days, and an experimental Linux x64 archive. The workflow creates or updates a clearly labelled GitHub **prerelease** with the preview ZIP and Linux archive:
+Pushing a version tag such as `v0.1.8` produces two **unsigned** Windows x64 artifacts, retained for 14 days, and an experimental Linux x64 archive. The workflow creates or updates a clearly labelled GitHub **prerelease** with the preview ZIP and Linux archive:
 
 - An MSIX package for eventual trusted signing.
 - A self-contained, unpackaged Windows publish folder compressed as a ZIP. Extract into a new folder and launch `EzPocket.exe`; no separate runtime installer is required.
-- A self-contained Linux GTK4 publish folder compressed as a tarball. Extract on a Linux desktop with GTK 4.12+ and launch `EzPocket.Linux`. This is an experimental build pending runtime validation on Linux.
+- A self-contained Linux GTK4 publish folder compressed as a tarball. Extract on a Linux desktop with GTK 4.12+ and launch `EzPocket.Linux`. CI checks startup under a virtual display; desktop and device testing remain in progress.
 
 MSIX and ZIP builds use separate jobs and fresh checkouts. Reusing MSIX intermediate files for the ZIP can omit the WinUI theme resources from `resources.pri`, causing an immediate startup crash. CI extracts and launches the ZIP before publishing it, requiring a window to be created and the process to remain running. This is a startup check, not a full clean-machine compatibility test.
 
