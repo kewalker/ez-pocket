@@ -296,7 +296,7 @@ public sealed class SaveVaultService
     {
         string targetPath = Path.GetFullPath(Path.Combine(pocketRoot, relativePath.Replace('/', Path.DirectorySeparatorChar)));
         string rootPath = Path.GetFullPath(pocketRoot).TrimEnd(Path.DirectorySeparatorChar) + Path.DirectorySeparatorChar;
-        if (!targetPath.StartsWith(rootPath, StringComparison.OrdinalIgnoreCase)) throw new InvalidDataException("Snapshot entry escapes the Pocket target.");
+        if (!targetPath.StartsWith(rootPath, TargetPaths.Comparison)) throw new InvalidDataException("Snapshot entry escapes the Pocket target.");
         string? directory = Path.GetDirectoryName(targetPath);
         if (string.IsNullOrWhiteSpace(directory)) throw new InvalidDataException("Snapshot entry does not have a target directory.");
         Directory.CreateDirectory(directory);

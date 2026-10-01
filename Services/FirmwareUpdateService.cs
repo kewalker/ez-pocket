@@ -126,7 +126,7 @@ public sealed class FirmwareUpdateService
                 cancellationToken.ThrowIfCancellationRequested();
                 string temporaryDestination = destination + ".ez-pocket-" + Guid.NewGuid().ToString("N") + ".tmp";
                 File.Copy(preview.FirmwareFilePath, temporaryDestination, true);
-                foreach (string existingFile in existingFiles.Where(file => !string.Equals(file, destination, StringComparison.OrdinalIgnoreCase)))
+                foreach (string existingFile in existingFiles.Where(file => !TargetPaths.Equal(file, destination)))
                     File.Delete(existingFile);
                 File.Move(temporaryDestination, destination, true);
                 Cleanup(preview.StagingPath);
@@ -201,7 +201,7 @@ public sealed class FirmwareUpdateService
     private static void EnsureRootDestination(string rootPath, string destination)
     {
         string root = Path.GetFullPath(rootPath).TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar) + Path.DirectorySeparatorChar;
-        if (!string.Equals(Path.GetDirectoryName(Path.GetFullPath(destination)) + Path.DirectorySeparatorChar, root, StringComparison.OrdinalIgnoreCase))
+        if (!TargetPaths.Equal(Path.GetDirectoryName(Path.GetFullPath(destination)) + Path.DirectorySeparatorChar, root))
             throw new IOException("Firmware can only be staged at the root of the selected Pocket.");
     }
 

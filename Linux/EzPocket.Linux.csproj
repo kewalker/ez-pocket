@@ -1,0 +1,42 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <OutputType>Exe</OutputType>
+    <RootNamespace>EzPocket</RootNamespace>
+    <ApplicationTitle>EzPocket</ApplicationTitle>
+    <ApplicationId>com.bitbird.ezpocket</ApplicationId>
+    <ApplicationDisplayVersion>0.1.7</ApplicationDisplayVersion>
+    <ApplicationVersion>8</ApplicationVersion>
+    <Version>$(ApplicationDisplayVersion)</Version>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <MauiEnableXamlCBindingWithSourceCompilation>true</MauiEnableXamlCBindingWithSourceCompilation>
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+    <EnableDefaultEmbeddedResourceItems>false</EnableDefaultEmbeddedResourceItems>
+    <DefineConstants>$(DefineConstants);LINUX</DefineConstants>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Maui.Platforms.Linux.Gtk4" Version="0.1.0-preview.12.26368.2" />
+    <PackageReference Include="Microsoft.Maui.Platforms.Linux.Gtk4.Essentials" Version="0.1.0-preview.12.26368.2" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="10.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Include="Program.cs" />
+    <Compile Include="LinuxFolderPickerService.cs" />
+    <Compile Include="..\*.cs" Link="%(Filename)%(Extension)" />
+    <Compile Include="..\Controls\**\*.cs" Link="Controls\%(RecursiveDir)%(Filename)%(Extension)" />
+    <Compile Include="..\Models\**\*.cs" Link="Models\%(RecursiveDir)%(Filename)%(Extension)" />
+    <Compile Include="..\Services\**\*.cs" Link="Services\%(RecursiveDir)%(Filename)%(Extension)" />
+
+    <MauiXaml Include="..\*.xaml" Link="%(Filename)%(Extension)" />
+    <MauiXaml Include="..\Controls\**\*.xaml" Link="Controls\%(RecursiveDir)%(Filename)%(Extension)" />
+    <MauiXaml Include="..\Resources\Styles\*.xaml" Link="Resources\Styles\%(Filename)%(Extension)" />
+
+    <MauiIcon Include="..\Resources\AppIcon\appicon.svg" ForegroundFile="..\Resources\AppIcon\appiconfg.svg" Color="#151515" />
+    <MauiImage Include="..\Resources\Images\*" />
+    <MauiFont Include="..\Resources\Fonts\*" />
+    <MauiAsset Include="..\Resources\Raw\**" LogicalName="%(RecursiveDir)%(Filename)%(Extension)" />
+  </ItemGroup>
+</Project>

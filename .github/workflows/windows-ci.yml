@@ -1,4 +1,4 @@
-name: Windows CI
+name: Desktop CI
 
 on:
   push:
@@ -21,10 +21,10 @@ jobs:
       - name: Check out source
         uses: actions/checkout@v7
 
-      - name: Set up .NET 9
+      - name: Set up .NET 10
         uses: actions/setup-dotnet@v6
         with:
-          dotnet-version: 9.0.x
+          dotnet-version: 10.0.x
 
       - name: Cache NuGet packages
         uses: actions/cache@v4
@@ -35,10 +35,10 @@ jobs:
             ${{ runner.os }}-nuget-
 
       - name: Install .NET MAUI Windows workload
-        run: dotnet workload install maui-windows --skip-manifest-update
+        run: dotnet workload install maui-windows maui-tizen --skip-manifest-update
 
       - name: Restore dependencies
-        run: dotnet restore EzPocket.sln -p:TargetFramework=net9.0-windows10.0.19041.0
+        run: dotnet restore EzPocket.sln -p:TargetFramework=net10.0-windows10.0.19041.0
 
       - name: Verify version tag matches app version
         if: startsWith(github.ref, 'refs/tags/v')
@@ -51,10 +51,10 @@ jobs:
           }
 
       - name: Build Windows app and tests
-        run: dotnet build EzPocket.sln -f net9.0-windows10.0.19041.0 --no-restore
+        run: dotnet build EzPocket.sln -f net10.0-windows10.0.19041.0 --no-restore
 
       - name: Run tests
-        run: dotnet test Tests/EzPocket.Tests.csproj -f net9.0-windows10.0.19041.0 --no-build --no-restore
+        run: dotnet test Tests/EzPocket.Tests.csproj -f net10.0-windows10.0.19041.0 --no-build --no-restore
 
   package-windows:
     name: Package unsigned Windows MSIX
@@ -67,10 +67,10 @@ jobs:
       - name: Check out source
         uses: actions/checkout@v7
 
-      - name: Set up .NET 9
+      - name: Set up .NET 10
         uses: actions/setup-dotnet@v6
         with:
-          dotnet-version: 9.0.x
+          dotnet-version: 10.0.x
 
       - name: Cache NuGet packages
         uses: actions/cache@v4
@@ -81,15 +81,15 @@ jobs:
             ${{ runner.os }}-nuget-
 
       - name: Install .NET MAUI Windows workload
-        run: dotnet workload install maui-windows --skip-manifest-update
+        run: dotnet workload install maui-windows maui-tizen --skip-manifest-update
 
       - name: Restore dependencies
-        run: dotnet restore EzPocket.sln -p:TargetFramework=net9.0-windows10.0.19041.0 -r win-x64 -p:PublishReadyToRun=true
+        run: dotnet restore EzPocket.sln -p:TargetFramework=net10.0-windows10.0.19041.0 -r win-x64 -p:PublishReadyToRun=true
 
       - name: Create unsigned MSIX
         run: >
           dotnet publish EzPocket.csproj
-          -f net9.0-windows10.0.19041.0
+          -f net10.0-windows10.0.19041.0
           -c Release
           --no-restore
           -p:RuntimeIdentifierOverride=win-x64
@@ -114,14 +114,14 @@ jobs:
       - uses: actions/checkout@v7
       - uses: actions/setup-dotnet@v6
         with:
-          dotnet-version: 9.0.x
+          dotnet-version: 10.0.x
       - name: Install .NET MAUI Windows workload
-        run: dotnet workload install maui-windows --skip-manifest-update
+        run: dotnet workload install maui-windows maui-tizen --skip-manifest-update
 
       - name: Publish self-contained Windows preview
         run: >
           dotnet publish EzPocket.csproj
-          -f net9.0-windows10.0.19041.0
+          -f net10.0-windows10.0.19041.0
           -c Release
           --self-contained true
           -p:RuntimeIdentifierOverride=win-x64
@@ -179,9 +179,11 @@ jobs:
           $tag = "${{ github.ref_name }}"
           $previewZip = "artifacts/ez-pocket-$tag-win-x64.zip"
           @"
-          ## Windows Technical Preview
+          ## Desktop Technical Preview
 
           This prerelease contains an unsigned, self-contained Windows preview ZIP for tester validation. Extract into a new folder and launch EzPocket.exe. No separate runtime installer is required. Windows may show a SmartScreen warning or organization policy may block it.
+
+          The experimental Linux x64 archive is uploaded by the Linux release job after the Windows preview passes its startup check. Extract it on a Linux desktop with GTK 4.12+ and launch EzPocket.Linux. The Linux build has not yet been runtime tested on a Linux desktop.
 
           Use only with a backed-up Pocket SD card. Review changes before writing, safely eject the card afterward, and report issues with the included diagnostics where possible.
 
@@ -193,5 +195,55 @@ jobs:
             gh release upload $tag $previewZip --clobber
           }
           else {
-            gh release create $tag $previewZip --title "$tag — Windows Technical Preview" --prerelease --notes-file release-notes.md
+            gh release create $tag $previewZip --title "$tag — Desktop Technical Preview" --prerelease --notes-file release-notes.md
           }
+
+  preview-linux:
+    name: Package experimental Linux preview
+    if: startsWith(github.ref, 'refs/tags/v')
+    needs: preview-windows
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+
+      - name: Set up .NET 10
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0.x
+
+      - name: Install GTK4 build dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libgtk-4-dev gobject-introspection libgirepository1.0-dev gir1.2-gtk-4.0 pkg-config
+
+      - name: Publish self-contained Linux preview
+        run: dotnet publish Linux/EzPocket.Linux.csproj -c Release -r linux-x64 --self-contained true -o artifacts/ez-pocket-linux-x64
+
+      - name: Write Linux preview instructions
+        run: |
+          cat > artifacts/ez-pocket-linux-x64/README.txt <<'EOF'
+          ez-pocket Linux GTK4 Technical Preview
+
+          Install GTK 4.12 or later and its introspection typelib for your distribution.
+          Extract the entire archive, then run ./EzPocket.Linux from this directory.
+
+          This is an experimental build. Back up the Pocket SD card before testing.
+          Scan and review all changes before applying them.
+
+          ez-pocket is independent and is not affiliated with Analogue.
+          EOF
+
+      - name: Create Linux preview archive
+        shell: bash
+        run: |
+          test -f artifacts/ez-pocket-linux-x64/EzPocket.Linux
+          tar -C artifacts/ez-pocket-linux-x64 -czf artifacts/ez-pocket-${{ github.ref_name }}-linux-x64.tar.gz .
+          tar -tzf artifacts/ez-pocket-${{ github.ref_name }}-linux-x64.tar.gz > /dev/null
+
+      - name: Upload Linux preview to release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release upload "${{ github.ref_name }}" "artifacts/ez-pocket-${{ github.ref_name }}-linux-x64.tar.gz" --clobber

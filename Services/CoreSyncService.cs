@@ -285,7 +285,9 @@ public sealed class CoreSyncService
 
     private string GetPocketBackupRoot(string pocketPath)
     {
-        byte[] hash = SHA256.HashData(Encoding.UTF8.GetBytes(Path.GetFullPath(pocketPath).ToUpperInvariant()));
+        string normalizedPath = Path.GetFullPath(pocketPath);
+        byte[] hash = SHA256.HashData(Encoding.UTF8.GetBytes(
+            OperatingSystem.IsWindows() ? normalizedPath.ToUpperInvariant() : normalizedPath));
         string key = Convert.ToHexString(hash)[..16];
         return Path.Combine(backupRoot, key);
     }
@@ -339,7 +341,7 @@ public sealed class CoreSyncService
             if (extractedBytes > MaximumPackageExtractedBytes)
                 throw new InvalidDataException($"Package expands beyond the {MaximumPackageExtractedBytes / 1024 / 1024} MB extraction limit.");
             string target = Path.GetFullPath(Path.Combine(extractPath, entry.FullName));
-            if (!target.StartsWith(root, StringComparison.OrdinalIgnoreCase))
+            if (!target.StartsWith(root, TargetPaths.Comparison))
                 throw new InvalidDataException("Package contains an unsafe file path.");
             Directory.CreateDirectory(Path.GetDirectoryName(target)!);
             entry.ExtractToFile(target, true);
@@ -413,13 +415,13 @@ public sealed class CoreSyncService
     private static bool TryValidateApplyTarget(CoreSyncPreview preview, out string problem)
     {
         string currentPath = Path.GetFullPath(preview.PocketPath);
-        if (!string.Equals(currentPath, preview.TargetSnapshot.FullPath, StringComparison.OrdinalIgnoreCase) || !Directory.Exists(currentPath))
+        if (!TargetPaths.Equal(currentPath, preview.TargetSnapshot.FullPath) || !Directory.Exists(currentPath))
         {
             problem = "The selected Pocket target is no longer available. Re-scan and prepare the changes again.";
             return false;
         }
         DriveInfo? drive = FindContainingDrive(currentPath);
-        if (!string.Equals(drive?.RootDirectory.FullName, preview.TargetSnapshot.VolumeRoot, StringComparison.OrdinalIgnoreCase) ||
+        if (!TargetPaths.Equal(drive?.RootDirectory.FullName, preview.TargetSnapshot.VolumeRoot) ||
             drive?.TotalSize != preview.TargetSnapshot.TotalSize ||
             !string.Equals(drive?.VolumeLabel, preview.TargetSnapshot.VolumeLabel, StringComparison.Ordinal))
         {
@@ -436,7 +438,7 @@ public sealed class CoreSyncService
     }
 
     private static DriveInfo? FindContainingDrive(string fullPath) => DriveInfo.GetDrives()
-        .Where(candidate => candidate.IsReady && fullPath.StartsWith(candidate.RootDirectory.FullName, StringComparison.OrdinalIgnoreCase))
+        .Where(candidate => candidate.IsReady && TargetPaths.Contains(candidate.RootDirectory.FullName, fullPath))
         .OrderByDescending(candidate => candidate.RootDirectory.FullName.Length)
         .FirstOrDefault();
 

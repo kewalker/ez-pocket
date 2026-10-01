@@ -34,9 +34,42 @@ public sealed class PocketScanner
             catch (IOException) { }
             catch (UnauthorizedAccessException) { }
         }
+        if (OperatingSystem.IsLinux())
+        {
+            // Removable media usually appears below one of these mount directories,
+            // rather than as a separate filesystem root in DriveInfo.GetDrives().
+            foreach (string mountParent in LinuxMountParents())
+            {
+                if (!Directory.Exists(mountParent)) continue;
+                try
+                {
+                    foreach (string mount in Directory.EnumerateDirectories(mountParent))
+                    {
+                        PocketDrive? pocket = ScanFolder(mount);
+                        if (pocket?.LooksLikePocket == true &&
+                            !results.Any(candidate => PathEquals(candidate.RootPath, pocket.RootPath)))
+                            results.Add(pocket);
+                    }
+                }
+                catch (IOException) { }
+                catch (UnauthorizedAccessException) { }
+            }
+        }
         diagnostics.Info("PocketScanCompleted", new Dictionary<string, string?> { ["CandidateCount"] = results.Count.ToString() });
         return results;
     }
+
+    private static IEnumerable<string> LinuxMountParents()
+    {
+        string user = Environment.UserName;
+        yield return Path.Combine("/media", user);
+        yield return Path.Combine("/run/media", user);
+        yield return "/mnt";
+    }
+
+    private static bool PathEquals(string left, string right) => TargetPaths.Equal(
+        Path.TrimEndingDirectorySeparator(Path.GetFullPath(left)),
+        Path.TrimEndingDirectorySeparator(Path.GetFullPath(right)));
 
     public PocketDrive? ScanFolder(string folderPath)
     {
@@ -53,7 +86,7 @@ public sealed class PocketScanner
                 ? Directory.EnumerateDirectories(coresPath).Select(Path.GetFileName).Where(name => name is not null).Cast<string>().OrderBy(name => name).ToArray()
                 : [];
             DriveInfo? drive = DriveInfo.GetDrives()
-                .Where(candidate => rootPath.StartsWith(candidate.RootDirectory.FullName, StringComparison.OrdinalIgnoreCase))
+                .Where(candidate => TargetPaths.Contains(candidate.RootDirectory.FullName, rootPath))
                 .OrderByDescending(candidate => candidate.RootDirectory.FullName.Length)
                 .FirstOrDefault();
 

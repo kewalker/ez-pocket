@@ -1,5 +1,8 @@
 using EzPocket.Services;
 using Microsoft.Extensions.Logging;
+#if LINUX
+using Microsoft.Maui.Platforms.Linux.Gtk4.Hosting;
+#endif
 
 namespace EzPocket;
 
@@ -8,8 +11,12 @@ public static class MauiProgram
     public static MauiApp CreateMauiApp()
     {
         var builder = MauiApp.CreateBuilder();
+#if LINUX
+        builder.UseMauiAppLinuxGtk4<App>();
+#else
+        builder.UseMauiApp<App>();
+#endif
         builder
-            .UseMauiApp<App>()
             .ConfigureFonts(fonts =>
             {
                 fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
@@ -31,6 +38,8 @@ public static class MauiProgram
         builder.Services.AddSingleton<PocketHealthService>();
 #if WINDOWS
         builder.Services.AddSingleton<IFolderPickerService, WindowsFolderPickerService>();
+#elif LINUX
+        builder.Services.AddSingleton<IFolderPickerService, LinuxFolderPickerService>();
 #else
         builder.Services.AddSingleton<IFolderPickerService, UnsupportedFolderPickerService>();
 #endif

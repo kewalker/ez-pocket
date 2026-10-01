@@ -21,26 +21,37 @@ Core updates and PocketOS firmware are intentionally separate workflows. Neither
 
 ## Platforms and status
 
-Windows is the current supported development target. The project also contains .NET MAUI targets for macOS (Mac Catalyst), iOS, and Android, but Windows is the first-release focus; folder picking and target management are currently implemented for Windows.
+Windows is the current supported development target. An experimental Linux desktop head in `Linux/` reuses the same MAUI pages and services through the GTK4 backend. The project also contains .NET MAUI targets for macOS (Mac Catalyst), iOS, and Android. Linux has not yet been validated on a Linux desktop; tagged builds provide a technical preview for testing.
 
-The application is currently version `0.1.0` and remains under active development. Open an issue to report a bug, discuss an improvement, or ask about planned work.
+The application is currently version `0.1.7` and remains under active development. Open an issue to report a bug, discuss an improvement, or ask about planned work.
 
 ## Requirements
 
 - Windows 10 version 1809 or later for the Windows target.
-- .NET 9 SDK.
-- .NET MAUI Windows workload.
+- .NET 10 SDK.
+- .NET MAUI Windows and Tizen workloads. The .NET 10 MAUI restore currently checks for `maui-tizen` even when building only Windows.
+
+For the experimental Linux target, use a Linux desktop with the .NET 10 SDK and GTK 4.12 or later. The GTK4 backend is experimental and is not officially supported by Microsoft. On Debian or Ubuntu, install `libgtk-4-dev`, `gobject-introspection`, `libgirepository1.0-dev`, `gir1.2-gtk-4.0`, and `pkg-config`. WebKitGTK is only needed for Blazor content, which this app does not use.
 
 ## Build and run
 
 From a PowerShell prompt in the repository:
 
 ```powershell
-dotnet workload install maui-windows
-dotnet restore EzPocket.sln -p:TargetFramework=net9.0-windows10.0.19041.0
-dotnet build EzPocket.sln -f net9.0-windows10.0.19041.0 --no-restore
-dotnet run --project EzPocket.csproj -f net9.0-windows10.0.19041.0
+dotnet workload install maui-windows maui-tizen
+dotnet restore EzPocket.sln -p:TargetFramework=net10.0-windows10.0.19041.0
+dotnet build EzPocket.sln -f net10.0-windows10.0.19041.0 --no-restore
+dotnet run --project EzPocket.csproj -f net10.0-windows10.0.19041.0
 ```
+
+On a Linux desktop, from the repository root:
+
+```sh
+bash scripts/build-linux.sh
+dotnet run --project Linux/EzPocket.Linux.csproj --no-build
+```
+
+The Linux head uses the same .NET 10 generation as the main app and pins the `Microsoft.Maui.Platforms.Linux.Gtk4` preview packages. **SCAN TARGET** looks for Pocket folders mounted under `/media/$USER`, `/run/media/$USER`, and `/mnt`. **CHOOSE FOLDER** accepts an absolute path to another mounted target. Selecting a path only scans it; writes still require the normal review and explicit apply action.
 
 If a stale WinUI/MSBuild process prevents the XAML compiler from writing an `obj/.../input.json` file, run the following once and then repeat the build:
 
@@ -53,10 +64,10 @@ dotnet build-server shutdown
 After restoring and building the Windows target:
 
 ```powershell
-dotnet test Tests/EzPocket.Tests.csproj -f net9.0-windows10.0.19041.0 --no-build --no-restore
+dotnet test Tests/EzPocket.Tests.csproj -f net10.0-windows10.0.19041.0 --no-build --no-restore
 ```
 
-GitHub Actions builds and tests this same Windows target for pull requests and changes to `main`.
+GitHub Actions builds and tests the Windows target and compiles the experimental Linux GTK4 head for pull requests and changes to `main`.
 
 ## Typical workflow
 
@@ -78,7 +89,7 @@ Selecting a folder never writes to it by itself. Core and firmware writes requir
 
 ## Releases
 
-Tagged builds produce unsigned Windows artifacts for maintainer validation and technical preview testing. They are not yet normal public downloads: Windows may show SmartScreen warnings or organization policies may block unsigned executables.
+Tagged builds produce unsigned Windows preview artifacts and an experimental self-contained Linux x64 archive. They are for technical preview testing, not normal public downloads. Windows may show SmartScreen warnings or organization policies may block unsigned executables; the Linux archive requires GTK 4.12+ and has not yet been runtime tested on Linux.
 
 MSIX packaging and trusted signing are planned before a normal public download is offered. See [docs/RELEASING.md](docs/RELEASING.md) for artifact and signing details.
 
@@ -89,6 +100,7 @@ MSIX packaging and trusted signing are planned before a normal public download i
 | `Services/` | Target discovery, inventory, staging, sync, firmware, selection, and diagnostics services. |
 | `Models/` | Pocket, core, firmware, and change-preview models. |
 | `Platforms/Windows/` | Windows-specific folder selection and app configuration. |
+| `Linux/` | Experimental GTK4 app entry point and Linux target selection. |
 | `Tests/` | Fast service/domain tests. |
 | `docs/` | Maintainer and release documentation. |
 
