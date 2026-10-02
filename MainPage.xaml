@@ -21,7 +21,7 @@
                 </Border>
             </Grid>
             <Border BackgroundColor="#151515" StrokeThickness="0" Padding="20" StrokeShape="RoundRectangle 2">
-                <Grid RowDefinitions="Auto,Auto,Auto,Auto" ColumnDefinitions="*,Auto,Auto,Auto" ColumnSpacing="10" RowSpacing="12">
+                <Grid x:Name="TargetHeroGrid" RowDefinitions="Auto,Auto,Auto,Auto" ColumnDefinitions="*,Auto,Auto,Auto" ColumnSpacing="10" RowSpacing="12">
                     <Label Text="TARGET" TextColor="#AFAFAA" FontSize="11" FontAttributes="Bold" />
                     <Label x:Name="StatusTitle" Grid.Row="1" Text="No Pocket connected" TextColor="White" FontSize="24" FontAttributes="Bold" />
                     <Label x:Name="StatusDetail" Grid.Row="2" Text="Connect an SD card or choose a storage folder to begin." TextColor="#D2D2CC" FontSize="13" />
@@ -30,12 +30,12 @@
                         <Label x:Name="HealthStatusText" Text="HEALTH · UNAVAILABLE" TextColor="#D2D2CC" FontSize="11" FontAttributes="Bold" VerticalOptions="Center" />
                     </HorizontalStackLayout>
                     <controls:EzButton x:Name="ScanButton" Grid.Column="1" Grid.RowSpan="4" Text="SCAN TARGET" Clicked="OnScanClicked" FontAttributes="Bold" CornerRadius="2" ButtonPadding="18,10" ButtonBackgroundColor="#FFFFFF" ButtonTextColor="#151515" VerticalOptions="Center" />
-                    <controls:EzButton Grid.Column="2" Grid.RowSpan="4" Text="CHANGE TARGET" Clicked="OnChooseFolderClicked" FontAttributes="Bold" CornerRadius="2" ButtonPadding="16,10" ButtonBackgroundColor="#343434" ButtonTextColor="White" VerticalOptions="Center" />
+                    <controls:EzButton x:Name="ChangeTargetButton" Grid.Column="2" Grid.RowSpan="4" Text="CHANGE TARGET" Clicked="OnChooseFolderClicked" FontAttributes="Bold" CornerRadius="2" ButtonPadding="16,10" ButtonBackgroundColor="#343434" ButtonTextColor="White" VerticalOptions="Center" />
                     <controls:EzButton x:Name="HealthButton" Grid.Column="3" Grid.RowSpan="4" Text="CHECK HEALTH" IsEnabled="False" Clicked="OnHealthClicked" FontAttributes="Bold" CornerRadius="2" ButtonPadding="14,10" ButtonBackgroundColor="#343434" ButtonTextColor="White" VerticalOptions="Center" />
                 </Grid>
             </Border>
             <Border BackgroundColor="#F4F4F0" Stroke="#C9C9C2" StrokeShape="RoundRectangle 2" Padding="16">
-                <Grid ColumnDefinitions="*,Auto" ColumnSpacing="16">
+                <Grid x:Name="FirmwareCardGrid" ColumnDefinitions="*,Auto" ColumnSpacing="16">
                     <VerticalStackLayout Spacing="4">
                         <Label Text="FIRMWARE" FontSize="11" FontAttributes="Bold" TextColor="#151515" />
                         <Label x:Name="FirmwareActionTitle" Text="Update PocketOS firmware" FontSize="18" FontAttributes="Bold" TextColor="#151515" />
@@ -45,7 +45,7 @@
                 </Grid>
             </Border>
             <Border BackgroundColor="White" Stroke="#151515" StrokeThickness="1" StrokeShape="RoundRectangle 2" Padding="16">
-                <Grid ColumnDefinitions="*,Auto" ColumnSpacing="16">
+                <Grid x:Name="CoreCardGrid" ColumnDefinitions="*,Auto" ColumnSpacing="16">
                     <VerticalStackLayout Spacing="4">
                         <Label x:Name="NextStepEyebrow" Text="CORE INVENTORY" FontSize="11" FontAttributes="Bold" TextColor="#151515" />
                         <Label x:Name="NextStepTitle" Text="Review your cores" FontSize="18" FontAttributes="Bold" TextColor="#151515" />
@@ -55,7 +55,7 @@
                 </Grid>
             </Border>
             <Border BackgroundColor="White" Stroke="#151515" StrokeThickness="1" StrokeShape="RoundRectangle 2" Padding="16">
-                <Grid ColumnDefinitions="*,Auto" ColumnSpacing="16">
+                <Grid x:Name="SaveVaultCardGrid" ColumnDefinitions="*,Auto" ColumnSpacing="16">
                     <VerticalStackLayout Spacing="4">
                         <Label Text="SAVE VAULT" FontSize="11" FontAttributes="Bold" TextColor="#151515" />
                         <Label x:Name="SaveVaultActionTitle" Text="Protect saves and memories" FontSize="18" FontAttributes="Bold" TextColor="#151515" />
@@ -65,7 +65,7 @@
                 </Grid>
             </Border>
             <Border BackgroundColor="#F4F4F0" Stroke="#C9C9C2" StrokeShape="RoundRectangle 2" Padding="16">
-                <Grid ColumnDefinitions="*,Auto" ColumnSpacing="16">
+                <Grid x:Name="AssetsCardGrid" ColumnDefinitions="*,Auto" ColumnSpacing="16">
                     <VerticalStackLayout Spacing="4">
                         <Label Text="ASSET LIBRARY" FontSize="11" FontAttributes="Bold" TextColor="#151515" />
                         <Label x:Name="AssetsActionTitle" Text="Palettes and optional core files" FontSize="18" FontAttributes="Bold" TextColor="#151515" />
@@ -118,12 +118,12 @@
                 <Label x:Name="FeaturedSetupStatus" IsVisible="False" TextColor="#52627A" FontSize="13" />
             </VerticalStackLayout>
             <Label Text="TARGET OVERVIEW" FontSize="11" FontAttributes="Bold" TextColor="#151515" />
-            <Grid ColumnDefinitions="*,*,*" ColumnSpacing="12">
+            <Grid x:Name="TargetOverviewGrid" ColumnDefinitions="*,*,*" ColumnSpacing="12">
                 <Border BackgroundColor="White" Stroke="#C9C9C2" StrokeShape="RoundRectangle 2" Padding="14"><VerticalStackLayout Spacing="4"><Label Text="INSTALLED CORES" TextColor="#60605C" FontSize="11" FontAttributes="Bold" /><Label x:Name="CoreCountValue" Text="&#x2014;" FontSize="24" FontAttributes="Bold" TextColor="#151515" /><Label x:Name="CoreCountDetail" Text="Select a target first" TextColor="#60605C" FontSize="12" /></VerticalStackLayout></Border>
                 <Border Grid.Column="1" BackgroundColor="White" Stroke="#C9C9C2" StrokeShape="RoundRectangle 2" Padding="14"><VerticalStackLayout Spacing="4"><Label Text="CURRENT TARGET" TextColor="#60605C" FontSize="11" FontAttributes="Bold" /><Label x:Name="TargetValue" Text="None" FontSize="18" FontAttributes="Bold" TextColor="#151515" LineBreakMode="TailTruncation" /><Label x:Name="TargetDetail" Text="No folder selected" TextColor="#60605C" FontSize="12" LineBreakMode="TailTruncation" /></VerticalStackLayout></Border>
                 <Border Grid.Column="2" BackgroundColor="White" Stroke="#C9C9C2" StrokeShape="RoundRectangle 2" Padding="14"><VerticalStackLayout Spacing="4"><Label Text="CHANGES" TextColor="#60605C" FontSize="11" FontAttributes="Bold" /><Label Text="REVIEW FIRST" FontSize="16" FontAttributes="Bold" TextColor="#151515" /><Label Text="You approve each install, update, and removal." TextColor="#60605C" FontSize="12" /></VerticalStackLayout></Border>
             </Grid>
-            <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12">
+            <Grid x:Name="DiagnosticsGrid" ColumnDefinitions="*,Auto" ColumnSpacing="12">
                 <Label x:Name="DiagnosticsStatus" Text="Need help? Local diagnostics exclude target paths and exception messages." FontSize="11" TextColor="#60605C" VerticalOptions="Center" LineBreakMode="TailTruncation" />
                 <controls:EzButton x:Name="ExportDiagnosticsButton" Grid.Column="1" Text="EXPORT DIAGNOSTICS" Clicked="OnExportDiagnosticsClicked" FontSize="10" ButtonPadding="8,3" ButtonBackgroundColor="White" ButtonTextColor="#60605C" CornerRadius="0" VerticalOptions="Center" />
             </Grid>

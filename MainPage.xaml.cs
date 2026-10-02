@@ -1,5 +1,6 @@
 using EzPocket.Models;
 using EzPocket.Services;
+using EzPocket.Controls;
 
 namespace EzPocket;
 
@@ -20,6 +21,9 @@ public partial class MainPage : ContentPage
     public MainPage()
     {
         InitializeComponent();
+#if LINUX
+        ConfigureLinuxCompactLayout();
+#endif
         scanner = IPlatformApplication.Current?.Services.GetService<PocketScanner>() ?? new PocketScanner();
         selection = IPlatformApplication.Current?.Services.GetService<PocketSelectionService>() ?? new PocketSelectionService();
         folderPicker = IPlatformApplication.Current?.Services.GetService<IFolderPickerService>() ?? new UnsupportedFolderPickerService();
@@ -101,6 +105,63 @@ public partial class MainPage : ContentPage
         }
         await AppNavigation.GoToAsync("AssetsPage");
     }
+
+#if LINUX
+    private void ConfigureLinuxCompactLayout()
+    {
+        SetGridShape(TargetHeroGrid, 3, 5);
+        foreach (View child in TargetHeroGrid.Children.OfType<View>().Where(child => child is not EzButton))
+            Grid.SetColumnSpan(child, 3);
+
+        EzButton[] targetActions = [ScanButton, ChangeTargetButton, HealthButton];
+        for (int column = 0; column < targetActions.Length; column++)
+        {
+            Grid.SetColumn(targetActions[column], column);
+            Grid.SetRow(targetActions[column], 4);
+            Grid.SetRowSpan(targetActions[column], 1);
+            targetActions[column].HorizontalOptions = LayoutOptions.Fill;
+        }
+
+        StackCardAction(FirmwareCardGrid, FirmwareButton);
+        StackCardAction(CoreCardGrid, NextStepButton);
+        StackCardAction(SaveVaultCardGrid, SaveVaultButton);
+        StackCardAction(AssetsCardGrid, AssetsButton);
+        StackColumns(FeaturedSetupCards);
+        StackColumns(TargetOverviewGrid);
+        StackCardAction(DiagnosticsGrid, ExportDiagnosticsButton);
+    }
+
+    private static void StackCardAction(Grid grid, EzButton action)
+    {
+        SetGridShape(grid, 1, 2);
+        Grid.SetColumn(action, 0);
+        Grid.SetRow(action, 1);
+        action.HorizontalOptions = LayoutOptions.Start;
+        action.Margin = new Thickness(0, 10, 0, 0);
+    }
+
+    private static void StackColumns(Grid grid)
+    {
+        View[] children = grid.Children.OfType<View>().ToArray();
+        SetGridShape(grid, 1, children.Length);
+        grid.RowSpacing = 12;
+        for (int row = 0; row < children.Length; row++)
+        {
+            Grid.SetColumn(children[row], 0);
+            Grid.SetRow(children[row], row);
+        }
+    }
+
+    private static void SetGridShape(Grid grid, int columns, int rows)
+    {
+        grid.ColumnDefinitions.Clear();
+        grid.RowDefinitions.Clear();
+        for (int column = 0; column < columns; column++)
+            grid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Star });
+        for (int row = 0; row < rows; row++)
+            grid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
+    }
+#endif
 
     private async void OnSaveVaultClicked(object? sender, EventArgs e)
     {
