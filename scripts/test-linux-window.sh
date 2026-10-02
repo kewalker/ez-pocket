@@ -81,3 +81,11 @@ if [ ! -f artifacts/linux-ui/inventory-ok.txt ]; then
     exit 1
 fi
 scrot -o artifacts/linux-ui/inventory.png
+inventory_window_id="$(xdotool search --onlyvisible --name '^EzPocket$' 2>/dev/null | head -n 1 || true)"
+if [ -z "$inventory_window_id" ]; then
+    echo "Populated inventory window is not visible." >&2
+    exit 1
+fi
+xdotool windowsize "$inventory_window_id" 860 640
+sleep 2
+scrot -o artifacts/linux-ui/inventory-resized.png

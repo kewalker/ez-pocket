@@ -82,10 +82,17 @@ public sealed class CoreInventoryService
         try
         {
             using JsonDocument document = JsonDocument.Parse(File.ReadAllText(file));
-            return document.RootElement.GetProperty("core").GetProperty("metadata").GetProperty("version").GetString();
+            if (document.RootElement.TryGetProperty("core", out JsonElement core)
+                && core.TryGetProperty("metadata", out JsonElement metadata)
+                && metadata.TryGetProperty("version", out JsonElement version)
+                && version.ValueKind == JsonValueKind.String)
+                return version.GetString();
+            return null;
         }
         catch (JsonException) { return null; }
         catch (InvalidOperationException) { return null; }
+        catch (IOException) { return null; }
+        catch (UnauthorizedAccessException) { return null; }
     }
 
     private static bool IsOlder(string installed, string available) => ParseVersion(installed).CompareTo(ParseVersion(available)) < 0;

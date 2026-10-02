@@ -1,5 +1,6 @@
 using EzPocket.Models;
 using EzPocket.Services;
+using System.Text.Json;
 
 namespace EzPocket;
 
@@ -309,7 +310,7 @@ public partial class CorePage : ContentPage
                 OnFilterChanged(this, EventArgs.Empty);
             });
         }
-        catch (HttpRequestException)
+        catch (Exception exception) when (exception is HttpRequestException or JsonException)
         {
             await Dispatcher.DispatchAsync(() => ShowOfflineInventory(pocket, cancellation));
         }

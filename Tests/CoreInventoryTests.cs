@@ -31,6 +31,29 @@ public sealed class CoreInventoryTests
     }
 
     [Fact]
+    public void CompareToleratesCoreMetadataWithoutVersion()
+    {
+        string root = Path.Combine(Path.GetTempPath(), "ez-pocket-tests", Guid.NewGuid().ToString("N"));
+        string coreDirectory = Path.Combine(root, "Cores", "example.core");
+        Directory.CreateDirectory(coreDirectory);
+        File.WriteAllText(Path.Combine(coreDirectory, "core.json"), """{"core":{"metadata":{}}}""");
+        try
+        {
+            var pocket = new PocketDrive(root, "Pocket", DriveType.Unknown, 0, 0, 2,
+                ["Assets", "Cores"], 1, ["example.core"]);
+            var available = new[] { new AvailableCore("example.core", "1.0", "Example", "Console", null, false) };
+
+            CoreComparison result = Assert.Single(CoreInventoryService.Compare(pocket, available));
+
+            Assert.Equal("-", result.InstalledVersion);
+        }
+        finally
+        {
+            Directory.Delete(root, true);
+        }
+    }
+
+    [Fact]
     public void InstalledCoresAreSelectedInitiallyAndUserChangesSurviveRefresh()
     {
         var selection = new CoreSelectionService();
