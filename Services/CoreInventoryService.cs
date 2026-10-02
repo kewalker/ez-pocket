@@ -19,6 +19,10 @@ public sealed class CoreInventoryService
 
     public async Task<IReadOnlyList<AvailableCore>> GetAvailableAsync(CancellationToken cancellationToken = default)
     {
+#if LINUX && DEBUG
+        if (Environment.GetEnvironmentVariable("EZPOCKET_INVENTORY_SMOKE_MARKER") is not null)
+            return [new AvailableCore("example.core", "1.0", "Example Core", "Console", null, false)];
+#endif
         diagnostics.Info("CoreInventoryRequested");
         try
         {
