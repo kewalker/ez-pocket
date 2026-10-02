@@ -22,6 +22,14 @@ public partial class CorePage : ContentPage
     public CorePage()
     {
         InitializeComponent();
+#if LINUX
+        CoreList.ItemTemplate = new DataTemplate(() =>
+        {
+            var label = new Label { TextColor = Color.FromArgb("#151515") };
+            label.SetBinding(Label.TextProperty, nameof(CoreComparison.FriendlyName));
+            return label;
+        });
+#endif
         selection = IPlatformApplication.Current?.Services.GetService<PocketSelectionService>() ?? new PocketSelectionService();
         inventory = IPlatformApplication.Current?.Services.GetService<CoreInventoryService>() ?? new CoreInventoryService();
         coreSelection = IPlatformApplication.Current?.Services.GetService<CoreSelectionService>() ?? new CoreSelectionService();
