@@ -22,11 +22,73 @@ public partial class CorePage : ContentPage
     public CorePage()
     {
         InitializeComponent();
+#if LINUX
+        CoreColumnHeader.IsVisible = false;
+        CoreList.ItemTemplate = new DataTemplate(CreateLinuxCoreRow);
+#endif
         selection = IPlatformApplication.Current?.Services.GetService<PocketSelectionService>() ?? new PocketSelectionService();
         inventory = IPlatformApplication.Current?.Services.GetService<CoreInventoryService>() ?? new CoreInventoryService();
         coreSelection = IPlatformApplication.Current?.Services.GetService<CoreSelectionService>() ?? new CoreSelectionService();
         featuredCoreSets = IPlatformApplication.Current?.Services.GetService<FeaturedCoreSetService>() ?? new FeaturedCoreSetService();
     }
+
+#if LINUX
+    private View CreateLinuxCoreRow()
+    {
+        var row = new Grid
+        {
+            BackgroundColor = Colors.White,
+            Padding = new Thickness(8, 6),
+            Margin = new Thickness(0, 0, 0, 1),
+            ColumnSpacing = 8,
+            ColumnDefinitions =
+            {
+                new ColumnDefinition { Width = new GridLength(36) },
+                new ColumnDefinition { Width = GridLength.Star },
+                new ColumnDefinition { Width = new GridLength(88) }
+            }
+        };
+
+        var checkBox = new CheckBox { Color = Color.FromArgb("#151515"), VerticalOptions = LayoutOptions.Center };
+        checkBox.SetBinding(CheckBox.IsCheckedProperty, nameof(CoreComparison.IsSelected), BindingMode.TwoWay);
+        checkBox.CheckedChanged += OnCoreSelectionChanged;
+        row.Add(checkBox);
+
+        var details = new VerticalStackLayout { Spacing = 2, VerticalOptions = LayoutOptions.Center };
+        var name = new Label { FontSize = 14, FontAttributes = FontAttributes.Bold, TextColor = Color.FromArgb("#151515"), LineBreakMode = LineBreakMode.TailTruncation };
+        name.SetBinding(Label.TextProperty, nameof(CoreComparison.FriendlyName));
+        details.Add(name);
+        var identifier = new Label { FontSize = 11, TextColor = Color.FromArgb("#60605C"), LineBreakMode = LineBreakMode.TailTruncation };
+        identifier.SetBinding(Label.TextProperty, nameof(CoreComparison.Identifier));
+        details.Add(identifier);
+        var metadata = new Label { FontSize = 11, TextColor = Color.FromArgb("#60605C"), LineBreakMode = LineBreakMode.TailTruncation };
+        metadata.SetBinding(Label.TextProperty, nameof(CoreComparison.CatalogSummary));
+        details.Add(metadata);
+        var status = new Label { FontSize = 11, TextColor = Color.FromArgb("#151515"), LineBreakMode = LineBreakMode.TailTruncation };
+        status.SetBinding(Label.TextProperty, nameof(CoreComparison.StatusLabel));
+        details.Add(status);
+        var rowTap = new TapGestureRecognizer();
+        rowTap.Tapped += OnCoreRowTapped;
+        details.GestureRecognizers.Add(rowTap);
+        Grid.SetColumn(details, 1);
+        row.Add(details);
+
+        var detailsButton = new Controls.EzButton
+        {
+            Text = "DETAILS",
+            FontSize = 11,
+            MinimumHeight = 32,
+            ButtonPadding = new Thickness(6, 3),
+            ButtonBackgroundColor = Color.FromArgb("#F4F4F0"),
+            ButtonTextColor = Color.FromArgb("#151515"),
+            VerticalOptions = LayoutOptions.Center
+        };
+        detailsButton.Clicked += OnDetailsClicked;
+        Grid.SetColumn(detailsButton, 2);
+        row.Add(detailsButton);
+        return row;
+    }
+#endif
 
     protected override async void OnAppearing()
     {

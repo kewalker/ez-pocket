@@ -40,4 +40,6 @@ public sealed record CoreComparison(
     public string VersionLabel => IsInstalled && IsAvailable
         ? $"Installed {InstalledVersion} \u00B7 Latest {AvailableVersion}"
         : AvailableVersion;
+
+    public string CatalogSummary => $"{Category} \u00B7 {VersionLabel}";
 }
