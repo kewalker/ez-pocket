@@ -28,7 +28,7 @@ jobs:
       - name: Install GTK4 build dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y libgtk-4-dev gobject-introspection libgirepository1.0-dev gir1.2-gtk-4.0 pkg-config xvfb xauth xdotool scrot
+          sudo apt-get install -y libgtk-4-dev gobject-introspection libgirepository1.0-dev gir1.2-gtk-4.0 pkg-config xvfb xauth xdotool scrot gdb
 
       - name: Build Linux app
         run: bash scripts/build-linux.sh
