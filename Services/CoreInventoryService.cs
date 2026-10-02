@@ -25,7 +25,7 @@ public sealed class CoreInventoryService
             string[] categories = ["Arcade", "Arcade Multi", "Computer", "Console", "Handheld",
                 "Media", "Music Players", "Others", "Tools"];
             return Enumerable.Range(0, 317)
-                .Select(index => new AvailableCore(index == 0 ? "example.core" : $"example.core.{index}",
+                .Select(index => new AvailableCore($"example.core.{index}",
                     "1.0", $"Example Core {index}", categories[index % categories.Length], null, false))
                 .ToArray();
         }
