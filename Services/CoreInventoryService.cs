@@ -21,10 +21,14 @@ public sealed class CoreInventoryService
     {
 #if LINUX && DEBUG
         if (Environment.GetEnvironmentVariable("EZPOCKET_INVENTORY_SMOKE_MARKER") is not null)
+        {
+            string[] categories = ["Arcade", "Arcade Multi", "Computer", "Console", "Handheld",
+                "Media", "Music Players", "Others", "Tools"];
             return Enumerable.Range(0, 317)
                 .Select(index => new AvailableCore(index == 0 ? "example.core" : $"example.core.{index}",
-                    "1.0", $"Example Core {index}", "Console", null, false))
+                    "1.0", $"Example Core {index}", categories[index % categories.Length], null, false))
                 .ToArray();
+        }
 #endif
         diagnostics.Info("CoreInventoryRequested");
         try
