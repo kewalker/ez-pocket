@@ -19,21 +19,17 @@ public sealed class CoreInventoryService
 
     public async Task<IReadOnlyList<AvailableCore>> GetAvailableAsync(CancellationToken cancellationToken = default)
     {
-#if LINUX && DEBUG
-        if (Environment.GetEnvironmentVariable("EZPOCKET_INVENTORY_SMOKE_MARKER") is not null)
-        {
-            string[] categories = ["Arcade", "Arcade Multi", "Computer", "Console", "Handheld",
-                "Media", "Music Players", "Others", "Tools"];
-            return Enumerable.Range(0, 317)
-                .Select(index => new AvailableCore($"example.core.{index}",
-                    "1.0", $"Example Core {index}", categories[index % categories.Length], null, false))
-                .ToArray();
-        }
-#endif
         diagnostics.Info("CoreInventoryRequested");
         try
         {
-            InventoryResponse? response = await client.GetFromJsonAsync<InventoryResponse>(InventoryUrl, cancellationToken);
+            InventoryResponse? response;
+#if LINUX && DEBUG
+            string? fixturePath = Environment.GetEnvironmentVariable("EZPOCKET_INVENTORY_FIXTURE_PATH");
+            if (fixturePath is not null)
+                response = JsonSerializer.Deserialize<InventoryResponse>(File.ReadAllText(fixturePath));
+            else
+#endif
+                response = await client.GetFromJsonAsync<InventoryResponse>(InventoryUrl, cancellationToken);
             IReadOnlyList<AvailableCore> cores = response?.Data?
             .Where(core => !string.IsNullOrWhiteSpace(core.Identifier))
             .Select(core => new AvailableCore(core.Identifier!, core.Version ?? "Unknown", core.Platform?.Name ?? core.Identifier!, core.Platform?.Category ?? "Other", core.DownloadUrl, core.RequiresLicense ?? false))

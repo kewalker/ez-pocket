@@ -63,6 +63,7 @@ kill "$app_pid"
 wait "$app_pid" 2>/dev/null || true
 
 EZPOCKET_INVENTORY_SMOKE_MARKER="$PWD/artifacts/linux-ui/inventory-ok.txt" \
+    EZPOCKET_INVENTORY_FIXTURE_PATH="$PWD/Tests/Fixtures/core-inventory-linux-smoke.json" \
     GDK_BACKEND=x11 GTK_A11Y=none dotnet Linux/bin/Debug/net10.0/EzPocket.Linux.dll &
 app_pid=$!
 for attempt in {1..55}; do
