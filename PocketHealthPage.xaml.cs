@@ -12,6 +12,7 @@ public partial class PocketHealthPage : ContentPage
     private readonly PocketHealthService health;
     private readonly PocketInitializationService initialization;
     private readonly PocketScanner scanner;
+    private readonly IPreferences preferences;
     public PocketHealthPage()
     {
         InitializeComponent();
@@ -19,6 +20,7 @@ public partial class PocketHealthPage : ContentPage
         health = IPlatformApplication.Current?.Services.GetService<PocketHealthService>() ?? new PocketHealthService();
         initialization = IPlatformApplication.Current?.Services.GetService<PocketInitializationService>() ?? new PocketInitializationService();
         scanner = IPlatformApplication.Current?.Services.GetService<PocketScanner>() ?? new PocketScanner();
+        preferences = IPlatformApplication.Current?.Services.GetService<IPreferences>() ?? Preferences.Default;
     }
     protected override void OnAppearing()
     {
@@ -129,8 +131,8 @@ public partial class PocketHealthPage : ContentPage
         return $"pocket-health-ignore-{Convert.ToHexString(SHA256.HashData(Encoding.UTF8.GetBytes(value)))}";
     }
 
-    private static bool IsIgnored(PocketDrive pocket, PocketHealthFinding finding) => Preferences.Default.Get(PreferenceKey(pocket, finding), false);
-    private static void SetIgnored(PocketDrive pocket, PocketHealthFinding finding, bool ignored) => Preferences.Default.Set(PreferenceKey(pocket, finding), ignored);
+    private bool IsIgnored(PocketDrive pocket, PocketHealthFinding finding) => preferences.Get(PreferenceKey(pocket, finding), false);
+    private void SetIgnored(PocketDrive pocket, PocketHealthFinding finding, bool ignored) => preferences.Set(PreferenceKey(pocket, finding), ignored);
     private async void OnInitializeClicked(object? sender, EventArgs e) => await InitializeTargetAsync();
 
     private async Task InitializeTargetAsync()

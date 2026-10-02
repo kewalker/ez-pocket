@@ -26,11 +26,11 @@ public sealed class AssetService
     private readonly HttpClient client;
     private readonly IAppDiagnostics diagnostics;
 
-    public AssetService(HttpClient? client = null, string? backupRoot = null, string? stagingRoot = null, IAppDiagnostics? diagnostics = null)
+    public AssetService(HttpClient? client = null, string? backupRoot = null, string? stagingRoot = null, IAppDiagnostics? diagnostics = null, IFileSystem? fileSystem = null)
     {
         this.client = client ?? new HttpClient { Timeout = TimeSpan.FromSeconds(30) };
-        this.backupRoot = backupRoot ?? Path.Combine(FileSystem.AppDataDirectory, "EzPocket", "backups", "assets");
-        this.stagingRoot = stagingRoot ?? Path.Combine(FileSystem.CacheDirectory, "EzPocket", "palette-staging");
+        this.backupRoot = backupRoot ?? Path.Combine(fileSystem?.AppDataDirectory ?? FileSystem.AppDataDirectory, "EzPocket", "backups", "assets");
+        this.stagingRoot = stagingRoot ?? Path.Combine(fileSystem?.CacheDirectory ?? FileSystem.CacheDirectory, "EzPocket", "palette-staging");
         this.diagnostics = diagnostics ?? NullAppDiagnostics.Instance;
     }
 

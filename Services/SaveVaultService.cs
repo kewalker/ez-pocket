@@ -13,9 +13,9 @@ public sealed class SaveVaultService
     private readonly string vaultRoot;
     private readonly IAppDiagnostics diagnostics;
 
-    public SaveVaultService(string? vaultRoot = null, IAppDiagnostics? diagnostics = null)
+    public SaveVaultService(string? vaultRoot = null, IAppDiagnostics? diagnostics = null, IFileSystem? fileSystem = null)
     {
-        this.vaultRoot = vaultRoot ?? Path.Combine(FileSystem.AppDataDirectory, "EzPocket", "save-vault");
+        this.vaultRoot = vaultRoot ?? Path.Combine(fileSystem?.AppDataDirectory ?? FileSystem.AppDataDirectory, "EzPocket", "save-vault");
         this.diagnostics = diagnostics ?? NullAppDiagnostics.Instance;
     }
 

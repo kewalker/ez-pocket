@@ -19,11 +19,11 @@ public sealed class AppDiagnosticsService : IAppDiagnostics
     private readonly string exportDirectory;
     private readonly object writeLock = new();
 
-    public AppDiagnosticsService(string? appDataDirectory = null, string? exportDirectory = null)
+    public AppDiagnosticsService(string? appDataDirectory = null, string? exportDirectory = null, IFileSystem? fileSystem = null)
     {
         string appData = appDataDirectory ?? Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
         logDirectory = Path.Combine(appData, "EzPocket", "diagnostics");
-        this.exportDirectory = exportDirectory ?? FileSystem.CacheDirectory;
+        this.exportDirectory = exportDirectory ?? fileSystem?.CacheDirectory ?? FileSystem.CacheDirectory;
     }
 
     public void Info(string eventName, IReadOnlyDictionary<string, string?>? properties = null) => Write("Information", eventName, properties, null);

@@ -9,6 +9,8 @@ public partial class AssetsPage : ContentPage
     private readonly PocketSelectionService selection;
     private readonly AssetService assets;
     private readonly AssetImportSelectionService imports;
+    private readonly IFilePicker filePicker;
+    private readonly ILauncher launcher;
 
     public AssetsPage()
     {
@@ -16,6 +18,8 @@ public partial class AssetsPage : ContentPage
         selection = IPlatformApplication.Current?.Services.GetService<PocketSelectionService>() ?? new PocketSelectionService();
         assets = IPlatformApplication.Current?.Services.GetService<AssetService>() ?? new AssetService();
         imports = IPlatformApplication.Current?.Services.GetService<AssetImportSelectionService>() ?? new AssetImportSelectionService();
+        filePicker = IPlatformApplication.Current?.Services.GetService<IFilePicker>() ?? FilePicker.Default;
+        launcher = IPlatformApplication.Current?.Services.GetService<ILauncher>() ?? Launcher.Default;
     }
 
     protected override void OnAppearing()
@@ -66,7 +70,7 @@ public partial class AssetsPage : ContentPage
         if (pocket is null) return;
         try
         {
-            IEnumerable<FileResult> selected = await FilePicker.Default.PickMultipleAsync(new PickOptions { PickerTitle = "Select Game Boy palette files" });
+            IEnumerable<FileResult> selected = await filePicker.PickMultipleAsync(new PickOptions { PickerTitle = "Select Game Boy palette files" });
             string[] paths = selected.Select(file => file.FullPath).Where(path => !string.IsNullOrWhiteSpace(path)).ToArray();
             if (paths.Length == 0) return;
             imports.SetPreview(assets.PreparePaletteImport(pocket, paths));
@@ -265,7 +269,7 @@ public partial class AssetsPage : ContentPage
     {
         try
         {
-            await Launcher.Default.OpenAsync(new Uri(url));
+            await launcher.OpenAsync(new Uri(url));
         }
         catch (Exception exception) when (exception is InvalidOperationException or UriFormatException)
         {
