@@ -238,35 +238,27 @@ public partial class CorePage : ContentPage
         try
         {
             var available = await inventory.GetAvailableAsync(cancellation.Token);
-            var comparison = CoreInventoryService.Compare(pocket, available);
-            allCores = comparison;
-            coreSelection.InitializeForPocket(pocket, comparison);
-            FeaturedCoreSetSelection? featuredSelection = featuredCoreSets.ApplyPendingSelection(coreSelection, comparison);
-            FeaturedSetNotice.IsVisible = featuredSelection is not null;
-            if (featuredSelection is not null) FeaturedSetNoticeText.Text = featuredSelection.Summary;
-            UpdateSelectionBar();
-            PopulateCategoryFilter();
-            StatusFilter.SelectedIndex = 0;
-            StatusFilter.SelectedItem = StatusFilter.Items[0];
-            Dispatcher.Dispatch(() =>
+            await Dispatcher.DispatchAsync(() =>
             {
+                if (!ReferenceEquals(refreshCancellation, cancellation)) return;
+                var comparison = CoreInventoryService.Compare(pocket, available);
+                allCores = comparison;
+                coreSelection.InitializeForPocket(pocket, comparison);
+                FeaturedCoreSetSelection? featuredSelection = featuredCoreSets.ApplyPendingSelection(coreSelection, comparison);
+                FeaturedSetNotice.IsVisible = featuredSelection is not null;
+                if (featuredSelection is not null) FeaturedSetNoticeText.Text = featuredSelection.Summary;
+                UpdateSelectionBar();
+                PopulateCategoryFilter();
                 StatusFilter.SelectedIndex = 0;
                 StatusFilter.SelectedItem = StatusFilter.Items[0];
+                InventoryState.Text = "Live inventory updated";
+                Summary.Text = $"{pocket.CoreCount} installed \u00B7 {available.Count} available";
+                OnFilterChanged(this, EventArgs.Empty);
             });
-            InventoryState.Text = "Live inventory updated";
-            Summary.Text = $"{pocket.CoreCount} installed \u00B7 {available.Count} available";
-            OnFilterChanged(this, EventArgs.Empty);
         }
         catch (HttpRequestException)
         {
-            Summary.Text = $"{pocket.CoreCount} installed";
-            InventoryState.Text = "Offline";
-            OfflineState.IsVisible = true;
-            allCores = pocket.InstalledCoreNames.Select(identifier => new CoreComparison(identifier, identifier, "Unknown", "Unknown", "-", true, false, "Unknown")).ToArray();
-            coreSelection.InitializeForPocket(pocket, allCores);
-            UpdateSelectionBar();
-            PopulateCategoryFilter();
-            OnFilterChanged(this, EventArgs.Empty);
+            await Dispatcher.DispatchAsync(() => ShowOfflineInventory(pocket, cancellation));
         }
         catch (OperationCanceledException) when (cancellation.IsCancellationRequested)
         {
@@ -274,24 +266,31 @@ public partial class CorePage : ContentPage
         }
         catch (OperationCanceledException)
         {
-            Summary.Text = $"{pocket.CoreCount} installed";
-            InventoryState.Text = "Offline";
-            OfflineState.IsVisible = true;
-            allCores = pocket.InstalledCoreNames.Select(identifier => new CoreComparison(identifier, identifier, "Unknown", "Unknown", "-", true, false, "Unknown")).ToArray();
-            coreSelection.InitializeForPocket(pocket, allCores);
-            UpdateSelectionBar();
-            PopulateCategoryFilter();
-            OnFilterChanged(this, EventArgs.Empty);
+            await Dispatcher.DispatchAsync(() => ShowOfflineInventory(pocket, cancellation));
         }
         finally
         {
-            if (ReferenceEquals(refreshCancellation, cancellation))
+            await Dispatcher.DispatchAsync(() =>
             {
+                if (!ReferenceEquals(refreshCancellation, cancellation)) return;
                 LoadingState.IsVisible = false;
                 RefreshButton.IsEnabled = true;
                 refreshInProgress = false;
                 refreshCancellation = null;
-            }
+            });
         }
+    }
+
+    private void ShowOfflineInventory(PocketDrive pocket, CancellationTokenSource cancellation)
+    {
+        if (!ReferenceEquals(refreshCancellation, cancellation)) return;
+        Summary.Text = $"{pocket.CoreCount} installed";
+        InventoryState.Text = "Offline";
+        OfflineState.IsVisible = true;
+        allCores = pocket.InstalledCoreNames.Select(identifier => new CoreComparison(identifier, identifier, "Unknown", "Unknown", "-", true, false, "Unknown")).ToArray();
+        coreSelection.InitializeForPocket(pocket, allCores);
+        UpdateSelectionBar();
+        PopulateCategoryFilter();
+        OnFilterChanged(this, EventArgs.Empty);
     }
 }
