@@ -36,7 +36,7 @@ jobs:
       - name: Check Linux startup
         run: bash scripts/test-linux-startup.sh dotnet Linux/bin/Debug/net10.0/EzPocket.Linux.dll
 
-      - name: Check Linux window resizing
+      - name: Check Linux window resizing and navigation
         run: xvfb-run -a -s '-screen 0 1280x900x24' bash scripts/test-linux-window.sh
 
       - name: Upload Linux UI screenshots

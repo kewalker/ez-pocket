@@ -2,6 +2,7 @@
 bin/
 obj/
 _build/
+artifacts/
 
 ## Visual Studio
 .vs/

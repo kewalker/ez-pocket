@@ -36,3 +36,25 @@ if [ "$width" -gt 900 ] || [ "$height" -gt 680 ]; then
     echo "GTK window did not shrink to the requested size." >&2
     exit 1
 fi
+
+kill "$app_pid"
+wait "$app_pid" 2>/dev/null || true
+
+EZPOCKET_NAVIGATION_SMOKE_MARKER="$PWD/artifacts/linux-ui/navigation-ok.txt" \
+    GDK_BACKEND=x11 GTK_A11Y=none dotnet Linux/bin/Debug/net10.0/EzPocket.Linux.dll &
+app_pid=$!
+for attempt in {1..20}; do
+    if [ -f artifacts/linux-ui/navigation-ok.txt ]; then break; fi
+    if ! kill -0 "$app_pid" 2>/dev/null; then
+        echo "Linux app exited during navigation." >&2
+        exit 1
+    fi
+    sleep 1
+done
+
+if [ ! -f artifacts/linux-ui/navigation-ok.txt ]; then
+    echo "Linux navigation did not reach CorePage." >&2
+    exit 1
+fi
+sleep 2
+scrot -o artifacts/linux-ui/navigated.png
