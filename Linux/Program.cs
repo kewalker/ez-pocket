@@ -1,6 +1,8 @@
 using Microsoft.Maui.Hosting;
 using Microsoft.Maui.Graphics;
 using Microsoft.Maui.Platforms.Linux.Gtk4.Platform;
+using EzPocket.Models;
+using EzPocket.Services;
 
 namespace EzPocket;
 
@@ -44,6 +46,14 @@ public sealed class Program : GtkMauiApplication
 
 #if DEBUG
         string? navigationMarker = Environment.GetEnvironmentVariable("EZPOCKET_NAVIGATION_SMOKE_MARKER");
+        string? inventoryMarker = Environment.GetEnvironmentVariable("EZPOCKET_INVENTORY_SMOKE_MARKER");
+        if (inventoryMarker is not null)
+        {
+            var selection = IPlatformApplication.Current?.Services.GetRequiredService<PocketSelectionService>()
+                ?? throw new InvalidOperationException("Pocket selection service is unavailable.");
+            selection.Select(new PocketDrive(Path.GetTempPath(), "CI Pocket", DriveType.Unknown,
+                0, 0, 2, ["Assets", "Cores"], 1, ["example.core"]));
+        }
         if (navigationMarker is not null && Application.Windows.FirstOrDefault() is Microsoft.Maui.Controls.Window testWindow)
         {
             testWindow.Dispatcher.Dispatch(async () =>
@@ -58,6 +68,25 @@ public sealed class Program : GtkMauiApplication
                 catch (Exception exception)
                 {
                     Console.Error.WriteLine($"Linux navigation smoke check failed: {exception}");
+                    Environment.Exit(1);
+                }
+            });
+        }
+        if (inventoryMarker is not null && Application.Windows.FirstOrDefault() is Microsoft.Maui.Controls.Window inventoryWindow)
+        {
+            inventoryWindow.Dispatcher.Dispatch(async () =>
+            {
+                try
+                {
+                    await AppNavigation.GoToAsync("CorePage");
+                    await Task.Delay(TimeSpan.FromSeconds(15));
+                    if (inventoryWindow.Page?.Navigation.NavigationStack.LastOrDefault() is not CorePage)
+                        throw new InvalidOperationException("Core inventory page is no longer active.");
+                    File.WriteAllText(inventoryMarker, "CorePage");
+                }
+                catch (Exception exception)
+                {
+                    Console.Error.WriteLine($"Linux inventory smoke check failed: {exception}");
                     Environment.Exit(1);
                 }
             });
