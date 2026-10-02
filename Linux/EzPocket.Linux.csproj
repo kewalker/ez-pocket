@@ -24,6 +24,7 @@
 
   <ItemGroup>
     <Compile Include="Program.cs" />
+    <Compile Include="LinuxTextStyles.cs" />
     <Compile Include="LinuxFolderPickerService.cs" />
     <Compile Include="..\*.cs" Link="%(Filename)%(Extension)" />
     <Compile Include="..\Controls\**\*.cs" Link="Controls\%(RecursiveDir)%(Filename)%(Extension)" />

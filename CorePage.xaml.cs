@@ -50,7 +50,7 @@ public partial class CorePage : ContentPage
 
     private async void OnBackClicked(object? sender, EventArgs e)
     {
-        await Shell.Current.GoToAsync("..");
+        await AppNavigation.GoToAsync("..");
     }
 
     private void OnCoreRowTapped(object? sender, TappedEventArgs e)
@@ -67,7 +67,7 @@ public partial class CorePage : ContentPage
         if (sender is BindableObject { BindingContext: CoreComparison core })
         {
             coreSelection.Select(core);
-            await Shell.Current.GoToAsync("CoreDetailsPage");
+            await AppNavigation.GoToAsync("CoreDetailsPage");
         }
     }
 
@@ -82,7 +82,7 @@ public partial class CorePage : ContentPage
 
     private async void OnReviewClicked(object? sender, EventArgs e)
     {
-        await Shell.Current.GoToAsync("CoreReviewPage");
+        await AppNavigation.GoToAsync("CoreReviewPage");
     }
 
     private void OnSelectVisibleChanged(object? sender, CheckedChangedEventArgs e)

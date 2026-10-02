@@ -21,7 +21,7 @@ public partial class AssetRemovalReviewPage : ContentPage
     {
         base.OnAppearing();
         AssetRemovalPreview? preview = imports.PendingRemoval;
-        if (preview is null) { _ = Shell.Current.GoToAsync(".."); return; }
+        if (preview is null) { _ = AppNavigation.GoToAsync(".."); return; }
         Summary.Text = $"{preview.Set.Name} · {preview.Files.Count} file{(preview.Files.Count == 1 ? string.Empty : "s")} to remove";
         FileList.ItemsSource = preview.Files;
         RemoveButton.IsEnabled = preview.CanApply;
@@ -42,12 +42,12 @@ public partial class AssetRemovalReviewPage : ContentPage
         imports.ClearRemoval();
         imports.ClearSet();
         imports.ReportSuccess(result.Message);
-        await Shell.Current.GoToAsync("../..");
+        await AppNavigation.GoToAsync("../..");
     }
 
     private async void OnBackClicked(object? sender, EventArgs e)
     {
         imports.ClearRemoval();
-        await Shell.Current.GoToAsync("..");
+        await AppNavigation.GoToAsync("..");
     }
 }

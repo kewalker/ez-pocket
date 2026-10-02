@@ -106,5 +106,5 @@ public partial class FirmwarePage : ContentPage
         else ApplyButton.IsEnabled = true;
     }
 
-    private async void OnBackClicked(object? sender, EventArgs e) => await Shell.Current.GoToAsync("..");
+    private async void OnBackClicked(object? sender, EventArgs e) => await AppNavigation.GoToAsync("..");
 }

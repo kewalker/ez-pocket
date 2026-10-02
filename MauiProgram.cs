@@ -15,6 +15,7 @@ public static class MauiProgram
 #if LINUX
         builder.UseMauiAppLinuxGtk4<App>()
             .AddLinuxGtk4Essentials();
+        LinuxTextStyles.Register();
 #else
         builder.UseMauiApp<App>();
 #endif

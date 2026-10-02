@@ -114,13 +114,13 @@ public partial class PocketHealthPage : ContentPage
                 await InitializeTargetAsync();
                 break;
             case PocketHealthAction.ManageCores:
-                await Shell.Current.GoToAsync("CorePage");
+                await AppNavigation.GoToAsync("CorePage");
                 break;
             case PocketHealthAction.ManageAssets:
-                await Shell.Current.GoToAsync("AssetsPage");
+                await AppNavigation.GoToAsync("AssetsPage");
                 break;
             case PocketHealthAction.ReturnToTarget:
-                await Shell.Current.GoToAsync("..");
+                await AppNavigation.GoToAsync("..");
                 break;
         }
     }
@@ -158,5 +158,5 @@ public partial class PocketHealthPage : ContentPage
         }
     }
 
-    private async void OnBackClicked(object? sender, EventArgs e) => await Shell.Current.GoToAsync("..");
+    private async void OnBackClicked(object? sender, EventArgs e) => await AppNavigation.GoToAsync("..");
 }

@@ -79,7 +79,7 @@ public partial class MainPage : ContentPage
     private async void OnNextStepClicked(object? sender, EventArgs e)
     {
         if (selection.SelectedPocket is null) await ChooseFolderAsync();
-        else await Shell.Current.GoToAsync("CorePage");
+        else await AppNavigation.GoToAsync("CorePage");
     }
 
     private async void OnFirmwareClicked(object? sender, EventArgs e)
@@ -89,7 +89,7 @@ public partial class MainPage : ContentPage
             await DisplayAlert("Select a Pocket", "Choose or scan a Pocket before preparing a firmware update.", "Got it");
             return;
         }
-        await Shell.Current.GoToAsync("FirmwarePage");
+        await AppNavigation.GoToAsync("FirmwarePage");
     }
 
     private async void OnAssetsClicked(object? sender, EventArgs e)
@@ -99,17 +99,17 @@ public partial class MainPage : ContentPage
             await ChooseFolderAsync();
             if (selection.SelectedPocket is null) return;
         }
-        await Shell.Current.GoToAsync("AssetsPage");
+        await AppNavigation.GoToAsync("AssetsPage");
     }
 
     private async void OnSaveVaultClicked(object? sender, EventArgs e)
     {
-        if (selection.SelectedPocket is not null) await Shell.Current.GoToAsync("SaveVaultPage");
+        if (selection.SelectedPocket is not null) await AppNavigation.GoToAsync("SaveVaultPage");
     }
 
     private async void OnHealthClicked(object? sender, EventArgs e)
     {
-        if (selection.SelectedPocket is not null) await Shell.Current.GoToAsync("PocketHealthPage");
+        if (selection.SelectedPocket is not null) await AppNavigation.GoToAsync("PocketHealthPage");
     }
 
     private async void OnExportDiagnosticsClicked(object? sender, EventArgs e)
@@ -154,7 +154,7 @@ public partial class MainPage : ContentPage
             FeaturedCoreSetSelection? featuredSelection = featuredCoreSets.ApplyPendingSelection(coreSelection, comparison);
             if (featuredSelection is null) return;
             coreSelection.ReportFeaturedSetSelection(featuredSelection.Summary);
-            await Shell.Current.GoToAsync("CoreReviewPage");
+            await AppNavigation.GoToAsync("CoreReviewPage");
         }
         catch (Exception exception) when (exception is HttpRequestException or InvalidDataException or OperationCanceledException)
         {
@@ -307,6 +307,6 @@ public partial class MainPage : ContentPage
 
     private async void OnManageCoresClicked(object? sender, EventArgs e)
     {
-        await Shell.Current.GoToAsync("CorePage");
+        await AppNavigation.GoToAsync("CorePage");
     }
 }

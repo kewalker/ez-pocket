@@ -28,10 +28,21 @@ jobs:
       - name: Install GTK4 build dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y libgtk-4-dev gobject-introspection libgirepository1.0-dev gir1.2-gtk-4.0 pkg-config xvfb xauth
+          sudo apt-get install -y libgtk-4-dev gobject-introspection libgirepository1.0-dev gir1.2-gtk-4.0 pkg-config xvfb xauth xdotool scrot
 
       - name: Build Linux app
         run: bash scripts/build-linux.sh
 
       - name: Check Linux startup
         run: bash scripts/test-linux-startup.sh dotnet Linux/bin/Debug/net10.0/EzPocket.Linux.dll
+
+      - name: Check Linux window resizing
+        run: xvfb-run -a -s '-screen 0 1280x900x24' bash scripts/test-linux-window.sh
+
+      - name: Upload Linux UI screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: linux-ui-screenshots
+          path: artifacts/linux-ui/*.png
+          if-no-files-found: ignore

@@ -74,7 +74,7 @@ public partial class AssetsPage : ContentPage
             string[] paths = selected.Select(file => file.FullPath).Where(path => !string.IsNullOrWhiteSpace(path)).ToArray();
             if (paths.Length == 0) return;
             imports.SetPreview(assets.PreparePaletteImport(pocket, paths));
-            await Shell.Current.GoToAsync("AssetReviewPage");
+            await AppNavigation.GoToAsync("AssetReviewPage");
         }
         catch (Exception exception) when (exception is IOException or UnauthorizedAccessException or OperationCanceledException)
         {
@@ -105,7 +105,7 @@ public partial class AssetsPage : ContentPage
             AssetImportPreview downloaded = await Task.Run(() => assets.PreparePalettePackAsync(pocket, progress));
             imports.SetPalettePack(new PalettePackCatalog(pocket, downloaded.Changes, downloaded.StagingPath!));
             Status.Text = "PACK READY · Review the file list before anything is copied to the target.";
-            await Shell.Current.GoToAsync("PalettePackPage");
+            await AppNavigation.GoToAsync("PalettePackPage");
         }
         catch (Exception exception) when (exception is HttpRequestException or IOException or InvalidDataException or OperationCanceledException)
         {
@@ -131,7 +131,7 @@ public partial class AssetsPage : ContentPage
         try
         {
             imports.SetPreview(await Task.Run(() => assets.PrepareGbaDisplayModeConfiguration(pocket)));
-            await Shell.Current.GoToAsync("AssetReviewPage");
+            await AppNavigation.GoToAsync("AssetReviewPage");
         }
         catch (Exception exception) when (exception is IOException or UnauthorizedAccessException or InvalidDataException or JsonException)
         {
@@ -164,7 +164,7 @@ public partial class AssetsPage : ContentPage
         try
         {
             imports.SetPreview(await assets.PrepareLibraryBoxArtAsync(pocket, system));
-            await Shell.Current.GoToAsync("AssetReviewPage");
+            await AppNavigation.GoToAsync("AssetReviewPage");
         }
         catch (Exception exception) when (exception is HttpRequestException or IOException or InvalidDataException or OperationCanceledException)
         {
@@ -192,7 +192,7 @@ public partial class AssetsPage : ContentPage
         {
             imports.SetPreview(await assets.PrepareLibraryBoxArtAsync(pocket, system));
             Status.Text = string.Empty;
-            await Shell.Current.GoToAsync("AssetReviewPage");
+            await AppNavigation.GoToAsync("AssetReviewPage");
         }
         catch (Exception exception) when (exception is HttpRequestException or IOException or InvalidDataException or OperationCanceledException)
         {
@@ -224,7 +224,7 @@ public partial class AssetsPage : ContentPage
         try
         {
             imports.SetPreview(await assets.PreparePlatformArtAsync(pocket, style));
-            await Shell.Current.GoToAsync("AssetReviewPage");
+            await AppNavigation.GoToAsync("AssetReviewPage");
         }
         catch (Exception exception) when (exception is HttpRequestException or IOException or InvalidDataException or OperationCanceledException)
         {
@@ -247,7 +247,7 @@ public partial class AssetsPage : ContentPage
         {
             imports.SetPreview(await assets.PreparePlatformArtAsync(pocket, style));
             Status.Text = string.Empty;
-            await Shell.Current.GoToAsync("AssetReviewPage");
+            await AppNavigation.GoToAsync("AssetReviewPage");
         }
         catch (Exception exception) when (exception is HttpRequestException or IOException or InvalidDataException or OperationCanceledException)
         {
@@ -262,7 +262,7 @@ public partial class AssetsPage : ContentPage
     {
         if (sender is not BindableObject { BindingContext: AssetSetInventory set }) return;
         imports.SelectSet(set);
-        await Shell.Current.GoToAsync("AssetSetPage");
+        await AppNavigation.GoToAsync("AssetSetPage");
     }
 
     private async Task OpenResourceAsync(string url)
@@ -284,6 +284,6 @@ public partial class AssetsPage : ContentPage
         if (message is not null) Status.Text = message;
     }
 
-    private async void OnBackClicked(object? sender, EventArgs e) => await Shell.Current.GoToAsync("..");
-    private async void OnHomeClicked(object? sender, EventArgs e) => await Shell.Current.GoToAsync("//MainPage");
+    private async void OnBackClicked(object? sender, EventArgs e) => await AppNavigation.GoToAsync("..");
+    private async void OnHomeClicked(object? sender, EventArgs e) => await AppNavigation.GoToAsync("//MainPage");
 }

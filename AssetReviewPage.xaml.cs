@@ -22,7 +22,7 @@ public partial class AssetReviewPage : ContentPage
     {
         base.OnAppearing();
         AssetImportPreview? preview = imports.PendingPreview;
-        if (preview is null) { _ = Shell.Current.GoToAsync(".."); return; }
+        if (preview is null) { _ = AppNavigation.GoToAsync(".."); return; }
         Summary.Text = $"{preview.Kind} · {preview.Changes.Count} file{(preview.Changes.Count == 1 ? string.Empty : "s")} to import · {preview.ReplacementCount} replacement{(preview.ReplacementCount == 1 ? string.Empty : "s")}";
         ChangeList.ItemsSource = preview.Changes;
         BlockerPanel.IsVisible = preview.Blockers.Count > 0;
@@ -98,7 +98,7 @@ public partial class AssetReviewPage : ContentPage
         }
         imports.ClearPreview();
         imports.ReportSuccess(result.Message);
-        await Shell.Current.GoToAsync("..");
+        await AppNavigation.GoToAsync("..");
     }
 
     private async void OnBackClicked(object? sender, EventArgs e)
@@ -106,6 +106,6 @@ public partial class AssetReviewPage : ContentPage
         if (isApplying) return;
         if (imports.PendingPreview is AssetImportPreview preview) assets.Cleanup(preview);
         imports.ClearPreview();
-        await Shell.Current.GoToAsync("..");
+        await AppNavigation.GoToAsync("..");
     }
 }

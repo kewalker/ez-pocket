@@ -21,7 +21,7 @@ public partial class PalettePackPage : ContentPage
     {
         base.OnAppearing();
         PalettePackCatalog? catalog = imports.PendingPalettePack;
-        if (catalog is null) { _ = Shell.Current.GoToAsync(".."); return; }
+        if (catalog is null) { _ = AppNavigation.GoToAsync(".."); return; }
         Summary.Text = $"{catalog.Candidates.Count:N0} palettes available · 0 selected";
         candidates = catalog.Candidates;
         PaletteList.ItemsSource = candidates;
@@ -58,13 +58,13 @@ public partial class PalettePackPage : ContentPage
         if (catalog is null || selected.Count == 0) return;
         imports.SetPreview(assets.PreparePalettePackSelection(catalog, selected));
         imports.ClearPalettePack();
-        await Shell.Current.GoToAsync("AssetReviewPage");
+        await AppNavigation.GoToAsync("AssetReviewPage");
     }
 
     private async void OnBackClicked(object? sender, EventArgs e)
     {
         if (imports.PendingPalettePack is PalettePackCatalog catalog) assets.CleanupPalettePack(catalog);
         imports.ClearPalettePack();
-        await Shell.Current.GoToAsync("..");
+        await AppNavigation.GoToAsync("..");
     }
 }

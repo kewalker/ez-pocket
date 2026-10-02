@@ -21,7 +21,7 @@ public partial class AssetSetPage : ContentPage
     {
         base.OnAppearing();
         AssetSetInventory? set = imports.PendingSet;
-        if (set is null) { _ = Shell.Current.GoToAsync(".."); return; }
+        if (set is null) { _ = AppNavigation.GoToAsync(".."); return; }
         SetName.Text = set.Name;
         SetKind.Text = set.Kind.ToUpperInvariant();
         SetSummary.Text = set.IsInstalled ? $"{set.Status} installed on the selected target." : "Not installed on the selected target.";
@@ -57,13 +57,13 @@ public partial class AssetSetPage : ContentPage
                 });
                 AssetImportPreview downloaded = await Task.Run(() => assets.PreparePalettePackAsync(pocket, progress));
                 imports.SetPalettePack(new PalettePackCatalog(pocket, downloaded.Changes, downloaded.StagingPath!));
-                await Shell.Current.GoToAsync("PalettePackPage");
+                await AppNavigation.GoToAsync("PalettePackPage");
                 return;
             }
             else if (set.Key == "gba-display-modes")
             {
                 imports.SetPreview(await Task.Run(() => assets.PrepareGbaDisplayModeConfiguration(pocket)));
-                await Shell.Current.GoToAsync("AssetReviewPage");
+                await AppNavigation.GoToAsync("AssetReviewPage");
                 return;
             }
             else if (set.Key == "platform")
@@ -79,7 +79,7 @@ public partial class AssetSetPage : ContentPage
                 imports.SetPreview(await assets.PrepareLibraryBoxArtAsync(pocket, system));
             }
             Status.Text = string.Empty;
-            await Shell.Current.GoToAsync("AssetReviewPage");
+            await AppNavigation.GoToAsync("AssetReviewPage");
         }
         catch (Exception exception) when (exception is HttpRequestException or IOException or InvalidDataException or OperationCanceledException)
         {
@@ -100,13 +100,13 @@ public partial class AssetSetPage : ContentPage
         PocketDrive? pocket = selection.SelectedPocket;
         if (set is null || pocket is null) return;
         imports.SetRemoval(assets.PrepareAssetSetRemoval(pocket, set));
-        await Shell.Current.GoToAsync("AssetRemovalReviewPage");
+        await AppNavigation.GoToAsync("AssetRemovalReviewPage");
     }
 
     private async void OnBackClicked(object? sender, EventArgs e)
     {
         imports.ClearSet();
-        await Shell.Current.GoToAsync("..");
+        await AppNavigation.GoToAsync("..");
     }
 
     private void SetDownloadBusy(bool isBusy, string? message = null)

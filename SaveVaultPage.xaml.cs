@@ -232,5 +232,5 @@ public partial class SaveVaultPage : ContentPage
         else RestoreSelectedButton.IsEnabled = true;
     }
 
-    private async void OnBackClicked(object? sender, EventArgs e) => await Shell.Current.GoToAsync("..");
+    private async void OnBackClicked(object? sender, EventArgs e) => await AppNavigation.GoToAsync("..");
 }

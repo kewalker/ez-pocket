@@ -35,21 +35,21 @@ public partial class CoreDetailsPage : ContentPage
 
     private async void OnBackClicked(object? sender, EventArgs e)
     {
-        await Shell.Current.GoToAsync("..");
+        await AppNavigation.GoToAsync("..");
     }
 
     private async void OnManageCoresClicked(object? sender, EventArgs e)
     {
-        await Shell.Current.GoToAsync("..");
+        await AppNavigation.GoToAsync("..");
     }
 
     private async void OnHomeClicked(object? sender, EventArgs e)
     {
-        await Shell.Current.GoToAsync("//MainPage");
+        await AppNavigation.GoToAsync("//MainPage");
     }
 
     private async void OnManageAssetsClicked(object? sender, EventArgs e)
     {
-        await Shell.Current.GoToAsync("AssetsPage");
+        await AppNavigation.GoToAsync("AssetsPage");
     }
 }

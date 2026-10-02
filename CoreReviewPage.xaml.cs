@@ -140,7 +140,7 @@ public partial class CoreReviewPage : ContentPage
             if (refreshedPocket is not null) pocketSelection.Select(refreshedPocket);
             if (returnsToDashboard) coreSelection.ReportDashboardSuccess(result.Message);
             else coreSelection.ReportSuccessfulSync(result.Message);
-            await Shell.Current.GoToAsync("..");
+            await AppNavigation.GoToAsync("..");
             return;
         }
         SyncStatus.Text = result.Message;
@@ -151,17 +151,17 @@ public partial class CoreReviewPage : ContentPage
 
     private async void OnBackClicked(object? sender, EventArgs e)
     {
-        await Shell.Current.GoToAsync("..");
+        await AppNavigation.GoToAsync("..");
     }
 
     private async void OnManageCoresClicked(object? sender, EventArgs e)
     {
-        await Shell.Current.GoToAsync("CorePage");
+        await AppNavigation.GoToAsync("CorePage");
     }
 
     private async void OnHomeClicked(object? sender, EventArgs e)
     {
-        await Shell.Current.GoToAsync("//MainPage");
+        await AppNavigation.GoToAsync("//MainPage");
     }
 
     private static string FormatCoreCount(int count) => count == 1 ? "1 core" : $"{count} cores";
