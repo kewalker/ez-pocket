@@ -79,10 +79,16 @@ public sealed class Program : GtkMauiApplication
                 try
                 {
                     await AppNavigation.GoToAsync("CorePage");
-                    await Task.Delay(TimeSpan.FromSeconds(15));
-                    if (inventoryWindow.Page?.Navigation.NavigationStack.LastOrDefault() is not CorePage)
-                        throw new InvalidOperationException("Core inventory page is no longer active.");
-                    File.WriteAllText(inventoryMarker, "CorePage");
+                    for (int attempt = 0; attempt < 45; attempt++)
+                    {
+                        if (inventoryWindow.Page?.Navigation.NavigationStack.LastOrDefault() is CorePage { HasPopulatedInventory: true })
+                        {
+                            File.WriteAllText(inventoryMarker, "CorePage populated");
+                            return;
+                        }
+                        await Task.Delay(TimeSpan.FromSeconds(1));
+                    }
+                    throw new InvalidOperationException("Core inventory did not populate within 45 seconds.");
                 }
                 catch (Exception exception)
                 {

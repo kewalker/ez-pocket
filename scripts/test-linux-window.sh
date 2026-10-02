@@ -67,7 +67,7 @@ EZPOCKET_INVENTORY_SMOKE_MARKER="$PWD/artifacts/linux-ui/inventory-ok.txt" \
     --args dotnet Linux/bin/Debug/net10.0/EzPocket.Linux.dll \
     > artifacts/linux-ui/inventory-gdb.log 2>&1 &
 app_pid=$!
-for attempt in {1..30}; do
+for attempt in {1..55}; do
     if [ -f artifacts/linux-ui/inventory-ok.txt ]; then break; fi
     if ! kill -0 "$app_pid" 2>/dev/null; then
         echo "Linux app exited while loading core inventory." >&2

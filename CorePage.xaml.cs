@@ -17,6 +17,8 @@ public partial class CorePage : ContentPage
     private bool sortAscending = true;
     private bool updatingVisibleSelection;
 
+    internal bool HasPopulatedInventory => !refreshInProgress && visibleCores.Count > 0 && !LoadingState.IsVisible;
+
     public CorePage()
     {
         InitializeComponent();
