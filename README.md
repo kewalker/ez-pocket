@@ -21,9 +21,9 @@ Core updates and PocketOS firmware are intentionally separate workflows. Neither
 
 ## Platforms and status
 
-Windows is the current supported development target. An experimental Linux desktop head in `Linux/` reuses the same MAUI pages and services through the GTK4 backend. The project also contains .NET MAUI targets for macOS (Mac Catalyst), iOS, and Android. Linux has not yet been validated on a Linux desktop; tagged builds provide a technical preview for testing.
+Windows is the current supported development target. An experimental Linux desktop head in `Linux/` reuses the same MAUI pages and services through the GTK4 backend. The project also contains .NET MAUI targets for macOS (Mac Catalyst), iOS, and Android. Linux builds run an automated GTK4 smoke check; tagged builds remain technical previews for desktop testing.
 
-The application is currently version `0.1.8` and remains under active development. Open an issue to report a bug, discuss an improvement, or ask about planned work.
+The application is currently version `0.1.9` and remains under active development. Open an issue to report a bug, discuss an improvement, or ask about planned work.
 
 ## Requirements
 

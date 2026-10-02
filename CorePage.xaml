@@ -65,8 +65,7 @@
                 <controls:EzButton x:Name="LatestSortButton" Grid.Column="4" HorizontalOptions="Start" Text="LATEST" FontSize="11" FontAttributes="Bold" MinimumHeight="26" ButtonPadding="4,2" CornerRadius="0" ButtonBackgroundColor="White" ButtonTextColor="#60605C" Clicked="OnLatestSortClicked" SemanticProperties.Description="Sort latest versions ascending" />
                 <controls:EzButton x:Name="StatusSortButton" Grid.Column="5" HorizontalOptions="Start" Text="STATUS" FontSize="11" FontAttributes="Bold" MinimumHeight="26" ButtonPadding="4,2" CornerRadius="0" ButtonBackgroundColor="White" ButtonTextColor="#60605C" Clicked="OnStatusSortClicked" SemanticProperties.Description="Sort statuses ascending" />
             </Grid>
-            <CollectionView Grid.Row="1" x:Name="CoreList" SelectionMode="None">
-            <CollectionView.EmptyView><Label Text="No cores found yet." TextColor="#60605C" HorizontalOptions="Center" VerticalOptions="Center" /></CollectionView.EmptyView>
+            <CollectionView Grid.Row="1" x:Name="CoreList" SelectionMode="None" EmptyView="No cores found yet.">
             <CollectionView.ItemTemplate>
                 <DataTemplate x:DataType="models:CoreComparison">
                     <Border BackgroundColor="White" Stroke="#D0D0CA" StrokeShape="RoundRectangle 0" Padding="12,8" Margin="0,0,0,0">

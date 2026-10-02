@@ -3,7 +3,7 @@
 ## Current desktop release status
 
 GitHub Actions builds and tests the Windows target on pull requests and `main`.
-Pushing a version tag such as `v0.1.8` produces two **unsigned** Windows x64 artifacts, retained for 14 days, and an experimental Linux x64 archive. The workflow creates or updates a clearly labelled GitHub **prerelease** with the preview ZIP and Linux archive:
+Pushing a version tag such as `v0.1.9` produces two **unsigned** Windows x64 artifacts, retained for 14 days, and an experimental Linux x64 archive. The workflow creates or updates a clearly labelled GitHub **prerelease** with the preview ZIP and Linux archive:
 
 - An MSIX package for eventual trusted signing.
 - A self-contained, unpackaged Windows publish folder compressed as a ZIP. Extract into a new folder and launch `EzPocket.exe`; no separate runtime installer is required.
