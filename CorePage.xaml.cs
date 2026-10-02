@@ -35,18 +35,12 @@ public partial class CorePage : ContentPage
 #if LINUX
     private View CreateLinuxCoreRow()
     {
-        var row = new Grid
+        var row = new HorizontalStackLayout
         {
             BackgroundColor = Colors.White,
             Padding = new Thickness(8, 6),
             Margin = new Thickness(0, 0, 0, 1),
-            ColumnSpacing = 8,
-            ColumnDefinitions =
-            {
-                new ColumnDefinition { Width = new GridLength(36) },
-                new ColumnDefinition { Width = GridLength.Star },
-                new ColumnDefinition { Width = new GridLength(88) }
-            }
+            Spacing = 8
         };
 
         var checkBox = new CheckBox { Color = Color.FromArgb("#151515"), VerticalOptions = LayoutOptions.Center };
@@ -69,23 +63,20 @@ public partial class CorePage : ContentPage
         details.Add(status);
         var rowTap = new TapGestureRecognizer();
         rowTap.Tapped += OnCoreRowTapped;
-        details.GestureRecognizers.Add(rowTap);
-        Grid.SetColumn(details, 1);
-        row.Add(details);
-
-        var detailsButton = new Controls.EzButton
+        name.GestureRecognizers.Add(rowTap);
+        var detailsButton = new Button
         {
             Text = "DETAILS",
             FontSize = 11,
-            MinimumHeight = 32,
-            ButtonPadding = new Thickness(6, 3),
-            ButtonBackgroundColor = Color.FromArgb("#F4F4F0"),
-            ButtonTextColor = Color.FromArgb("#151515"),
-            VerticalOptions = LayoutOptions.Center
+            Padding = new Thickness(8, 4),
+            BackgroundColor = Color.FromArgb("#F4F4F0"),
+            TextColor = Color.FromArgb("#151515"),
+            HorizontalOptions = LayoutOptions.Start,
+            CornerRadius = 2
         };
         detailsButton.Clicked += OnDetailsClicked;
-        Grid.SetColumn(detailsButton, 2);
-        row.Add(detailsButton);
+        details.Add(detailsButton);
+        row.Add(details);
         return row;
     }
 #endif
