@@ -26,7 +26,10 @@ public sealed class CoreInventoryService
 #if LINUX && DEBUG
             string? fixturePath = Environment.GetEnvironmentVariable("EZPOCKET_INVENTORY_FIXTURE_PATH");
             if (fixturePath is not null)
+            {
+                await Task.Delay(100, cancellationToken).ConfigureAwait(false);
                 response = JsonSerializer.Deserialize<InventoryResponse>(File.ReadAllText(fixturePath));
+            }
             else
 #endif
                 response = await client.GetFromJsonAsync<InventoryResponse>(InventoryUrl, cancellationToken);
