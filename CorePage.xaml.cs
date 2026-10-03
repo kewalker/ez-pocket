@@ -292,10 +292,10 @@ public partial class CorePage : ContentPage
         try
         {
             var available = await inventory.GetAvailableAsync(cancellation.Token);
+            var comparison = await Task.Run(() => CoreInventoryService.Compare(pocket, available), cancellation.Token);
             await Dispatcher.DispatchAsync(() =>
             {
                 if (!ReferenceEquals(refreshCancellation, cancellation)) return;
-                var comparison = CoreInventoryService.Compare(pocket, available);
                 allCores = comparison;
                 coreSelection.InitializeForPocket(pocket, comparison);
                 FeaturedCoreSetSelection? featuredSelection = featuredCoreSets.ApplyPendingSelection(coreSelection, comparison);

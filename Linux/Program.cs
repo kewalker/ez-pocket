@@ -19,22 +19,28 @@ public sealed class Program : GtkMauiApplication
                 gtkWindow.SetSizeRequest(-1, -1);
                 gtkWindow.SetResizable(true);
 
-                int previousWidth = gtkWindow.GetAllocatedWidth();
-                int previousHeight = gtkWindow.GetAllocatedHeight();
+                Gtk.Widget? windowContent = gtkWindow.GetChild();
+                int previousWidth = windowContent?.GetAllocatedWidth() ?? 0;
+                int previousHeight = windowContent?.GetAllocatedHeight() ?? 0;
+                GtkLayoutPanel? previousPanel = null;
                 gtkWindow.AddTickCallback((_, _) =>
                 {
-                    int width = gtkWindow.GetAllocatedWidth();
-                    int height = gtkWindow.GetAllocatedHeight();
-                    if (width < 1 || height < 1 || (width == previousWidth && height == previousHeight))
+                    int width = windowContent?.GetAllocatedWidth() ?? 0;
+                    int height = windowContent?.GetAllocatedHeight() ?? 0;
+                    if (width < 1 || height < 1)
                         return true;
 
-                    previousWidth = width;
-                    previousHeight = height;
                     if (window is Microsoft.Maui.Controls.Window { Page: NavigationPage navigation }
                         && navigation.CurrentPage is ContentPage page
                         && page.Content is Layout content
                         && content.Handler?.PlatformView is GtkLayoutPanel panel)
                     {
+                        if (width == previousWidth && height == previousHeight && ReferenceEquals(panel, previousPanel))
+                            return true;
+
+                        previousWidth = width;
+                        previousHeight = height;
+                        previousPanel = panel;
                         content.InvalidateMeasure();
                         panel.CrossPlatformMeasure(width, height);
                         panel.CrossPlatformArrange(new Rect(0, 0, width, height));
@@ -47,7 +53,8 @@ public sealed class Program : GtkMauiApplication
 #if DEBUG
         string? navigationMarker = Environment.GetEnvironmentVariable("EZPOCKET_NAVIGATION_SMOKE_MARKER");
         string? inventoryMarker = Environment.GetEnvironmentVariable("EZPOCKET_INVENTORY_SMOKE_MARKER");
-        if (inventoryMarker is not null)
+        string? returnMarker = Environment.GetEnvironmentVariable("EZPOCKET_RETURN_SMOKE_MARKER");
+        if (inventoryMarker is not null || returnMarker is not null)
         {
             var selection = IPlatformApplication.Current?.Services.GetRequiredService<PocketSelectionService>()
                 ?? throw new InvalidOperationException("Pocket selection service is unavailable.");
@@ -93,6 +100,40 @@ public sealed class Program : GtkMauiApplication
                 catch (Exception exception)
                 {
                     Console.Error.WriteLine($"Linux inventory smoke check failed: {exception}");
+                    Environment.Exit(1);
+                }
+            });
+        }
+        if (returnMarker is not null && Application.Windows.FirstOrDefault() is Microsoft.Maui.Controls.Window returnWindow)
+        {
+            returnWindow.Dispatcher.Dispatch(async () =>
+            {
+                try
+                {
+                    await AppNavigation.GoToAsync("CorePage");
+                    await AppNavigation.GoToAsync("CoreReviewPage");
+                    File.WriteAllText(returnMarker + ".review", "CoreReviewPage");
+                    for (int attempt = 0; attempt < 30 && !File.Exists(returnMarker + ".back"); attempt++)
+                        await Task.Delay(TimeSpan.FromSeconds(1));
+                    if (!File.Exists(returnMarker + ".back"))
+                        throw new InvalidOperationException("Resize signal was not received.");
+
+                    await AppNavigation.GoToAsync("..");
+                    for (int attempt = 0; attempt < 30; attempt++)
+                    {
+                        if (returnWindow.Page?.Navigation.NavigationStack.LastOrDefault() is CorePage { HasPopulatedInventory: true })
+                        {
+                            await Task.Delay(TimeSpan.FromSeconds(2));
+                            File.WriteAllText(returnMarker, "CorePage restored");
+                            return;
+                        }
+                        await Task.Delay(TimeSpan.FromSeconds(1));
+                    }
+                    throw new InvalidOperationException("Core inventory did not return after review.");
+                }
+                catch (Exception exception)
+                {
+                    Console.Error.WriteLine($"Linux return smoke check failed: {exception}");
                     Environment.Exit(1);
                 }
             });
