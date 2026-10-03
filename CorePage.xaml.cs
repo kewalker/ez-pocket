@@ -63,9 +63,22 @@ public partial class CorePage : ContentPage
         var status = new Label { FontSize = 11, TextColor = Color.FromArgb("#151515"), LineBreakMode = LineBreakMode.TailTruncation };
         status.SetBinding(Label.TextProperty, nameof(CoreComparison.StatusLabel));
         details.Add(status);
-        var rowTap = new TapGestureRecognizer();
-        rowTap.Tapped += OnCoreRowTapped;
-        details.GestureRecognizers.Add(rowTap);
+        var selectionArea = new Grid();
+        selectionArea.Add(details);
+        var selectionButton = new Button
+        {
+            Text = string.Empty,
+            BackgroundColor = Colors.Transparent,
+            BorderWidth = 0,
+            Opacity = 0.01,
+            Padding = 0,
+            HorizontalOptions = LayoutOptions.Fill,
+            VerticalOptions = LayoutOptions.Fill,
+            ZIndex = 1
+        };
+        SemanticProperties.SetDescription(selectionButton, "Toggle core selection");
+        selectionButton.Clicked += OnCoreRowClicked;
+        selectionArea.Add(selectionButton);
         var detailsButton = new Button
         {
             Text = "DETAILS",
@@ -77,8 +90,8 @@ public partial class CorePage : ContentPage
             CornerRadius = 2
         };
         detailsButton.Clicked += OnDetailsClicked;
-        details.Add(detailsButton);
-        row.Add(details);
+        row.Add(selectionArea);
+        row.Add(detailsButton);
         return row;
     }
 #endif
@@ -111,15 +124,17 @@ public partial class CorePage : ContentPage
     }
 
     private void OnCoreRowTapped(object? sender, TappedEventArgs e)
+        => ToggleCoreSelection(sender);
+
+    private void OnCoreRowClicked(object? sender, EventArgs e)
+        => ToggleCoreSelection(sender);
+
+    private void ToggleCoreSelection(object? sender)
     {
         if (sender is BindableObject { BindingContext: CoreComparison core })
         {
             coreSelection.SetSelected(core, !core.IsSelected);
             UpdateSelectionBar();
-#if LINUX && DEBUG
-            string? rowTapMarker = Environment.GetEnvironmentVariable("EZPOCKET_ROW_TAP_MARKER");
-            if (rowTapMarker is not null) File.WriteAllText(rowTapMarker, $"{core.Identifier}:{core.IsSelected}");
-#endif
         }
     }
 

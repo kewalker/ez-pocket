@@ -224,6 +224,7 @@ public partial class MainPage : ContentPage
             FeaturedCoreSetSelection? featuredSelection = null;
             await Dispatcher.DispatchAsync(() =>
             {
+                coreSelection.BeginManageSession();
                 coreSelection.InitializeForPocket(pocket, comparison);
                 featuredSelection = featuredCoreSets.ApplyPendingSelection(coreSelection, comparison);
                 if (featuredSelection is not null) coreSelection.ReportFeaturedSetSelection(featuredSelection.Summary);
