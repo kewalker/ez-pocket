@@ -5,8 +5,8 @@
     <RootNamespace>EzPocket</RootNamespace>
     <ApplicationTitle>EzPocket</ApplicationTitle>
     <ApplicationId>com.bitbird.ezpocket</ApplicationId>
-    <ApplicationDisplayVersion>0.1.10</ApplicationDisplayVersion>
-    <ApplicationVersion>11</ApplicationVersion>
+    <ApplicationDisplayVersion>0.1.11</ApplicationDisplayVersion>
+    <ApplicationVersion>12</ApplicationVersion>
     <Version>$(ApplicationDisplayVersion)</Version>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
