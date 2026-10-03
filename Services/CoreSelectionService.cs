@@ -17,6 +17,14 @@ public sealed class CoreSelectionService
 
     public void Select(CoreComparison core) => SelectedCore = core;
 
+    public void BeginManageSession()
+    {
+        selectedCores.Clear();
+        cores = [];
+        initializedPocketPath = null;
+        SelectedCore = null;
+    }
+
     public void SetSelected(CoreComparison core, bool isSelected)
     {
         core.IsSelected = isSelected;

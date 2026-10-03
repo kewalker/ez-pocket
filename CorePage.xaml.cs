@@ -30,6 +30,7 @@ public partial class CorePage : ContentPage
         selection = IPlatformApplication.Current?.Services.GetService<PocketSelectionService>() ?? new PocketSelectionService();
         inventory = IPlatformApplication.Current?.Services.GetService<CoreInventoryService>() ?? new CoreInventoryService();
         coreSelection = IPlatformApplication.Current?.Services.GetService<CoreSelectionService>() ?? new CoreSelectionService();
+        coreSelection.BeginManageSession();
         featuredCoreSets = IPlatformApplication.Current?.Services.GetService<FeaturedCoreSetService>() ?? new FeaturedCoreSetService();
     }
 
@@ -64,7 +65,7 @@ public partial class CorePage : ContentPage
         details.Add(status);
         var rowTap = new TapGestureRecognizer();
         rowTap.Tapped += OnCoreRowTapped;
-        name.GestureRecognizers.Add(rowTap);
+        details.GestureRecognizers.Add(rowTap);
         var detailsButton = new Button
         {
             Text = "DETAILS",
@@ -115,6 +116,10 @@ public partial class CorePage : ContentPage
         {
             coreSelection.SetSelected(core, !core.IsSelected);
             UpdateSelectionBar();
+#if LINUX && DEBUG
+            string? rowTapMarker = Environment.GetEnvironmentVariable("EZPOCKET_ROW_TAP_MARKER");
+            if (rowTapMarker is not null) File.WriteAllText(rowTapMarker, $"{core.Identifier}:{core.IsSelected}");
+#endif
         }
     }
 

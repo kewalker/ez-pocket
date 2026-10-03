@@ -63,6 +63,7 @@ kill "$app_pid"
 wait "$app_pid" 2>/dev/null || true
 
 EZPOCKET_INVENTORY_SMOKE_MARKER="$PWD/artifacts/linux-ui/inventory-ok.txt" \
+    EZPOCKET_ROW_TAP_MARKER="$PWD/artifacts/linux-ui/row-tap.txt" \
     EZPOCKET_INVENTORY_FIXTURE_PATH="$PWD/Tests/Fixtures/core-inventory-linux-smoke.json" \
     GDK_BACKEND=x11 GTK_A11Y=none dotnet Linux/bin/Debug/net10.0/EzPocket.Linux.dll &
 app_pid=$!
@@ -86,6 +87,17 @@ if [ -z "$inventory_window_id" ]; then
     echo "Populated inventory window is not visible." >&2
     exit 1
 fi
+xdotool mousemove --window "$inventory_window_id" 150 250 click 1
+for attempt in {1..8}; do
+    if [ -f artifacts/linux-ui/row-tap.txt ]; then break; fi
+    sleep 1
+done
+if [ ! -f artifacts/linux-ui/row-tap.txt ]; then
+    echo "Clicking a Linux core row did not toggle selection." >&2
+    exit 1
+fi
+echo "Linux core row tap: $(cat artifacts/linux-ui/row-tap.txt)"
+scrot -o artifacts/linux-ui/inventory-selected.png
 xdotool windowsize "$inventory_window_id" 860 640
 sleep 2
 scrot -o artifacts/linux-ui/inventory-resized.png

@@ -81,6 +81,24 @@ public sealed class CoreInventoryTests
         Assert.All(refreshed, core => Assert.False(core.IsSelected));
     }
 
+    [Fact]
+    public void NewManageSessionSelectsInstalledCoresAgain()
+    {
+        var selection = new CoreSelectionService();
+        var pocket = new PocketDrive("C:\\Pocket", "Pocket", DriveType.Unknown, 0, 0, 2,
+            ["Assets", "Cores"], 1, ["installed"]);
+        var firstVisit = new[] { new CoreComparison("installed", "Installed", "Console", "1.0", "1.0", true, true, "Installed") };
+        selection.InitializeForPocket(pocket, firstVisit);
+        selection.SetSelected(firstVisit[0], false);
+
+        selection.BeginManageSession();
+        var nextVisit = new[] { new CoreComparison("installed", "Installed", "Console", "1.0", "1.0", true, true, "Installed") };
+        selection.InitializeForPocket(pocket, nextVisit);
+
+        Assert.True(nextVisit[0].IsSelected);
+        Assert.Single(selection.SelectedCores);
+    }
+
     private sealed class JsonHandler(string json) : HttpMessageHandler
     {
         protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken) => Task.FromResult(new HttpResponseMessage(System.Net.HttpStatusCode.OK)

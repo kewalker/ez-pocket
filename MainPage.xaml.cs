@@ -194,7 +194,17 @@ public partial class MainPage : ContentPage
 
     private async void OnFeaturedSetTapped(object? sender, TappedEventArgs e)
     {
-        if (preparingFeaturedSet || sender is not VisualElement { StyleId: string id }) return;
+        if (sender is VisualElement { StyleId: string id }) await OpenFeaturedSetAsync(id);
+    }
+
+    private async void OnFeaturedSetClicked(object? sender, EventArgs e)
+    {
+        if (sender is VisualElement { StyleId: string id }) await OpenFeaturedSetAsync(id);
+    }
+
+    private async Task OpenFeaturedSetAsync(string id)
+    {
+        if (preparingFeaturedSet) return;
         if (selection.SelectedPocket is null)
         {
             await DisplayAlert("Select a Pocket", "Choose or scan a Pocket before reviewing a featured setup.", "Got it");
@@ -210,22 +220,32 @@ public partial class MainPage : ContentPage
         {
             PocketDrive pocket = selection.SelectedPocket;
             IReadOnlyList<AvailableCore> available = await inventory.GetAvailableAsync();
-            IReadOnlyList<CoreComparison> comparison = CoreInventoryService.Compare(pocket, available);
-            coreSelection.InitializeForPocket(pocket, comparison);
-            FeaturedCoreSetSelection? featuredSelection = featuredCoreSets.ApplyPendingSelection(coreSelection, comparison);
+            IReadOnlyList<CoreComparison> comparison = await Task.Run(() => CoreInventoryService.Compare(pocket, available));
+            FeaturedCoreSetSelection? featuredSelection = null;
+            await Dispatcher.DispatchAsync(() =>
+            {
+                coreSelection.InitializeForPocket(pocket, comparison);
+                featuredSelection = featuredCoreSets.ApplyPendingSelection(coreSelection, comparison);
+                if (featuredSelection is not null) coreSelection.ReportFeaturedSetSelection(featuredSelection.Summary);
+            });
             if (featuredSelection is null) return;
-            coreSelection.ReportFeaturedSetSelection(featuredSelection.Summary);
-            await AppNavigation.GoToAsync("CoreReviewPage");
+            await Dispatcher.DispatchAsync(() => AppNavigation.GoToAsync("CoreReviewPage"));
         }
         catch (Exception exception) when (exception is HttpRequestException or InvalidDataException or OperationCanceledException)
         {
-            FeaturedSetupStatus.Text = "Could not load the live inventory.";
-            await DisplayAlert("Could not load setup", "Connect to the internet and try again. No changes were made.", "Got it");
+            await Dispatcher.DispatchAsync(async () =>
+            {
+                FeaturedSetupStatus.Text = "Could not load the live inventory.";
+                await DisplayAlert("Could not load setup", "Connect to the internet and try again. No changes were made.", "Got it");
+            });
         }
         finally
         {
-            preparingFeaturedSet = false;
-            FeaturedSetupCards.IsEnabled = true;
+            await Dispatcher.DispatchAsync(() =>
+            {
+                preparingFeaturedSet = false;
+                FeaturedSetupCards.IsEnabled = true;
+            });
         }
     }
 

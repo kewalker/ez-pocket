@@ -89,7 +89,7 @@
                         <VerticalStackLayout Spacing="7">
                             <Label Text="HANDHELD ESSENTIALS" FontSize="14" FontAttributes="Bold" TextColor="#151515" />
                             <Label Text="GB, GBC, GBA, Game Gear, NGPC, Lynx, PC Engine" FontSize="12" TextColor="#60605C" />
-                            <Label Text="ADD TO REVIEW  &#x2192;" FontSize="11" FontAttributes="Bold" TextColor="#151515" Margin="0,4,0,0" />
+                            <Button StyleId="handheld-essentials" Text="ADD TO REVIEW  &#x2192;" Clicked="OnFeaturedSetClicked" FontSize="11" FontAttributes="Bold" TextColor="#151515" BackgroundColor="#F4F4F0" BorderColor="#151515" BorderWidth="1" CornerRadius="2" Padding="8,3" HeightRequest="30" HorizontalOptions="Start" Margin="0,4,0,0" />
                         </VerticalStackLayout>
                     </Border>
                     <Border Grid.Column="1" StyleId="console-classics" HeightRequest="138" BackgroundColor="White" Stroke="#151515" StrokeThickness="1" StrokeShape="RoundRectangle 2" Padding="16" SemanticProperties.Description="Review the Console classics core setup">
@@ -100,7 +100,7 @@
                         <VerticalStackLayout Spacing="7">
                             <Label Text="CONSOLE CLASSICS" FontSize="14" FontAttributes="Bold" TextColor="#151515" />
                             <Label Text="NES, SNES, Genesis, Master System, Atari 2600" FontSize="12" TextColor="#60605C" />
-                            <Label Text="ADD TO REVIEW  &#x2192;" FontSize="11" FontAttributes="Bold" TextColor="#151515" Margin="0,4,0,0" />
+                            <Button StyleId="console-classics" Text="ADD TO REVIEW  &#x2192;" Clicked="OnFeaturedSetClicked" FontSize="11" FontAttributes="Bold" TextColor="#151515" BackgroundColor="#F4F4F0" BorderColor="#151515" BorderWidth="1" CornerRadius="2" Padding="8,3" HeightRequest="30" HorizontalOptions="Start" Margin="0,4,0,0" />
                         </VerticalStackLayout>
                     </Border>
                     <Border Grid.Column="2" StyleId="arcade-starter" HeightRequest="138" BackgroundColor="White" Stroke="#151515" StrokeThickness="1" StrokeShape="RoundRectangle 2" Padding="16" SemanticProperties.Description="Review the Arcade starter core setup">
@@ -111,7 +111,7 @@
                         <VerticalStackLayout Spacing="7">
                             <Label Text="ARCADE STARTER" FontSize="14" FontAttributes="Bold" TextColor="#151515" />
                             <Label Text="Five classic arcade platforms. Games not included." FontSize="12" TextColor="#60605C" />
-                            <Label Text="ADD TO REVIEW  &#x2192;" FontSize="11" FontAttributes="Bold" TextColor="#151515" Margin="0,4,0,0" />
+                            <Button StyleId="arcade-starter" Text="ADD TO REVIEW  &#x2192;" Clicked="OnFeaturedSetClicked" FontSize="11" FontAttributes="Bold" TextColor="#151515" BackgroundColor="#F4F4F0" BorderColor="#151515" BorderWidth="1" CornerRadius="2" Padding="8,3" HeightRequest="30" HorizontalOptions="Start" Margin="0,4,0,0" />
                         </VerticalStackLayout>
                     </Border>
                 </Grid>
