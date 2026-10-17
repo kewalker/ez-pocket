@@ -4,6 +4,9 @@ obj/
 _build/
 artifacts/
 
+## Sites publishing checkout (tracked source lives in website/)
+/site/
+
 ## Visual Studio
 .vs/
 *.user

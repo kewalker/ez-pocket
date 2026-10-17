@@ -1,10 +1,42 @@
 # ez-pocket
 
-`ez-pocket` is a .NET MAUI desktop app for inspecting and managing an Analogue Pocket SD-card target. It helps make core and PocketOS firmware maintenance understandable: scan a target, review the planned changes, then explicitly choose whether to write them.
+`ez-pocket` is a desktop app for managing cores and PocketOS firmware on an Analogue Pocket SD card. It shows core names you can recognize, lets you choose what to keep, and previews the exact file changes before you approve a write.
+
+**Scan the card → choose cores → review changes → apply only when ready.** Selecting a target or browsing the inventory does not change the card.
+
+[Visit the ez-pocket website](https://ez-pocket.adored-fig-0910.chatgpt.site/) · [Download a preview](https://github.com/kewalker/ez-pocket/releases) · [Report an issue](https://github.com/kewalker/ez-pocket/issues/new/choose)
+
+## Try the Windows technical preview
+
+The current build is for testers and is unsigned. [Download the Windows preview ZIP from the newest prerelease](https://github.com/kewalker/ez-pocket/releases), then:
+
+1. Extract the ZIP into a new folder, keeping all included files together.
+2. Launch `EzPocket.exe`. No separate .NET runtime or installer is needed. Windows may show a SmartScreen warning, and some organization policies may block the app.
+3. Insert a backed-up Pocket SD card. Select **SCAN TARGET**, or choose its root folder if it is not detected.
+4. Open **MANAGE CORES**, select the cores you want, and choose **REVIEW CHANGES**. Check the proposed additions, replacements, and removals before applying anything.
+
+The [Linux x64 preview](https://github.com/kewalker/ez-pocket/releases) is experimental and requires GTK 4.12 or later. macOS does not have a downloadable build yet. [Report a bug or suggest an improvement](https://github.com/kewalker/ez-pocket/issues/new/choose).
+
+## See the workflow
+
+These Windows captures use a sample Pocket folder and the self-contained v0.1.6 preview. No changes were applied to the sample target. [Watch the 30-second walkthrough](docs/media/windows-preview-walkthrough.gif).
+
+![Dashboard showing the selected target, firmware, core management, Save Vault, and asset library](docs/media/dashboard-windows.jpg)
+
+![Core inventory with friendly names, technical identifiers, versions, and one selected core](docs/media/core-inventory-windows.jpg)
+
+![Change review listing selected cores and the exact files to add or replace](docs/media/review-changes-windows.jpg)
 
 It is an independent project and is not affiliated with, endorsed by, or sponsored by Analogue.
 
 > **Early development software.** Review every change preview and keep your own backup of important SD-card content and saves. Do not remove the SD card or close the app while a write is underway.
+
+## Why use ez-pocket?
+
+- **Readable inventory.** Find cores by familiar names while keeping technical identifiers and versions available for diagnosis.
+- **Review before writing.** See the planned core changes and any package conflicts or blockers before starting a sync.
+- **Recoverable core updates.** Replaced or removed core content is backed up, and changed files are restored if a sync fails.
+- **Separate firmware workflow.** Check the official PocketOS source and verify its published checksum before staging firmware. Core selection never stages firmware.
 
 ## What it does
 
@@ -14,6 +46,9 @@ It is an independent project and is not affiliated with, endorsed by, or sponsor
 - Lets you search, filter, select a desired core set, and inspect a full reconciliation preview before applying core changes.
 - Downloads and stages selected core packages, reports package conflicts or blockers, backs up replaced/removed core content, and restores changed files if a core sync fails.
 - Provides curated featured core sets as a starting point for the normal review workflow.
+- Creates local Save Vault snapshots of saves and Memories, with selected restores reviewed before writing.
+- Checks target health without writing: required folders, installed core metadata, and available space.
+- Manages opt-in palettes and supported library/platform image assets through scoped previews.
 - Checks the official Pocket firmware source, verifies the published MD5 checksum, and stages firmware separately from core updates.
 - Exports local diagnostics that deliberately exclude target paths and exception messages.
 

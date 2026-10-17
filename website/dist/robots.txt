@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://ez-pocket.adored-fig-0910.chatgpt.site/sitemap.xml
