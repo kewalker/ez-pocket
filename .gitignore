@@ -4,7 +4,7 @@ obj/
 _build/
 artifacts/
 
-## Sites publishing checkout (tracked source lives in website/)
+## Legacy Sites checkout (GitHub Pages source lives in website/)
 /site/
 
 ## Visual Studio

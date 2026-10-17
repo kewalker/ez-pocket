@@ -4,4 +4,6 @@ Static, dependency-free public landing page. `dist/` contains the deployable sit
 
 Preview from this directory with `node preview.mjs`, then open the printed local URL. The preview binds only to this computer.
 
-Hosting identity is in `.openai/hosting.json`. This directory is the reviewable source in the app repository. The ignored root `site/` directory is the separate Sites publishing checkout. Copy this directory's contents into that checkout before publishing with the Sites source workflow; preserve the existing project ID and the checkout's Git metadata. Refresh the asset copies when the source screenshots change. Keep screenshot version captions accurate.
+The public site is hosted at https://kewalker.github.io/ez-pocket/. `.github/workflows/pages.yml` publishes `website/dist/` automatically when that directory or the workflow changes on `main`. It can also be run manually from GitHub Actions. Repository Settings → Pages must use **GitHub Actions** as its publishing source.
+
+Use relative asset links so the site works below the `/ez-pocket/` project path. Update the canonical URL, Open Graph metadata, sitemap, and robots file together if the public address changes. Refresh asset copies when the source screenshots change, and keep screenshot version captions accurate.

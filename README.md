@@ -4,7 +4,7 @@
 
 **Scan the card → choose cores → review changes → apply only when ready.** Selecting a target or browsing the inventory does not change the card.
 
-[Visit the ez-pocket website](https://ez-pocket.adored-fig-0910.chatgpt.site/) · [Download a preview](https://github.com/kewalker/ez-pocket/releases) · [Report an issue](https://github.com/kewalker/ez-pocket/issues/new/choose)
+[Visit the ez-pocket website](https://kewalker.github.io/ez-pocket/) · [Download a preview](https://github.com/kewalker/ez-pocket/releases) · [Report an issue](https://github.com/kewalker/ez-pocket/issues/new/choose)
 
 ## Try the Windows technical preview
 
