@@ -58,7 +58,7 @@ Core updates and PocketOS firmware are intentionally separate workflows. Neither
 
 Windows is the current supported development target. An experimental Linux desktop head in `Linux/` reuses the same MAUI pages and services through the GTK4 backend. The project also contains .NET MAUI targets for macOS (Mac Catalyst), iOS, and Android. Linux builds run an automated GTK4 smoke check; tagged builds remain technical previews for desktop testing.
 
-The application is currently version `0.1.11` and remains under active development. Open an issue to report a bug, discuss an improvement, or ask about planned work.
+The application is currently version `0.1.12` and remains under active development. Open an issue to report a bug, discuss an improvement, or ask about planned work.
 
 ## Requirements
 
@@ -106,6 +106,8 @@ GitHub Actions builds and tests the Windows target and compiles the experimental
 
 ## Typical workflow
 
+New to the app? Open **QUICK START** from the dashboard for an optional guide to connecting storage, understanding the scan, choosing cores or a starter collection, and reviewing changes. It never opens automatically, and you can leave at any point.
+
 1. Connect the Pocket SD card, then use **SCAN TARGET** or choose its folder.
 2. Open **MANAGE CORES** to refresh the installed and live inventories.
 3. Choose the cores to keep; select **REVIEW CHANGES** to inspect additions, replacements, removals, package conflicts, and blockers.
@@ -126,7 +128,7 @@ Selecting a folder never writes to it by itself. Core and firmware writes requir
 
 Tagged builds produce unsigned Windows preview artifacts and an experimental self-contained Linux x64 archive. They are for technical preview testing, not normal public downloads. Windows may show SmartScreen warnings or organization policies may block unsigned executables; the Linux archive requires GTK 4.12+. CI checks Linux startup under a virtual display, while desktop and device testing remain in progress.
 
-MSIX packaging and trusted signing are planned before a normal public download is offered. See [docs/RELEASING.md](docs/RELEASING.md) for artifact and signing details.
+Windows signing is deferred. Public downloads remain clearly labelled unsigned technical previews; the unsigned MSIX is retained only as a CI artifact. See [docs/RELEASING.md](docs/RELEASING.md) for release and packaging details.
 
 ## Project layout
 

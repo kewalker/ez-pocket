@@ -35,6 +35,7 @@ internal static class AppNavigation
             "AssetRemovalReviewPage" => new AssetRemovalReviewPage(),
             "SaveVaultPage" => new SaveVaultPage(),
             "PocketHealthPage" => new PocketHealthPage(),
+            "QuickStartPage" => new QuickStartPage(),
             _ => throw new ArgumentOutOfRangeException(nameof(route), route, "Unknown page route.")
         };
         NavigationPage.SetHasNavigationBar(page, false);

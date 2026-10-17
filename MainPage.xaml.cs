@@ -80,6 +80,8 @@ public partial class MainPage : ContentPage
 
     private async void OnChooseFolderClicked(object? sender, EventArgs e) => await ChooseFolderAsync();
 
+    private async void OnQuickStartClicked(object? sender, EventArgs e) => await AppNavigation.GoToAsync("QuickStartPage");
+
     private async void OnNextStepClicked(object? sender, EventArgs e)
     {
         if (selection.SelectedPocket is null) await ChooseFolderAsync();

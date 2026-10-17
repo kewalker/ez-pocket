@@ -20,6 +20,10 @@
                     </Grid>
                 </Border>
             </Grid>
+            <HorizontalStackLayout Spacing="10">
+                <Label Text="New to ez-pocket?" FontSize="12" TextColor="#60605C" VerticalOptions="Center" />
+                <controls:EzButton Text="QUICK START  &#x2192;" Clicked="OnQuickStartClicked" FontSize="11" FontAttributes="Bold" ButtonPadding="10,4" MinimumHeight="32" ButtonBackgroundColor="#F4F4F0" ButtonTextColor="#151515" CornerRadius="2" SemanticProperties.Description="Open the optional Quick Start guide" />
+            </HorizontalStackLayout>
             <Border BackgroundColor="#151515" StrokeThickness="0" Padding="20" StrokeShape="RoundRectangle 2">
                 <Grid x:Name="TargetHeroGrid" RowDefinitions="Auto,Auto,Auto,Auto" ColumnDefinitions="*,Auto,Auto,Auto" ColumnSpacing="10" RowSpacing="12">
                     <Label Text="TARGET" TextColor="#AFAFAA" FontSize="11" FontAttributes="Bold" />

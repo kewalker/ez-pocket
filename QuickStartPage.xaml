@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:controls="clr-namespace:EzPocket.Controls"
+             x:Class="EzPocket.QuickStartPage"
+             BackgroundColor="White" Title="Quick Start">
+    <ScrollView>
+        <VerticalStackLayout Padding="28,20,28,28" Spacing="22" MaximumWidthRequest="1000" HorizontalOptions="Fill">
+            <HorizontalStackLayout Spacing="8">
+                <controls:EzButton Text="&#x2190; BACK" Clicked="OnBackClicked" FontSize="11" MinimumHeight="32" ButtonPadding="10,4" />
+                <Label Text="EZ-POCKET / QUICK START" FontSize="11" FontAttributes="Bold" TextColor="#60605C" VerticalOptions="Center" />
+            </HorizontalStackLayout>
+            <VerticalStackLayout Spacing="6">
+                <Label Text="Quick Start" FontSize="28" FontAttributes="Bold" TextColor="#151515" />
+                <Label Text="A short guide to your first reviewed update. Come back whenever you need it, or leave at any point." FontSize="14" TextColor="#60605C" />
+            </VerticalStackLayout>
+            <Border BackgroundColor="#151515" StrokeThickness="0" StrokeShape="RoundRectangle 2" Padding="16">
+                <VerticalStackLayout Spacing="5">
+                    <Label Text="SCAN &#x2192; CHOOSE &#x2192; REVIEW &#x2192; APPLY" FontSize="11" FontAttributes="Bold" TextColor="White" />
+                    <Label Text="This guide only scans and prepares selections. Writing to your card always needs a separate review and your explicit approval." FontSize="13" TextColor="#D2D2CC" />
+                </VerticalStackLayout>
+            </Border>
+            <VerticalStackLayout x:Name="GuideActions" Spacing="22">
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="01 / CONNECT YOUR CARD" FontSize="11" FontAttributes="Bold" TextColor="#60605C" />
+                    <Label Text="Choose your Pocket storage" FontSize="20" FontAttributes="Bold" TextColor="#151515" />
+                    <Label Text="Insert your SD card, or connect your Pocket with USB SD access enabled. Scan for a target, or choose the card's root folder rather than a folder inside it." FontSize="13" TextColor="#60605C" />
+                    <FlexLayout Wrap="Wrap" AlignItems="Start">
+                        <controls:EzButton x:Name="ScanTargetButton" Text="SCAN TARGET" Clicked="OnScanClicked" Margin="0,0,10,8" />
+                        <controls:EzButton Text="CHOOSE FOLDER" Clicked="OnChooseFolderClicked" ButtonBackgroundColor="#F4F4F0" ButtonTextColor="#151515" Margin="0,0,0,8" />
+                    </FlexLayout>
+                    <Picker x:Name="DetectedTargets" Title="Choose a detected target" TitleColor="#60605C" IsVisible="False" SelectedIndexChanged="OnDetectedTargetChanged" TextColor="#151515" BackgroundColor="#F4F4F0" />
+                    <Label x:Name="ScanStatus" Text="Selecting a target does not change its files. Keep a separate backup of important saves before applying changes." FontSize="12" TextColor="#60605C" />
+                </VerticalStackLayout>
+                <BoxView HeightRequest="1" Color="#C9C9C2" />
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="02 / UNDERSTAND YOUR SETUP" FontSize="11" FontAttributes="Bold" TextColor="#60605C" />
+                    <Label Text="See what ez-pocket found" FontSize="20" FontAttributes="Bold" TextColor="#151515" />
+                    <Border Stroke="#C9C9C2" StrokeShape="RoundRectangle 2" BackgroundColor="#F4F4F0" Padding="14">
+                        <VerticalStackLayout Spacing="5">
+                            <Label x:Name="TargetName" Text="No target selected" FontSize="17" FontAttributes="Bold" TextColor="#151515" />
+                            <Label x:Name="TargetPath" Text="Connect your storage and scan, or choose a folder above." FontSize="12" TextColor="#60605C" LineBreakMode="WordWrap" />
+                            <Label x:Name="TargetSummary" FontSize="12" TextColor="#151515" IsVisible="False" />
+                        </VerticalStackLayout>
+                    </Border>
+                    <Label Text="A core lets the Pocket run a particular system or arcade platform. Games and required BIOS files are separate and are not included with this guide." FontSize="13" TextColor="#60605C" />
+                </VerticalStackLayout>
+                <BoxView HeightRequest="1" Color="#C9C9C2" />
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="03 / CHOOSE YOUR NEXT STEP" FontSize="11" FontAttributes="Bold" TextColor="#60605C" />
+                    <Label Text="Keep your cores, or explore a collection" FontSize="20" FontAttributes="Bold" TextColor="#151515" />
+                    <Label Text="Already have cores? Open the inventory and choose the Updates status filter. Installed cores stay selected; unchecking one requests its removal in the change review." FontSize="13" TextColor="#60605C" />
+                    <controls:EzButton x:Name="ManageCoresButton" Text="MANAGE CORES" Clicked="OnManageCoresClicked" IsEnabled="False" HorizontalOptions="Start" />
+                    <Label Text="Starting a collection? Choose a curated lineup to add to your selection. You can adjust it in the inventory before reviewing changes." FontSize="13" TextColor="#60605C" />
+                    <Picker x:Name="StarterCollection" Title="Choose a core collection" TitleColor="#60605C" TextColor="#151515" BackgroundColor="#F4F4F0" SelectedIndexChanged="OnCollectionChanged" />
+                    <Label x:Name="CollectionDescription" FontSize="12" TextColor="#60605C" IsVisible="False" />
+                    <controls:EzButton x:Name="BrowseCollectionButton" Text="BROWSE COLLECTION" Clicked="OnBrowseCollectionClicked" IsEnabled="False" HorizontalOptions="Start" ButtonBackgroundColor="#F4F4F0" ButtonTextColor="#151515" />
+                    <Label x:Name="ActionHint" Text="Select a target above to enable these actions. The live inventory needs an internet connection." FontSize="12" TextColor="#60605C" />
+                </VerticalStackLayout>
+                <BoxView HeightRequest="1" Color="#C9C9C2" />
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="04 / REVIEW BEFORE YOU APPLY" FontSize="11" FontAttributes="Bold" TextColor="#60605C" />
+                    <Label Text="Check the plan, then decide" FontSize="20" FontAttributes="Bold" TextColor="#151515" />
+                    <Label Text="In the core inventory, choose REVIEW CHANGES to see the exact files the app plans to add, replace, or remove. Resolve any blockers and check that the target is right before choosing APPLY CHANGES." FontSize="13" TextColor="#60605C" />
+                    <Label Text="You can go back and change your selection. Firmware, save restores, and assets each have their own workflow; a core update does not approve those changes." FontSize="13" TextColor="#60605C" />
+                    <Label Text="When an operation finishes, safely eject the card before using it in your Pocket." FontSize="13" TextColor="#60605C" />
+                </VerticalStackLayout>
+            </VerticalStackLayout>
+            <controls:EzButton Text="RETURN TO DASHBOARD" Clicked="OnBackClicked" HorizontalOptions="Start" ButtonBackgroundColor="#F4F4F0" ButtonTextColor="#151515" />
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

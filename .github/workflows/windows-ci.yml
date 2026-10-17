@@ -190,6 +190,11 @@ jobs:
           This is an independent project and is not affiliated with, endorsed by, or sponsored by Analogue.
           "@ | Set-Content release-notes.md
 
+          $versionNotes = "docs/releases/$tag.md"
+          if (Test-Path -LiteralPath $versionNotes) {
+            Copy-Item -LiteralPath $versionNotes -Destination release-notes.md
+          }
+
           gh release view $tag 2>$null
           if ($LASTEXITCODE -eq 0) {
             gh release upload $tag $previewZip --clobber
