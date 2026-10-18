@@ -54,11 +54,17 @@ It is an independent project and is not affiliated with, endorsed by, or sponsor
 
 Core updates and PocketOS firmware are intentionally separate workflows. Neither operation includes saves, games, or device firmware changes unless you explicitly use that workflow.
 
+### Palette Studio
+
+Open **PALETTE STUDIO** from the dashboard or Asset Library to browse color swatches, open `.gbp` / `.pal` files, edit colors, and keep local favorites. With a target selected, you can also browse the community pack. The existing web editor remains available.
+
+Open your own screenshot for a side-by-side four-shade preview, then export a palette to a local folder or choose **REVIEW INSTALL**. Export preserves existing files; writing to the selected Pocket uses the asset review workflow. Screenshot previews approximate brightness and cannot identify separate sprite or window layers. APGB edits preserve the other color groups and LCD-off color. No game images are bundled.
+
 ## Platforms and status
 
 Windows is the current supported development target. An experimental Linux desktop head in `Linux/` reuses the same MAUI pages and services through the GTK4 backend. The project also contains .NET MAUI targets for macOS (Mac Catalyst), iOS, and Android. Linux builds run an automated GTK4 smoke check; tagged builds remain technical previews for desktop testing.
 
-The application is currently version `0.1.13` and remains under active development. Open an issue to report a bug, discuss an improvement, or ask about planned work.
+The application is currently version `0.1.14` and remains under active development. Open an issue to report a bug, discuss an improvement, or ask about planned work.
 
 ## Requirements
 

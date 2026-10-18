@@ -12,6 +12,7 @@ public partial class AppShell : Shell
 		Routing.RegisterRoute("AssetsPage", typeof(AssetsPage));
 		Routing.RegisterRoute("AssetReviewPage", typeof(AssetReviewPage));
 		Routing.RegisterRoute("PalettePackPage", typeof(PalettePackPage));
+		Routing.RegisterRoute("PaletteStudioPage", typeof(PaletteStudioPage));
 		Routing.RegisterRoute("AssetSetPage", typeof(AssetSetPage));
 		Routing.RegisterRoute("AssetRemovalReviewPage", typeof(AssetRemovalReviewPage));
 		Routing.RegisterRoute("SaveVaultPage", typeof(SaveVaultPage));

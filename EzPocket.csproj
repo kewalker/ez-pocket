@@ -28,8 +28,8 @@
 		<ApplicationId>com.bitbird.ezpocket</ApplicationId>
 
 		<!-- Versions -->
-		<ApplicationDisplayVersion>0.1.13</ApplicationDisplayVersion>
-		<ApplicationVersion>14</ApplicationVersion>
+		<ApplicationDisplayVersion>0.1.14</ApplicationDisplayVersion>
+		<ApplicationVersion>15</ApplicationVersion>
 		<Version>$(ApplicationDisplayVersion)</Version>
 
 		<!-- To develop, package, and publish an app to the Microsoft Store, see: https://aka.ms/MauiTemplateUnpackaged -->
@@ -85,6 +85,7 @@
 	<ItemGroup>
 		<PackageReference Include="Microsoft.Maui.Controls" Version="$(MauiVersion)" />
 		<PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="10.0.0" />
+		<PackageReference Include="SkiaSharp" Version="4.153.1" />
 	</ItemGroup>
 
 </Project>

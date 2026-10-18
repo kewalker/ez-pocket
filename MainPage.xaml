@@ -74,6 +74,7 @@
                         <Label Text="ASSET LIBRARY" FontSize="11" FontAttributes="Bold" TextColor="#151515" />
                         <Label x:Name="AssetsActionTitle" Text="Palettes and optional core files" FontSize="18" FontAttributes="Bold" TextColor="#151515" />
                         <Label x:Name="AssetsActionDetail" Text="Select a target to inspect shared palettes and other verified, opt-in core assets." FontSize="13" TextColor="#60605C" />
+                        <controls:EzButton Text="OPEN PALETTE STUDIO  →" Clicked="OnPaletteStudioClicked" FontSize="11" MinimumHeight="32" ButtonPadding="10,4" HorizontalOptions="Start" ButtonBackgroundColor="#FFFFFF" ButtonTextColor="#151515" Margin="0,6,0,0" />
                     </VerticalStackLayout>
                     <controls:EzButton x:Name="AssetsButton" Grid.Column="1" Text="VIEW ASSETS" IsEnabled="False" Clicked="OnAssetsClicked" CornerRadius="2" VerticalOptions="Center" />
                 </Grid>

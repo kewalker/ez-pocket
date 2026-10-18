@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:controls="clr-namespace:EzPocket.Controls"
+             x:Class="EzPocket.PaletteStudioPage" Title="Palette Studio" BackgroundColor="#FFFFFF">
+    <ScrollView>
+        <VerticalStackLayout Padding="24,16" Spacing="16">
+            <HorizontalStackLayout Spacing="8">
+                <controls:EzButton Text="← BACK" Clicked="OnBackClicked" MinimumHeight="30" ButtonPadding="10,3" />
+                <Label Text="ASSET LIBRARY / PALETTE STUDIO" FontSize="11" TextColor="#60605C" VerticalOptions="Center" />
+            </HorizontalStackLayout>
+            <VerticalStackLayout Spacing="3">
+                <Label Text="Palette Studio" FontSize="28" FontAttributes="Bold" TextColor="#151515" />
+                <Label Text="Find a look. Make it yours." FontSize="14" TextColor="#60605C" />
+            </VerticalStackLayout>
+            <FlexLayout Wrap="Wrap" AlignItems="Center">
+                <controls:EzButton Text="OPEN PALETTES" Clicked="OnOpenClicked" Margin="0,0,8,6" MinimumHeight="34" ButtonPadding="12,5" />
+                <controls:EzButton x:Name="PackButton" Text="BROWSE COMMUNITY PACK" Clicked="OnPackClicked" Margin="0,0,8,6" MinimumHeight="34" ButtonPadding="12,5" ButtonBackgroundColor="#F4F4F0" ButtonTextColor="#151515" />
+                <controls:EzButton Text="WEB EDITOR ↗" Clicked="OnWebClicked" Margin="0,0,0,6" MinimumHeight="34" ButtonPadding="12,5" ButtonBackgroundColor="#F4F4F0" ButtonTextColor="#151515" />
+            </FlexLayout>
+            <Grid x:Name="Workspace" ColumnDefinitions="300,*" ColumnSpacing="24" RowSpacing="20" SizeChanged="OnWorkspaceSizeChanged">
+                <VerticalStackLayout x:Name="Browser" Spacing="9">
+                    <Label Text="PALETTE LIBRARY" FontSize="11" FontAttributes="Bold" TextColor="#60605C" />
+                    <SearchBar x:Name="Search" Placeholder="Search palettes" TextChanged="OnSearchChanged" TextColor="#151515" BackgroundColor="#F4F4F0" />
+                    <HorizontalStackLayout Spacing="8"><Switch x:Name="FavoritesOnly" Toggled="OnFavoritesChanged" WidthRequest="50" /><Label Text="Favorites only" VerticalOptions="Center" TextColor="#151515" /></HorizontalStackLayout>
+                    <Label x:Name="LibrarySummary" FontSize="12" TextColor="#60605C" />
+                    <CollectionView x:Name="PaletteList" SelectionMode="Single" SelectionChanged="OnPaletteSelected" HeightRequest="400">
+                        <CollectionView.EmptyView><Label Text="No matching palettes. Open files or browse the community pack." TextColor="#60605C" Margin="0,12" /></CollectionView.EmptyView>
+                    </CollectionView>
+                </VerticalStackLayout>
+                <VerticalStackLayout x:Name="Editor" Grid.Column="1" Spacing="12">
+                    <Label Text="EDIT PALETTE" FontSize="11" FontAttributes="Bold" TextColor="#60605C" />
+                    <Entry x:Name="PaletteName" Placeholder="Palette name" TextColor="#151515" TextChanged="OnNameChanged" MaxLength="80" />
+                    <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12">
+                        <Picker x:Name="GroupPicker" Title="Color group" SelectedIndexChanged="OnGroupChanged" TextColor="#151515" />
+                        <controls:EzButton Grid.Column="1" x:Name="FavoriteButton" Text="☆ FAVORITE" Clicked="OnFavoriteClicked" MinimumHeight="34" ButtonPadding="10,5" ButtonBackgroundColor="#F4F4F0" ButtonTextColor="#151515" />
+                    </Grid>
+                    <Label x:Name="FormatSummary" FontSize="12" TextColor="#60605C" />
+                    <Label Text="Click a swatch to choose a color, or type in its HEX field." FontSize="12" TextColor="#60605C" />
+                    <Grid x:Name="ColorEditors" ColumnDefinitions="*,*,*,*" ColumnSpacing="8" />
+                    <FlexLayout Wrap="Wrap">
+                        <controls:EzButton Text="REVERSE COLORS" Clicked="OnReverseClicked" MinimumHeight="32" ButtonPadding="10,4" Margin="0,0,8,4" ButtonBackgroundColor="#F4F4F0" ButtonTextColor="#151515" />
+                        <controls:EzButton Text="RESET EDITS" Clicked="OnResetClicked" MinimumHeight="32" ButtonPadding="10,4" Margin="0,0,8,4" ButtonBackgroundColor="#F4F4F0" ButtonTextColor="#151515" />
+                        <controls:EzButton Text="COMPARE WITH THIS" Clicked="OnCompareClicked" MinimumHeight="32" ButtonPadding="10,4" Margin="0,0,0,4" ButtonBackgroundColor="#F4F4F0" ButtonTextColor="#151515" />
+                    </FlexLayout>
+                    <Grid ColumnDefinitions="*,Auto"><Label Text="SCREENSHOT PREVIEW" FontSize="11" FontAttributes="Bold" TextColor="#60605C" VerticalOptions="Center" /><controls:EzButton Grid.Column="1" Text="OPEN SCREENSHOT" Clicked="OnScreenshotClicked" MinimumHeight="32" ButtonPadding="10,4" ButtonBackgroundColor="#F4F4F0" ButtonTextColor="#151515" /></Grid>
+                    <Grid ColumnDefinitions="*,*" ColumnSpacing="12">
+                        <VerticalStackLayout Spacing="5"><Label x:Name="CompareLabel" Text="REFERENCE" FontSize="11" TextColor="#60605C" /><Border Stroke="#D6D6D0" BackgroundColor="#F4F4F0" HeightRequest="210"><Image x:Name="ReferenceImage" Aspect="AspectFit" /></Border></VerticalStackLayout>
+                        <VerticalStackLayout Grid.Column="1" Spacing="5"><Label Text="CURRENT" FontSize="11" TextColor="#60605C" /><Border Stroke="#D6D6D0" BackgroundColor="#F4F4F0" HeightRequest="210"><Image x:Name="CurrentImage" Aspect="AspectFit" /></Border></VerticalStackLayout>
+                    </Grid>
+                    <Label x:Name="PreviewNote" Text="Calibration pattern · Open your own Game Boy screenshot to preview it. No game images are bundled." FontSize="12" TextColor="#60605C" />
+                    <Label Text="Preview maps image brightness to four shades using the selected group. Colored images and separate sprite/window layers may differ on Pocket. Palette selection still happens on Pocket." FontSize="11" TextColor="#60605C" />
+                    <FlexLayout Wrap="Wrap">
+                        <controls:EzButton x:Name="ReviewButton" Text="REVIEW INSTALL" Clicked="OnReviewClicked" MinimumHeight="36" ButtonPadding="12,6" Margin="0,0,8,6" />
+                        <controls:EzButton x:Name="ExportButton" Text="EXPORT FILE" Clicked="OnExportClicked" MinimumHeight="36" ButtonPadding="12,6" Margin="0,0,0,6" ButtonBackgroundColor="#F4F4F0" ButtonTextColor="#151515" />
+                    </FlexLayout>
+                    <Label x:Name="TargetNote" FontSize="12" TextColor="#60605C" />
+                </VerticalStackLayout>
+            </Grid>
+            <Label x:Name="Status" TextColor="#60605C" FontSize="12" />
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

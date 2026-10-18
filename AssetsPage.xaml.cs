@@ -122,6 +122,9 @@ public partial class AssetsPage : ContentPage
     private async void OnPaletteEditorClicked(object? sender, EventArgs e) =>
         await OpenResourceAsync("https://www.nortakales.com/page/gbpEditor");
 
+    private async void OnPaletteStudioClicked(object? sender, EventArgs e) =>
+        await AppNavigation.GoToAsync("PaletteStudioPage");
+
     private async void OnDisplayModesClicked(object? sender, EventArgs e)
     {
         PocketDrive? pocket = selection.SelectedPocket;
