@@ -5,8 +5,8 @@
     <RootNamespace>EzPocket</RootNamespace>
     <ApplicationTitle>EzPocket</ApplicationTitle>
     <ApplicationId>com.bitbird.ezpocket</ApplicationId>
-    <ApplicationDisplayVersion>0.1.14</ApplicationDisplayVersion>
-    <ApplicationVersion>15</ApplicationVersion>
+    <ApplicationDisplayVersion>0.1.15</ApplicationDisplayVersion>
+    <ApplicationVersion>16</ApplicationVersion>
     <Version>$(ApplicationDisplayVersion)</Version>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
@@ -22,6 +22,8 @@
     <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="10.0.0" />
     <PackageReference Include="SkiaSharp" Version="4.153.1" />
     <PackageReference Include="SkiaSharp.NativeAssets.Linux.NoDependencies" Version="4.153.1" />
+    <PackageReference Include="Extism.Sdk" Version="1.10.0" />
+    <PackageReference Include="Extism.runtime.all" Version="1.13.0" />
   </ItemGroup>
 
   <ItemGroup>

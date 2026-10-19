@@ -82,6 +82,7 @@ public partial class MainPage : ContentPage
 
     private async void OnQuickStartClicked(object? sender, EventArgs e) => await AppNavigation.GoToAsync("QuickStartPage");
     private async void OnPaletteStudioClicked(object? sender, EventArgs e) => await AppNavigation.GoToAsync("PaletteStudioPage");
+    private async void OnPocketPluginsClicked(object? sender, EventArgs e) => await AppNavigation.GoToAsync("PocketPluginsPage");
 
     private async void OnNextStepClicked(object? sender, EventArgs e)
     {

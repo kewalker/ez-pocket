@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
 		<TargetFrameworks>net10.0-android;net10.0-ios;net10.0-maccatalyst</TargetFrameworks>
@@ -28,8 +28,8 @@
 		<ApplicationId>com.bitbird.ezpocket</ApplicationId>
 
 		<!-- Versions -->
-		<ApplicationDisplayVersion>0.1.14</ApplicationDisplayVersion>
-		<ApplicationVersion>15</ApplicationVersion>
+		<ApplicationDisplayVersion>0.1.15</ApplicationDisplayVersion>
+		<ApplicationVersion>16</ApplicationVersion>
 		<Version>$(ApplicationDisplayVersion)</Version>
 
 		<!-- To develop, package, and publish an app to the Microsoft Store, see: https://aka.ms/MauiTemplateUnpackaged -->
@@ -86,6 +86,8 @@
 		<PackageReference Include="Microsoft.Maui.Controls" Version="$(MauiVersion)" />
 		<PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="10.0.0" />
 		<PackageReference Include="SkiaSharp" Version="4.153.1" />
+		<PackageReference Include="Extism.Sdk" Version="1.10.0" />
+		<PackageReference Include="Extism.runtime.all" Version="1.13.0" />
 	</ItemGroup>
 
 </Project>

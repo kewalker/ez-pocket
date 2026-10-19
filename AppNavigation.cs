@@ -32,6 +32,7 @@ internal static class AppNavigation
             "AssetReviewPage" => new AssetReviewPage(),
             "PalettePackPage" => new PalettePackPage(),
             "PaletteStudioPage" => new PaletteStudioPage(),
+            "PocketPluginsPage" => new PocketPluginsPage(),
             "AssetSetPage" => new AssetSetPage(),
             "AssetRemovalReviewPage" => new AssetRemovalReviewPage(),
             "SaveVaultPage" => new SaveVaultPage(),

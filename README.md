@@ -60,11 +60,17 @@ Open **PALETTE STUDIO** from the dashboard or Asset Library to browse color swat
 
 Open your own screenshot for a side-by-side four-shade preview, then export a palette to a local folder or choose **REVIEW INSTALL**. Export preserves existing files; writing to the selected Pocket uses the asset review workflow. Screenshot previews approximate brightness and cannot identify separate sprite or window layers. APGB edits preserve the other color groups and LCD-off color. No game images are bundled.
 
+### Pocket Plugins (initial support)
+
+Open **POCKET PLUGINS** to install a plugin from a GitHub release and manually run core setup tools or file generators using the format shared by Pocket Sync and pupdate. Review the plugin's source, version, and network access first. Runs use a full local copy of the target; additions, replacements, and deletions require review and an explicit apply action. Replaced and deleted files are backed up, with recovery attempted if an apply fails.
+
+The first version supports working copies up to 64 GiB / 200,000 files and requires space for the copy and generated output. Plugins cannot apply save, Memory, or root firmware file changes. There is no automatic execution. See [Pocket Plugin workflow, storage, and limits](docs/POCKET-PLUGINS.md).
+
 ## Platforms and status
 
 Windows is the current supported development target. An experimental Linux desktop head in `Linux/` reuses the same MAUI pages and services through the GTK4 backend. The project also contains .NET MAUI targets for macOS (Mac Catalyst), iOS, and Android. Linux builds run an automated GTK4 smoke check; tagged builds remain technical previews for desktop testing.
 
-The application is currently version `0.1.14` and remains under active development. Open an issue to report a bug, discuss an improvement, or ask about planned work.
+The application is currently version `0.1.15` and remains under active development. Open an issue to report a bug, discuss an improvement, or ask about planned work.
 
 ## Requirements
 

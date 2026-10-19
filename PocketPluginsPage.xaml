@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:controls="clr-namespace:EzPocket.Controls"
+             xmlns:models="clr-namespace:EzPocket.Models"
+             x:Class="EzPocket.PocketPluginsPage" Title="Pocket Plugins" BackgroundColor="White">
+    <ScrollView>
+        <VerticalStackLayout Padding="28,20,28,28" Spacing="16">
+            <HorizontalStackLayout Spacing="8">
+                <controls:EzButton x:Name="BackButton" Text="← BACK" MinimumHeight="30" FontSize="11" ButtonPadding="10,3" Clicked="OnBackClicked" />
+                <Label Text="EZ-POCKET / POCKET PLUGINS" FontSize="11" FontAttributes="Bold" TextColor="#60605C" VerticalOptions="Center" />
+            </HorizontalStackLayout>
+            <Label Text="Pocket Plugins" FontSize="28" FontAttributes="Bold" TextColor="#151515" />
+            <Label Text="Run core setup tools, ROM builders, and file generators. Compatible with the Pocket Plugin format used by Pocket Sync and pupdate." FontSize="14" TextColor="#60605C" />
+            <Label x:Name="TargetSummary" FontSize="13" TextColor="#151515" />
+            <BoxView HeightRequest="1" Color="#C9C9C2" />
+            <VerticalStackLayout x:Name="InstallPanel" Spacing="8">
+                <Label Text="INSTALL FROM GITHUB" FontSize="11" FontAttributes="Bold" TextColor="#151515" />
+                <Entry x:Name="RepositoryEntry" Placeholder="owner/repository or GitHub repository URL" TextColor="#151515" BackgroundColor="#F4F4F0" SemanticProperties.Description="GitHub plugin repository" />
+                <Label Text="Downloads the latest release to this computer. Installation does not run the plugin." FontSize="12" TextColor="#60605C" />
+                <controls:EzButton Text="INSTALL PLUGIN" Clicked="OnInstallClicked" HorizontalOptions="Start" FontSize="11" />
+            </VerticalStackLayout>
+            <VerticalStackLayout x:Name="SelectionPanel" Spacing="8">
+                <Label Text="INSTALLED PLUGINS" FontSize="11" FontAttributes="Bold" TextColor="#151515" />
+                <Picker x:Name="PluginPicker" Title="Choose a plugin" SelectedIndexChanged="OnPluginChanged" TextColor="#151515" BackgroundColor="#F4F4F0" />
+                <Label x:Name="PluginDescription" FontSize="14" TextColor="#151515" />
+                <Label x:Name="PluginSource" FontSize="12" TextColor="#60605C" />
+                <Label x:Name="PluginNetwork" FontSize="12" TextColor="#60605C" />
+                <Label Text="Plugins can read and change the local working copy and send data to their listed network hosts. Run only plugins you trust." FontSize="12" TextColor="#60605C" />
+                <HorizontalStackLayout Spacing="8">
+                    <controls:EzButton x:Name="RunButton" Text="RUN AND REVIEW" IsEnabled="False" Clicked="OnRunClicked" FontSize="11" />
+                    <controls:EzButton x:Name="RemoveButton" Text="REMOVE PLUGIN" IsEnabled="False" Clicked="OnRemoveClicked" FontSize="11" ButtonBackgroundColor="#F4F4F0" ButtonTextColor="#151515" />
+                </HorizontalStackLayout>
+            </VerticalStackLayout>
+            <Label Text="Each run copies Pocket content to this computer first, excluding system storage metadata. Allow space for a full copy and generated files. This preview supports targets up to 64 GiB / 200,000 files. Saves, Memories, and root firmware files cannot be changed by plugins." FontSize="12" TextColor="#60605C" />
+            <BoxView HeightRequest="1" Color="#C9C9C2" />
+            <HorizontalStackLayout Spacing="10">
+                <ActivityIndicator x:Name="Activity" Color="#151515" IsVisible="False" />
+                <Label x:Name="Status" Text="Install or choose a plugin to begin." FontSize="13" TextColor="#151515" VerticalOptions="Center" />
+            </HorizontalStackLayout>
+            <controls:EzButton x:Name="CancelRunButton" Text="CANCEL RUN" IsVisible="False" Clicked="OnCancelRunClicked" HorizontalOptions="Start" FontSize="11" ButtonBackgroundColor="#F4F4F0" ButtonTextColor="#151515" />
+            <Border x:Name="PromptPanel" IsVisible="False" Stroke="#151515" StrokeThickness="1" StrokeShape="RoundRectangle 2" Padding="16">
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="PLUGIN QUESTION" FontSize="11" FontAttributes="Bold" TextColor="#60605C" />
+                    <Label x:Name="PromptQuery" FontSize="16" TextColor="#151515" />
+                    <Picker x:Name="PromptChoices" Title="Choose an answer" TextColor="#151515" BackgroundColor="#F4F4F0" />
+                    <Entry x:Name="PromptText" Placeholder="Your answer" TextColor="#151515" BackgroundColor="#F4F4F0" />
+                    <controls:EzButton Text="CONTINUE" Clicked="OnAnswerClicked" HorizontalOptions="Start" FontSize="11" />
+                </VerticalStackLayout>
+            </Border>
+            <VerticalStackLayout x:Name="PluginLinks" Spacing="6" />
+            <VerticalStackLayout x:Name="ReviewPanel" Spacing="10" IsVisible="False">
+                <Label Text="REVIEW CHANGES" FontSize="11" FontAttributes="Bold" TextColor="#151515" />
+                <Label x:Name="ReviewSummary" FontSize="16" FontAttributes="Bold" TextColor="#151515" />
+                <Label x:Name="Blockers" FontSize="13" TextColor="#151515" />
+                <CollectionView x:Name="ChangeList" SelectionMode="None" HeightRequest="320">
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate x:DataType="models:PocketPluginChange">
+                            <Grid ColumnDefinitions="85,*,100" ColumnSpacing="12" Padding="0,8">
+                                <Label Text="{Binding Action}" FontSize="11" FontAttributes="Bold" TextColor="#151515" />
+                                <Label Grid.Column="1" Text="{Binding RelativePath}" FontSize="12" TextColor="#151515" LineBreakMode="MiddleTruncation" />
+                                <Label Grid.Column="2" Text="{Binding SizeBytes, StringFormat='{0:N0} B'}" FontSize="11" TextColor="#60605C" HorizontalTextAlignment="End" />
+                            </Grid>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+                <Label Text="Applying changes backs up replaced and deleted files locally. Check every deletion before applying." FontSize="12" TextColor="#60605C" />
+                <HorizontalStackLayout Spacing="8">
+                    <controls:EzButton x:Name="ApplyButton" Text="APPLY CHANGES" Clicked="OnApplyClicked" FontSize="11" />
+                    <controls:EzButton x:Name="DiscardButton" Text="DISCARD CHANGES" Clicked="OnDiscardClicked" FontSize="11" ButtonBackgroundColor="#F4F4F0" ButtonTextColor="#151515" />
+                </HorizontalStackLayout>
+            </VerticalStackLayout>
+            <Label x:Name="BackupSummary" FontSize="12" TextColor="#60605C" />
+            <Label Text="PLUGIN LOG · LAST 32,000 CHARACTERS" FontSize="11" FontAttributes="Bold" TextColor="#60605C" />
+            <Label x:Name="RunLog" FontSize="12" TextColor="#60605C" />
+            <Label Text="ez-pocket is an independent project, unaffiliated with Analogue. Plugins are provided by their respective authors." FontSize="11" TextColor="#60605C" />
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>
