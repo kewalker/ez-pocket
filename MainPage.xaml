@@ -24,10 +24,6 @@
                 <Label Text="New to ez-pocket?" FontSize="12" TextColor="#60605C" VerticalOptions="Center" />
                 <controls:EzButton Text="QUICK START  &#x2192;" Clicked="OnQuickStartClicked" FontSize="11" FontAttributes="Bold" ButtonPadding="10,4" MinimumHeight="32" ButtonBackgroundColor="#F4F4F0" ButtonTextColor="#151515" CornerRadius="2" SemanticProperties.Description="Open the optional Quick Start guide" />
             </HorizontalStackLayout>
-            <HorizontalStackLayout Spacing="10">
-                <controls:EzButton Text="POCKET PLUGINS" Clicked="OnPocketPluginsClicked" FontSize="11" ButtonPadding="10,4" MinimumHeight="32" ButtonBackgroundColor="#F4F4F0" ButtonTextColor="#151515" SemanticProperties.Description="Install and run core setup plugins with staged change review" />
-                <Label Text="Core setup tools and file generators" FontSize="12" TextColor="#60605C" VerticalOptions="Center" />
-            </HorizontalStackLayout>
             <Border BackgroundColor="#151515" StrokeThickness="0" Padding="20" StrokeShape="RoundRectangle 2">
                 <Grid x:Name="TargetHeroGrid" RowDefinitions="Auto,Auto,Auto,Auto" ColumnDefinitions="*,Auto,Auto,Auto" ColumnSpacing="10" RowSpacing="12">
                     <Label Text="TARGET" TextColor="#AFAFAA" FontSize="11" FontAttributes="Bold" />
@@ -132,6 +128,10 @@
                 <Border Grid.Column="1" BackgroundColor="White" Stroke="#C9C9C2" StrokeShape="RoundRectangle 2" Padding="14"><VerticalStackLayout Spacing="4"><Label Text="CURRENT TARGET" TextColor="#60605C" FontSize="11" FontAttributes="Bold" /><Label x:Name="TargetValue" Text="None" FontSize="18" FontAttributes="Bold" TextColor="#151515" LineBreakMode="TailTruncation" /><Label x:Name="TargetDetail" Text="No folder selected" TextColor="#60605C" FontSize="12" LineBreakMode="TailTruncation" /></VerticalStackLayout></Border>
                 <Border Grid.Column="2" BackgroundColor="White" Stroke="#C9C9C2" StrokeShape="RoundRectangle 2" Padding="14"><VerticalStackLayout Spacing="4"><Label Text="CHANGES" TextColor="#60605C" FontSize="11" FontAttributes="Bold" /><Label Text="REVIEW FIRST" FontSize="16" FontAttributes="Bold" TextColor="#151515" /><Label Text="You approve each install, update, and removal." TextColor="#60605C" FontSize="12" /></VerticalStackLayout></Border>
             </Grid>
+            <HorizontalStackLayout Spacing="10">
+                <Label Text="TOOLS" FontSize="10" TextColor="#60605C" VerticalOptions="Center" />
+                <controls:EzButton Text="POCKET PLUGINS" Clicked="OnPocketPluginsClicked" FontSize="10" ButtonPadding="8,3" MinimumHeight="30" ButtonBackgroundColor="White" ButtonTextColor="#60605C" CornerRadius="0" SemanticProperties.Description="Install and run core setup plugins with staged change review" />
+            </HorizontalStackLayout>
             <Grid x:Name="DiagnosticsGrid" ColumnDefinitions="*,Auto" ColumnSpacing="12">
                 <Label x:Name="DiagnosticsStatus" Text="Need help? Local diagnostics exclude target paths and exception messages." FontSize="11" TextColor="#60605C" VerticalOptions="Center" LineBreakMode="TailTruncation" />
                 <controls:EzButton x:Name="ExportDiagnosticsButton" Grid.Column="1" Text="EXPORT DIAGNOSTICS" Clicked="OnExportDiagnosticsClicked" FontSize="10" ButtonPadding="8,3" ButtonBackgroundColor="White" ButtonTextColor="#60605C" CornerRadius="0" VerticalOptions="Center" />

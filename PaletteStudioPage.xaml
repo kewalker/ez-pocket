@@ -32,7 +32,7 @@
                     <Label Text="EDIT PALETTE" FontSize="11" FontAttributes="Bold" TextColor="#60605C" />
                     <Entry x:Name="PaletteName" Placeholder="Palette name" TextColor="#151515" TextChanged="OnNameChanged" MaxLength="80" />
                     <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12">
-                        <Picker x:Name="GroupPicker" Title="Color group" SelectedIndexChanged="OnGroupChanged" TextColor="#151515" />
+                        <controls:EzDropdown x:Name="GroupPicker" Title="Color group" SelectedIndexChanged="OnGroupChanged" />
                         <controls:EzButton Grid.Column="1" x:Name="FavoriteButton" Text="☆ FAVORITE" Clicked="OnFavoriteClicked" MinimumHeight="34" ButtonPadding="10,5" ButtonBackgroundColor="#F4F4F0" ButtonTextColor="#151515" />
                     </Grid>
                     <Label x:Name="FormatSummary" FontSize="12" TextColor="#60605C" />

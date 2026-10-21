@@ -32,25 +32,17 @@
             </VerticalStackLayout>
             <VerticalStackLayout Grid.Column="1" Spacing="4">
                 <Label Text="STATUS" FontSize="11" FontAttributes="Bold" TextColor="#60605C" />
-                <Border BackgroundColor="White" Stroke="#151515" StrokeThickness="1" StrokeShape="RoundRectangle 2" Padding="10,0">
-                    <Grid ColumnDefinitions="*,Auto">
-                        <Picker Grid.ColumnSpan="2" x:Name="StatusFilter" TextColor="#151515" BackgroundColor="Transparent" FontSize="14" HeightRequest="46" HorizontalOptions="Fill" SelectedIndex="0" SelectedIndexChanged="OnFilterChanged" SemanticProperties.Description="Status filter dropdown">
-                            <Picker.Items>
-                                <x:String>All cores</x:String><x:String>Updates</x:String><x:String>Installed</x:String><x:String>Available</x:String>
-                            </Picker.Items>
-                        </Picker>
-                    </Grid>
-                </Border>
+                <controls:EzDropdown x:Name="StatusFilter" SelectedIndex="0" SelectedIndexChanged="OnFilterChanged" SemanticProperties.Description="Status filter dropdown">
+                    <controls:EzDropdown.Items>
+                        <x:String>All cores</x:String><x:String>Updates</x:String><x:String>Installed</x:String><x:String>Available</x:String>
+                    </controls:EzDropdown.Items>
+                </controls:EzDropdown>
             </VerticalStackLayout>
             <VerticalStackLayout Grid.Column="2" Spacing="4">
                 <Label Text="CATEGORY" FontSize="11" FontAttributes="Bold" TextColor="#60605C" />
-                <Border BackgroundColor="White" Stroke="#151515" StrokeThickness="1" StrokeShape="RoundRectangle 2" Padding="10,0">
-                    <Grid ColumnDefinitions="*,Auto">
-                        <Picker Grid.ColumnSpan="2" x:Name="CategoryFilter" TextColor="#151515" BackgroundColor="Transparent" FontSize="14" HeightRequest="46" HorizontalOptions="Fill" SelectedIndexChanged="OnFilterChanged" SemanticProperties.Description="Category filter dropdown">
-                            <Picker.Items><x:String>All categories</x:String></Picker.Items>
-                        </Picker>
-                    </Grid>
-                </Border>
+                <controls:EzDropdown x:Name="CategoryFilter" SelectedIndexChanged="OnFilterChanged" SemanticProperties.Description="Category filter dropdown">
+                    <controls:EzDropdown.Items><x:String>All categories</x:String></controls:EzDropdown.Items>
+                </controls:EzDropdown>
             </VerticalStackLayout>
         </Grid>
         <Border Grid.Row="3" x:Name="FeaturedSetNotice" IsVisible="False" BackgroundColor="#F4F4F0" Stroke="#151515" StrokeShape="RoundRectangle 2" Padding="12,8">

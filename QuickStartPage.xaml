@@ -29,7 +29,7 @@
                         <controls:EzButton x:Name="ScanTargetButton" Text="SCAN TARGET" Clicked="OnScanClicked" Margin="0,0,10,8" />
                         <controls:EzButton Text="CHOOSE FOLDER" Clicked="OnChooseFolderClicked" ButtonBackgroundColor="#F4F4F0" ButtonTextColor="#151515" Margin="0,0,0,8" />
                     </FlexLayout>
-                    <Picker x:Name="DetectedTargets" Title="Choose a detected target" TitleColor="#60605C" IsVisible="False" SelectedIndexChanged="OnDetectedTargetChanged" TextColor="#151515" BackgroundColor="#F4F4F0" />
+                    <controls:EzDropdown x:Name="DetectedTargets" Title="Choose a detected target" IsVisible="False" SelectedIndexChanged="OnDetectedTargetChanged" />
                     <Label x:Name="ScanStatus" Text="Selecting a target does not change its files. Keep a separate backup of important saves before applying changes." FontSize="12" TextColor="#60605C" />
                 </VerticalStackLayout>
                 <BoxView HeightRequest="1" Color="#C9C9C2" />
@@ -52,7 +52,7 @@
                     <Label Text="Already have cores? Open the inventory and choose the Updates status filter. Installed cores stay selected; unchecking one requests its removal in the change review." FontSize="13" TextColor="#60605C" />
                     <controls:EzButton x:Name="ManageCoresButton" Text="MANAGE CORES" Clicked="OnManageCoresClicked" IsEnabled="False" HorizontalOptions="Start" />
                     <Label Text="Starting a collection? Choose a curated lineup to add to your selection. You can adjust it in the inventory before reviewing changes." FontSize="13" TextColor="#60605C" />
-                    <Picker x:Name="StarterCollection" Title="Choose a core collection" TitleColor="#60605C" TextColor="#151515" BackgroundColor="#F4F4F0" SelectedIndexChanged="OnCollectionChanged" />
+                    <controls:EzDropdown x:Name="StarterCollection" Title="Choose a core collection" SelectedIndexChanged="OnCollectionChanged" />
                     <Label x:Name="CollectionDescription" FontSize="12" TextColor="#60605C" IsVisible="False" />
                     <controls:EzButton x:Name="BrowseCollectionButton" Text="BROWSE COLLECTION" Clicked="OnBrowseCollectionClicked" IsEnabled="False" HorizontalOptions="Start" ButtonBackgroundColor="#F4F4F0" ButtonTextColor="#151515" />
                     <Label x:Name="ActionHint" Text="Select a target above to enable these actions. The live inventory needs an internet connection." FontSize="12" TextColor="#60605C" />

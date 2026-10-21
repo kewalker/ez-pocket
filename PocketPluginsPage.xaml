@@ -22,7 +22,7 @@
             </VerticalStackLayout>
             <VerticalStackLayout x:Name="SelectionPanel" Spacing="8">
                 <Label Text="INSTALLED PLUGINS" FontSize="11" FontAttributes="Bold" TextColor="#151515" />
-                <Picker x:Name="PluginPicker" Title="Choose a plugin" SelectedIndexChanged="OnPluginChanged" TextColor="#151515" BackgroundColor="#F4F4F0" />
+                <controls:EzDropdown x:Name="PluginPicker" Title="Choose a plugin" SelectedIndexChanged="OnPluginChanged" />
                 <Label x:Name="PluginDescription" FontSize="14" TextColor="#151515" />
                 <Label x:Name="PluginSource" FontSize="12" TextColor="#60605C" />
                 <Label x:Name="PluginNetwork" FontSize="12" TextColor="#60605C" />
@@ -43,7 +43,7 @@
                 <VerticalStackLayout Spacing="10">
                     <Label Text="PLUGIN QUESTION" FontSize="11" FontAttributes="Bold" TextColor="#60605C" />
                     <Label x:Name="PromptQuery" FontSize="16" TextColor="#151515" />
-                    <Picker x:Name="PromptChoices" Title="Choose an answer" TextColor="#151515" BackgroundColor="#F4F4F0" />
+                    <controls:EzDropdown x:Name="PromptChoices" Title="Choose an answer" />
                     <Entry x:Name="PromptText" Placeholder="Your answer" TextColor="#151515" BackgroundColor="#F4F4F0" />
                     <controls:EzButton Text="CONTINUE" Clicked="OnAnswerClicked" HorizontalOptions="Start" FontSize="11" />
                 </VerticalStackLayout>
