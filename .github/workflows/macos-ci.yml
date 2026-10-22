@@ -46,7 +46,7 @@ jobs:
           dotnet --info
 
       - name: Install Mac Catalyst workload
-        run: dotnet workload install maui-maccatalyst --version 10.0.401
+        run: dotnet workload install maui-maccatalyst
 
       - name: Publish app without an Apple distribution identity
         run: >-
