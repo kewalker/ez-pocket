@@ -15,6 +15,8 @@ jobs:
     name: Build Apple Silicon preview
     runs-on: macos-26
     timeout-minutes: 30
+    env:
+      DEVELOPER_DIR: /Applications/Xcode_26.6.app/Contents/Developer
     steps:
       - name: Check out source
         uses: actions/checkout@v4
@@ -22,7 +24,21 @@ jobs:
       - name: Set up .NET 10
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: 10.0.x
+          dotnet-version: 10.0.401
+
+      # Keep the SDK, workload set, and Xcode together. Latest workloads can
+      # require an Xcode version not yet available on GitHub's hosted image.
+      - name: Pin SDK and workload set for this build
+        run: |
+          cat > global.json <<'JSON'
+          {
+            "sdk": {
+              "version": "10.0.401",
+              "rollForward": "disable",
+              "workloadVersion": "10.0.401"
+            }
+          }
+          JSON
 
       - name: Record Apple toolchain
         run: |
@@ -30,7 +46,7 @@ jobs:
           dotnet --info
 
       - name: Install Mac Catalyst workload
-        run: dotnet workload install maui-maccatalyst
+        run: dotnet workload install maui-maccatalyst --version 10.0.401
 
       - name: Publish app without an Apple distribution identity
         run: >-

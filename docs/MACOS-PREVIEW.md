@@ -47,6 +47,8 @@ run for pull requests and pushes to main. It uploads a ZIP and SHA-256 checksum
 for 14 days; it does not publish a GitHub Release. Intel Macs are not covered by
 this first preview.
 
+The workflow pins .NET SDK/workload set `10.0.401` and Xcode `26.6` together.
+The SDK selection is generated in CI so it does not change local Windows builds.
 The runner's Xcode must match the installed .NET Mac Catalyst workload. If the
 build reports an Xcode mismatch, align those versions before treating the build
 as a code failure. CI currently checks packaging, not interactive startup or SD
