@@ -1,0 +1,64 @@
+name: macOS unsigned preview
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: Build Apple Silicon preview
+    runs-on: macos-26
+    timeout-minutes: 30
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+
+      - name: Set up .NET 10
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0.x
+
+      - name: Record Apple toolchain
+        run: |
+          xcodebuild -version
+          dotnet --info
+
+      - name: Install Mac Catalyst workload
+        run: dotnet workload install maui-maccatalyst
+
+      - name: Publish app without an Apple distribution identity
+        run: >-
+          dotnet publish EzPocket.csproj
+          -f net10.0-maccatalyst -c Release
+          -p:TargetFrameworks=net10.0-maccatalyst
+          -p:RuntimeIdentifier=maccatalyst-arm64
+          -p:CreatePackage=false
+          -p:EnablePackageSigning=false
+          -p:CodesignKey=-
+          -p:CodesignEntitlements=Platforms/MacCatalyst/Entitlements.plist
+
+      - name: Package tester download
+        shell: bash
+        run: |
+          set -euo pipefail
+          app="bin/Release/net10.0-maccatalyst/maccatalyst-arm64/EzPocket.app"
+          test -d "$app"
+          plutil -lint "$app/Contents/Info.plist"
+          mkdir -p artifacts/macos
+          cp docs/MACOS-PREVIEW.md artifacts/macos/READ-ME.md
+          ditto -c -k --sequesterRsrc --keepParent "$app" artifacts/macos/ez-pocket-macos-arm64-unsigned.zip
+          (cd artifacts/macos && shasum -a 256 ez-pocket-macos-arm64-unsigned.zip > SHA256SUMS.txt)
+
+      - name: Upload unsigned tester preview
+        uses: actions/upload-artifact@v4
+        with:
+          name: ez-pocket-macos-arm64-unsigned
+          path: artifacts/macos/*
+          if-no-files-found: error
+          retention-days: 14

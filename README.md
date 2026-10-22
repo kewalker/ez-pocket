@@ -15,7 +15,7 @@ The current build is for testers and is unsigned. [Download the Windows preview 
 3. Insert a backed-up Pocket SD card. Select **SCAN TARGET**, or choose its root folder if it is not detected.
 4. Open **MANAGE CORES**, select the cores you want, and choose **REVIEW CHANGES**. Check the proposed additions, replacements, and removals before applying anything.
 
-The [Linux x64 preview](https://github.com/kewalker/ez-pocket/releases) is experimental and requires GTK 4.12 or later. macOS does not have a downloadable build yet. [Report a bug or suggest an improvement](https://github.com/kewalker/ez-pocket/issues/new/choose).
+The [Linux x64 preview](https://github.com/kewalker/ez-pocket/releases) is experimental and requires GTK 4.12 or later. An unsigned Apple Silicon macOS preview workflow is available for initial testing; see [macOS preview instructions and testing checklist](docs/MACOS-PREVIEW.md). Mac runtime and SD-card testing are still pending. [Report a bug or suggest an improvement](https://github.com/kewalker/ez-pocket/issues/new/choose).
 
 ## See the workflow
 

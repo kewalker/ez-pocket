@@ -2,6 +2,12 @@
 
 ## Current desktop release status
 
+The separate **macOS unsigned preview** workflow builds an Apple Silicon Mac
+Catalyst app on pull requests, main, or manual dispatch. It uploads a tester ZIP
+and checksum as Actions artifacts only, without Apple developer credentials or
+notarization. It does not attach a download to a release. See
+[macOS preview instructions](MACOS-PREVIEW.md) for the current validation limits.
+
 GitHub Actions builds and tests the Windows target on pull requests and `main`.
 Pushing a version tag such as `v0.1.13` produces two **unsigned** Windows x64 artifacts, retained for 14 days, and an experimental Linux x64 archive. The workflow creates or updates a clearly labelled GitHub **prerelease** with the preview ZIP and Linux archive:
 
