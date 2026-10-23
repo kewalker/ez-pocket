@@ -13,6 +13,7 @@ public partial class CoreReviewPage : ContentPage
     private CoreSyncPreview? preview;
     private bool hasPrepared;
     private bool returnsToDashboard;
+    private bool isApplying;
 
     public CoreReviewPage()
     {
@@ -40,7 +41,7 @@ public partial class CoreReviewPage : ContentPage
 
     protected override void OnDisappearing()
     {
-        if (preview is { } stagedPreview)
+        if (!isApplying && preview is { } stagedPreview)
             _ = Task.Run(() =>
             {
                 try { coreSync.Cleanup(stagedPreview); }
@@ -139,6 +140,7 @@ public partial class CoreReviewPage : ContentPage
 
     private async void OnSyncClicked(object? sender, EventArgs e)
     {
+        if (isApplying) return;
         if (preview is not { CanSync: true }) return;
         PocketDrive? pocket = pocketSelection.SelectedPocket;
         if (pocket is null || !string.Equals(pocket.RootPath, preview.PocketPath, StringComparison.OrdinalIgnoreCase) || !health.Inspect(pocket).CanWrite)
@@ -152,26 +154,58 @@ public partial class CoreReviewPage : ContentPage
         if (!confirmed) return;
 
         SyncButton.IsEnabled = false;
+        SyncButton.Text = "APPLYING…";
+        isApplying = true;
+        ReviewNavigation.IsEnabled = false;
+        PreparingIndicator.IsVisible = true;
+        PreparingIndicator.IsRunning = true;
+        ApplyHint.Text = "Applying changes · Keep the card connected and the app open.";
+        SyncStatus.Text = "Starting core changes…";
         CoreSyncPreview activePreview = preview;
-        CoreSyncResult result = await Task.Run(() => coreSync.ApplyAsync(activePreview));
-        if (result.Succeeded)
+        var progress = new Progress<string>(message =>
         {
-            PocketDrive? refreshedPocket = await Task.Run(() => scanner.ScanFolder(activePreview.PocketPath));
+            if (isApplying) SyncStatus.Text = message;
+        });
+        try
+        {
+            CoreSyncResult result = await Task.Run(() => coreSync.ApplyAsync(activePreview, progress: progress));
+            if (result.Succeeded)
+            {
+                SyncStatus.Text = "Changes applied · Refreshing the core inventory…";
+                PocketDrive? refreshedPocket = await Task.Run(() => scanner.ScanFolder(activePreview.PocketPath));
+                await Dispatcher.DispatchAsync(() =>
+                {
+                    if (refreshedPocket is not null) pocketSelection.Select(refreshedPocket);
+                    if (returnsToDashboard) coreSelection.ReportDashboardSuccess(result.Message);
+                    else coreSelection.ReportSuccessfulSync(result.Message);
+                });
+                await Dispatcher.DispatchAsync(() => AppNavigation.GoToAsync(".."));
+                return;
+            }
             await Dispatcher.DispatchAsync(() =>
             {
-                if (refreshedPocket is not null) pocketSelection.Select(refreshedPocket);
-                if (returnsToDashboard) coreSelection.ReportDashboardSuccess(result.Message);
-                else coreSelection.ReportSuccessfulSync(result.Message);
+                SyncStatus.Text = result.Message;
+                SyncButton.IsEnabled = true;
             });
-            await Dispatcher.DispatchAsync(() => AppNavigation.GoToAsync(".."));
-            return;
         }
-        await Dispatcher.DispatchAsync(() =>
+        catch (Exception exception)
         {
-            SyncStatus.Text = result.Message;
-            SyncButton.IsEnabled = true;
-        });
+            SyncStatus.Text = $"Could not finish applying changes: {exception.Message}. Scan the target and prepare a new review before trying again.";
+            SyncButton.IsVisible = false;
+            PrepareButton.IsVisible = true;
+        }
+        finally
+        {
+            isApplying = false;
+            ReviewNavigation.IsEnabled = true;
+            PreparingIndicator.IsRunning = false;
+            PreparingIndicator.IsVisible = false;
+            SyncButton.Text = "APPLY CHANGES";
+            ApplyHint.Text = "Reviewed changes are applied only after this confirmation.";
+        }
     }
+
+    protected override bool OnBackButtonPressed() => isApplying || base.OnBackButtonPressed();
 
     private async void OnBackClicked(object? sender, EventArgs e)
     {
