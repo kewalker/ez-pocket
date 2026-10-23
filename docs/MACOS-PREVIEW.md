@@ -5,14 +5,20 @@ has no Apple Developer ID signature, and is not notarized. The build tools may
 apply an ad-hoc signature required to run native code; this does not identify a
 developer or require an Apple account or signing certificate.
 
+**First launch requires a macOS security exception.** In the first Mac test,
+the app was blocked until it was allowed in **System Settings → Privacy &
+Security → Open Anyway**. This is expected for this unsigned, unnotarized preview.
+
 ## Download and open
 
 1. Open the repository's Actions tab and select **macOS unsigned preview**.
 2. Select a successful run and download the `ez-pocket-macos-arm64-unsigned` artifact.
 3. Extract the artifact, then extract `ez-pocket-macos-arm64-unsigned.zip`.
 4. Move `EzPocket.app` into Applications and open it.
-5. If macOS blocks it, attempt to open it once, then open System Settings →
-   Privacy & Security → Open Anyway and confirm. Managed Macs may prohibit this.
+5. If macOS blocks it, dismiss the warning and open **System Settings →
+   Privacy & Security**. Scroll to the security message for EzPocket, choose
+   **Open Anyway**, then confirm **Open** when prompted. You must attempt to
+   open the app first for this option to appear. Managed Macs may prohibit this.
 
 See [Apple's instructions](https://support.apple.com/en-us/102445).
 Do not disable Gatekeeper system-wide. No separate .NET installation is needed.

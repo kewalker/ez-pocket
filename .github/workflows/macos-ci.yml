@@ -70,6 +70,12 @@ jobs:
           cp docs/MACOS-PREVIEW.md artifacts/macos/READ-ME.md
           ditto -c -k --sequesterRsrc --keepParent "$app" artifacts/macos/ez-pocket-macos-arm64-unsigned.zip
           (cd artifacts/macos && shasum -a 256 ez-pocket-macos-arm64-unsigned.zip > SHA256SUMS.txt)
+          cat >> "$GITHUB_STEP_SUMMARY" <<'MARKDOWN'
+          ### Open the unsigned macOS preview
+          Download the artifact below and read READ-ME.md. Extract the inner ZIP and move EzPocket.app to Applications.
+
+          On first launch, macOS may block this unsigned, unnotarized app. Attempt to open it once, then go to **System Settings → Privacy & Security → Open Anyway** and confirm **Open**. This was required during the first Mac test. No Apple certificate installation is needed.
+          MARKDOWN
 
       - name: Upload unsigned tester preview
         uses: actions/upload-artifact@v4
