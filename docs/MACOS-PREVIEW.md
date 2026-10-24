@@ -11,6 +11,11 @@ Security → Open Anyway**. This is expected for this unsigned, unnotarized prev
 
 ## Download and open
 
+For a tagged preview, download `ez-pocket-<version>-macos-arm64-unsigned.zip`
+from the repository's Releases page. Extract it, read the included `READ-ME.md`,
+then follow steps 4–5 below. The matching `.sha256` file is attached beside it.
+For a pull request or main build, use the Actions artifact instead:
+
 1. Open the repository's Actions tab and select **macOS unsigned preview**.
 2. Select a successful run and download the `ez-pocket-macos-arm64-unsigned` artifact.
 3. Extract the artifact, then extract `ez-pocket-macos-arm64-unsigned.zip`.
@@ -50,8 +55,10 @@ folder opens it in place; it does not import or copy the card.
 The workflow builds on GitHub's macOS runner; maintainers do not need a local Mac
 or Apple developer credentials. Run it manually with **Run workflow**, or let it
 run for pull requests and pushes to main. It uploads a ZIP and SHA-256 checksum
-for 14 days; it does not publish a GitHub Release. Intel Macs are not covered by
-this first preview.
+for 14 days. On version tags, Desktop CI reuses this build and attaches the Mac
+ZIP, checksum, and instructions to the shared desktop prerelease. Release assets
+are separate from the expiring Actions artifacts. Intel Macs are not covered by
+this preview.
 
 The workflow pins .NET SDK/workload set `10.0.401` and Xcode `26.6` together.
 The SDK selection is generated in CI so it does not change local Windows builds.

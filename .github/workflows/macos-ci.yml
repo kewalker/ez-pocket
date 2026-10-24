@@ -6,6 +6,7 @@ on:
   pull_request:
     branches: [main]
   workflow_dispatch:
+  workflow_call:
 
 permissions:
   contents: read
@@ -69,6 +70,7 @@ jobs:
           mkdir -p artifacts/macos
           cp docs/MACOS-PREVIEW.md artifacts/macos/READ-ME.md
           ditto -c -k --sequesterRsrc --keepParent "$app" artifacts/macos/ez-pocket-macos-arm64-unsigned.zip
+          zip -j artifacts/macos/ez-pocket-macos-arm64-unsigned.zip artifacts/macos/READ-ME.md
           (cd artifacts/macos && shasum -a 256 ez-pocket-macos-arm64-unsigned.zip > SHA256SUMS.txt)
           cat >> "$GITHUB_STEP_SUMMARY" <<'MARKDOWN'
           ### Open the unsigned macOS preview

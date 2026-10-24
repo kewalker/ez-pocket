@@ -4,8 +4,11 @@
 
 The separate **macOS unsigned preview** workflow builds an Apple Silicon Mac
 Catalyst app on pull requests, main, or manual dispatch. It uploads a tester ZIP
-and checksum as Actions artifacts only, without Apple developer credentials or
-notarization. It does not attach a download to a release. See
+and checksum as Actions artifacts, without Apple developer credentials or
+notarization. On version tags, Desktop CI calls the same workflow and attaches
+the versioned Mac ZIP, SHA-256 checksum, and README to the same prerelease as
+Windows and Linux, after the Mac build and Windows release job succeed. The ZIP
+includes first-launch instructions. See
 [macOS preview instructions](MACOS-PREVIEW.md) for the current validation limits.
 
 GitHub Actions builds and tests the Windows target on pull requests and `main`.
