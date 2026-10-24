@@ -166,7 +166,7 @@ public sealed class CoreSyncService
         throw lastFailure ?? new HttpRequestException("Package download failed.");
     }
 
-    public Task<CoreSyncResult> ApplyAsync(CoreSyncPreview preview, CancellationToken cancellationToken = default)
+    public Task<CoreSyncResult> ApplyAsync(CoreSyncPreview preview, CancellationToken cancellationToken = default, IProgress<string>? progress = null)
     {
         diagnostics.Info("CoreSyncApplyStarted", new Dictionary<string, string?>
         {
@@ -180,6 +180,7 @@ public sealed class CoreSyncService
             return Task.FromResult(new CoreSyncResult(false, 0, 0, null, "Resolve the package issues before syncing."));
         }
 
+        progress?.Report("Checking the target and available space…");
         if (!TryValidateApplyTarget(preview, out string targetProblem))
         {
             diagnostics.Warning("CoreSyncApplyTargetInvalid", new Dictionary<string, string?> { ["Reason"] = targetProblem });
@@ -192,8 +193,10 @@ public sealed class CoreSyncService
         var removedDirectories = new List<CoreSyncRemoval>();
         try
         {
+            int fileNumber = 0;
             foreach (CoreSyncFileChange change in preview.Changes)
             {
+                fileNumber++;
                 cancellationToken.ThrowIfCancellationRequested();
                 EnsureSafeRelativePath(change.RelativePath);
                 if (!File.Exists(change.SourcePath)) throw new FileNotFoundException("A staged package file is missing.", change.SourcePath);
@@ -201,6 +204,7 @@ public sealed class CoreSyncService
                 string destination = Path.Combine(preview.PocketPath, change.RelativePath);
                 if (File.Exists(destination))
                 {
+                    progress?.Report($"Backing up file {fileNumber} of {preview.Changes.Count} · {change.RelativePath}");
                     string backupFile = Path.Combine(backupPath, change.RelativePath);
                     Directory.CreateDirectory(Path.GetDirectoryName(backupFile)!);
                     File.Copy(destination, backupFile, true);
@@ -211,25 +215,31 @@ public sealed class CoreSyncService
                     addedFiles.Add(destination);
                 }
 
+                progress?.Report($"Writing file {fileNumber} of {preview.Changes.Count} · {change.RelativePath}");
                 Directory.CreateDirectory(Path.GetDirectoryName(destination)!);
                 string temporaryDestination = destination + ".ez-pocket-" + Guid.NewGuid().ToString("N") + ".tmp";
                 File.Copy(change.SourcePath, temporaryDestination, true);
                 File.Move(temporaryDestination, destination, true);
             }
 
+            int removalNumber = 0;
             foreach (CoreSyncRemoval removal in preview.Removals)
             {
+                removalNumber++;
                 cancellationToken.ThrowIfCancellationRequested();
                 EnsureSafeRelativePath(removal.RelativePath);
                 string sourceDirectory = Path.Combine(preview.PocketPath, removal.RelativePath);
                 if (!Directory.Exists(sourceDirectory)) continue;
 
+                progress?.Report($"Backing up core {removalNumber} of {preview.Removals.Count} for removal · {removal.FriendlyName}");
                 string backupDirectory = Path.Combine(backupPath, "removed", removal.RelativePath);
                 CopyDirectory(sourceDirectory, backupDirectory);
+                progress?.Report($"Removing core {removalNumber} of {preview.Removals.Count} · {removal.FriendlyName}");
                 Directory.Delete(sourceDirectory, true);
                 removedDirectories.Add(removal);
             }
 
+            progress?.Report("Finishing changes and cleaning up local backups…");
             int backupsPruned = Directory.Exists(backupPath) ? PruneBackups(preview.PocketPath) : 0;
             try { Cleanup(preview); }
             catch (IOException) { }
@@ -244,6 +254,7 @@ public sealed class CoreSyncService
         }
         catch (Exception exception) when (exception is IOException or UnauthorizedAccessException or OperationCanceledException)
         {
+            progress?.Report("Restoring changed files after the sync stopped…");
             Restore(backupPath, preview.PocketPath, replacedFiles, addedFiles, removedDirectories);
             diagnostics.Error("CoreSyncApplyFailed", exception, new Dictionary<string, string?>
             {

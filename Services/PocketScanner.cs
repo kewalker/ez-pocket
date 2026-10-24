@@ -13,7 +13,11 @@ public sealed class PocketScanner
     {
         diagnostics.Info("PocketScanStarted");
         var results = new List<PocketDrive>();
-        foreach (DriveInfo drive in DriveInfo.GetDrives())
+        bool isMac = OperatingSystem.IsMacCatalyst() || OperatingSystem.IsMacOS();
+        if (isMac) results.AddRange(ScanMountedVolumes("/Volumes"));
+        // macOS exposes internal APFS mounts through DriveInfo too. The startup
+        // filesystem has Cores and System directories, which are not a Pocket.
+        foreach (DriveInfo drive in isMac ? Array.Empty<DriveInfo>() : DriveInfo.GetDrives())
         {
             try
             {
@@ -56,6 +60,33 @@ public sealed class PocketScanner
             }
         }
         diagnostics.Info("PocketScanCompleted", new Dictionary<string, string?> { ["CandidateCount"] = results.Count.ToString() });
+        return results;
+    }
+
+    /// <summary>Scans direct, non-link volume roots without traversing internal mounts.</summary>
+    public IReadOnlyList<PocketDrive> ScanMountedVolumes(string mountParent)
+    {
+        var results = new List<PocketDrive>();
+        try
+        {
+            if (!Directory.Exists(mountParent)) return results;
+            foreach (string mount in Directory.EnumerateDirectories(mountParent))
+            {
+                try
+                {
+                    // /Volumes/Macintosh HD commonly links back to the startup root.
+                    if ((File.GetAttributes(mount) & FileAttributes.ReparsePoint) != 0) continue;
+                    PocketDrive? pocket = ScanFolder(mount);
+                    if (pocket?.LooksLikePocket == true &&
+                        pocket.FoundFolders.Any(folder => folder is "Assets" or "Platforms"))
+                        results.Add(pocket);
+                }
+                catch (IOException) { }
+                catch (UnauthorizedAccessException) { }
+            }
+        }
+        catch (IOException) { }
+        catch (UnauthorizedAccessException) { }
         return results;
     }
 

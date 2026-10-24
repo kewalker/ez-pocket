@@ -43,6 +43,9 @@ public static class MauiProgram
 #if WINDOWS
         builder.Services.AddSingleton<IColorPickerService, WindowsColorPickerService>();
         builder.Services.AddSingleton<IFolderPickerService, WindowsFolderPickerService>();
+#elif MACCATALYST
+        builder.Services.AddSingleton<IColorPickerService, MauiColorPickerService>();
+        builder.Services.AddSingleton<IFolderPickerService, MacFolderPickerService>();
 #elif LINUX
         builder.Services.AddSingleton<IColorPickerService, MauiColorPickerService>();
         builder.Services.AddSingleton<IFolderPickerService, LinuxFolderPickerService>();
