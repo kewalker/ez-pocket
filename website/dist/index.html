@@ -38,7 +38,29 @@
       <details class="walkthrough"><summary>WATCH THE 30-SECOND DEMO <span aria-hidden="true">+</span></summary><img src="assets/windows-preview-walkthrough.gif" width="960" loading="lazy" alt="Animated walkthrough of the dashboard, core selection, and change review using a sample target"><p>The demo uses a sample folder. It does not write to the folder. <a href="assets/windows-preview-walkthrough.gif">Open the demo separately ↗</a></p></details>
     </section>
     <section class="features-band" id="features" aria-labelledby="features-title"><div class="wrap section"><div class="section-heading"><div><p class="eyebrow">MORE TOOLS</p><h2 id="features-title">Firmware, saves,<br>and other files.</h2></div><p>These tools are separate from core sync. When a tool writes to the card, you review its changes first.</p></div><dl class="features"><div><dt><span>01 / CORES</span>Core inventory</dt><dd>Search for cores, compare versions, and choose what to keep. Check the file list before you sync.</dd></div><div><dt><span>02 / SAVE VAULT</span>Save backups</dt><dd>Back up saves and Memories to your computer. Choose a snapshot and review the files before a restore.</dd></div><div><dt><span>03 / FIRMWARE</span>Firmware updates</dt><dd>Check Analogue's PocketOS download. The app checks its published checksum before it stages the file.</dd></div><div><dt><span>04 / HEALTH</span>Card checks</dt><dd>Check for missing folders, core metadata the app cannot read, and low free space. This check does not write to the card.</dd></div><div><dt><span>05 / ASSETS</span>Palettes and images</dt><dd>Add optional palettes and supported images. Review the files before you write.</dd></div><div><dt><span>06 / DIAGNOSTICS</span>Diagnostics</dt><dd>Export a report when you need help. It leaves out target paths and error messages. You choose whether to share it.</dd></div></dl></div></section>
-    <section class="wrap section download" id="download" aria-labelledby="download-title"><div><p class="eyebrow">WINDOWS TECHNICAL PREVIEW</p><h2 id="download-title">Get the Windows<br>preview.</h2><p>Download the ZIP and extract it to a folder. Keep the files together, then run <strong>EzPocket.exe</strong>. The .NET runtime is included.</p><a class="button primary" href="https://github.com/kewalker/ez-pocket/releases">DOWNLOAD WINDOWS PREVIEW <span aria-hidden="true">↗</span></a><p class="micro">Opens GitHub Releases. Choose the Windows ZIP.</p></div><aside class="release-notes" aria-label="Preview requirements"><h3>BEFORE YOU START</h3><p>This is a test build. It is unsigned, so Windows may warn you or block it. Back up your SD card before you try it.</p><dl><div><dt>WINDOWS</dt><dd>Windows 10 1809 or later · x64 preview</dd></div><div><dt>MACOS</dt><dd>Download not available yet</dd></div><div><dt>LINUX</dt><dd>Experimental x64 preview · GTK 4.12+</dd></div></dl><a href="https://github.com/kewalker/ez-pocket/issues/new/choose">REPORT A BUG OR SUGGEST AN IMPROVEMENT ↗</a></aside></section>
+    <section class="wrap section download" id="download" aria-labelledby="download-title">
+      <div>
+        <p class="eyebrow">DESKTOP TECHNICAL PREVIEW · V0.1.17</p>
+        <h2 id="download-title">Choose your<br>desktop preview.</h2>
+        <p>Scan your card and review every change before writing. Windows is the primary development target. macOS and Linux builds are experimental.</p>
+        <div class="actions" aria-label="Platform downloads">
+          <a class="button primary" href="https://github.com/kewalker/ez-pocket/releases/download/v0.1.17/ez-pocket-v0.1.17-win-x64.zip">WINDOWS X64 <span aria-hidden="true">↗</span></a>
+          <a class="button" href="https://github.com/kewalker/ez-pocket/releases/download/v0.1.17/ez-pocket-v0.1.17-macos-arm64-unsigned.zip">MACOS APPLE SILICON · EXPERIMENTAL <span aria-hidden="true">↗</span></a>
+          <a class="button" href="https://github.com/kewalker/ez-pocket/releases/download/v0.1.17/ez-pocket-v0.1.17-linux-x64.tar.gz">LINUX X64 · EXPERIMENTAL <span aria-hidden="true">↗</span></a>
+        </div>
+        <p class="micro">Unsigned previews. No separate .NET runtime needed. <a href="https://github.com/kewalker/ez-pocket/releases/tag/v0.1.17">RELEASE NOTES &amp; MAC CHECKSUM ↗</a></p>
+      </div>
+      <aside class="release-notes" aria-label="Preview requirements">
+        <h3>BEFORE YOU START</h3>
+        <p>These are early test builds. Back up your SD card before trying them, and keep the card connected while changes are being applied.</p>
+        <dl>
+          <div><dt>WINDOWS</dt><dd>Windows 10 1809 or later · x64. Extract the ZIP and run EzPocket.exe. Keep all files together. SmartScreen or organization policy may warn or block it.</dd></div>
+          <div><dt>MACOS</dt><dd>Experimental · Apple Silicon (M1 or newer). Extract the ZIP and move EzPocket.app to Applications. Unsigned and not notarized: attempt to open it once, then use System Settings → Privacy &amp; Security → Open Anyway and confirm Open. Intel Macs are not supported.</dd></div>
+          <div><dt>LINUX</dt><dd>Experimental · x64 · GTK 4.12+ and its introspection typelib. Extract the archive and run ./EzPocket.Linux.</dd></div>
+        </dl>
+        <a href="https://github.com/kewalker/ez-pocket/issues/new/choose">REPORT A BUG OR SUGGEST AN IMPROVEMENT ↗</a>
+      </aside>
+    </section>
   </main>
   <footer class="wrap"><div><a class="wordmark" href="#">ez-pocket</a><p>An independent project. Not affiliated with, endorsed by, or sponsored by Analogue. Games and BIOS files are not included.</p></div><div class="footer-links"><a href="https://github.com/kewalker/ez-pocket">SOURCE CODE ↗</a><a href="https://github.com/kewalker/ez-pocket/releases">RELEASE NOTES ↗</a><a href="https://github.com/kewalker/ez-pocket/blob/main/LICENSE">LICENSE ↗</a></div></footer>
 </body>
