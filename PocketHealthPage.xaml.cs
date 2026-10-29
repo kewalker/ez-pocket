@@ -13,6 +13,8 @@ public partial class PocketHealthPage : ContentPage
     private readonly PocketInitializationService initialization;
     private readonly PocketScanner scanner;
     private readonly IPreferences preferences;
+    private int reportGeneration;
+    private PocketHealthReport? displayedReport;
     public PocketHealthPage()
     {
         InitializeComponent();
@@ -22,18 +24,62 @@ public partial class PocketHealthPage : ContentPage
         scanner = IPlatformApplication.Current?.Services.GetService<PocketScanner>() ?? new PocketScanner();
         preferences = IPlatformApplication.Current?.Services.GetService<IPreferences>() ?? Preferences.Default;
     }
-    protected override void OnAppearing()
+    protected override async void OnAppearing()
     {
         base.OnAppearing();
-        LoadReport();
+        await LoadReportAsync();
     }
 
-    private void LoadReport()
+    protected override void OnDisappearing()
     {
+        reportGeneration++;
+        CheckingIndicator.IsVisible = CheckingIndicator.IsRunning = false;
+        CheckButton.IsEnabled = true;
+        base.OnDisappearing();
+    }
+
+    private async Task LoadReportAsync()
+    {
+        int generation = ++reportGeneration;
+        displayedReport = null;
         FindingList.Children.Clear();
         PocketDrive? pocket = selection.SelectedPocket;
         if (pocket is null) { TargetName.Text = "No Pocket selected"; Summary.Text = "Return to the dashboard and choose a target first."; InitializeButton.IsVisible = false; return; }
-        PocketHealthReport report = health.Inspect(pocket);
+        TargetName.Text = pocket.Name;
+        Summary.Text = "Checking target folders, core metadata, and storage…";
+        InitializeButton.IsVisible = false;
+        CheckButton.IsEnabled = false;
+        CheckingIndicator.IsVisible = CheckingIndicator.IsRunning = true;
+        try
+        {
+            var result = await Task.Run(() =>
+            {
+                PocketDrive refreshed = scanner.ScanFolder(pocket.RootPath) ?? pocket;
+                return health.Inspect(refreshed);
+            });
+            if (generation != reportGeneration || !ReferenceEquals(selection.SelectedPocket, pocket)) return;
+            selection.RecordHealth(result);
+            displayedReport = result;
+            RenderReport(result);
+        }
+        catch (Exception exception) when (exception is IOException or UnauthorizedAccessException or ArgumentException)
+        {
+            if (generation == reportGeneration) Summary.Text = "Could not inspect the target. Reconnect it and check again.";
+        }
+        finally
+        {
+            if (generation == reportGeneration)
+            {
+                CheckButton.IsEnabled = true;
+                CheckingIndicator.IsVisible = CheckingIndicator.IsRunning = false;
+            }
+        }
+    }
+
+    private void RenderReport(PocketHealthReport report)
+    {
+        FindingList.Children.Clear();
+        PocketDrive pocket = report.Pocket;
         TargetName.Text = pocket.Name;
         InitializeButton.IsVisible = false;
         InitializeButton.IsEnabled = true;
@@ -61,7 +107,7 @@ public partial class PocketHealthPage : ContentPage
         if (ignored)
         {
             var restore = CreateButton("RESTORE FINDING", false);
-            restore.Clicked += (_, _) => { SetIgnored(pocket, finding, false); LoadReport(); };
+            restore.Clicked += (_, _) => { SetIgnored(pocket, finding, false); if (displayedReport is { } report) RenderReport(report); };
             content.Children.Add(restore);
         }
         else
@@ -77,7 +123,7 @@ public partial class PocketHealthPage : ContentPage
             if (finding.RequiresAttention && !finding.IsBlocking)
             {
                 var ignore = CreateButton("IGNORE", false);
-                ignore.Clicked += (_, _) => { SetIgnored(pocket, finding, true); LoadReport(); };
+                ignore.Clicked += (_, _) => { SetIgnored(pocket, finding, true); if (displayedReport is { } report) RenderReport(report); };
                 actions.Children.Add(ignore);
             }
             if (actions.Children.Count > 0) content.Children.Add(actions);
@@ -140,16 +186,16 @@ public partial class PocketHealthPage : ContentPage
         PocketDrive? pocket = selection.SelectedPocket;
         if (pocket is null) return;
         PocketInitializationPreview preview = initialization.Preview(pocket);
-        if (!preview.IsRequired) { LoadReport(); return; }
+        if (!preview.IsRequired) { await LoadReportAsync(); return; }
         bool confirmed = await DisplayAlert("Initialize target", $"Create these empty Pocket folders on {pocket.Name}: {string.Join(", ", preview.MissingFolders)}? Existing files will not be changed.", "Initialize", "Cancel");
         if (!confirmed) return;
         InitializeButton.IsEnabled = false;
         try
         {
-            initialization.Initialize(pocket);
-            PocketDrive? refreshed = scanner.ScanFolder(pocket.RootPath);
+            await Task.Run(() => initialization.Initialize(pocket));
+            PocketDrive? refreshed = await Task.Run(() => scanner.ScanFolder(pocket.RootPath));
             if (refreshed is not null) selection.Select(refreshed);
-            LoadReport();
+            await LoadReportAsync();
         }
         catch (Exception exception) when (exception is IOException or UnauthorizedAccessException)
         {
@@ -159,4 +205,5 @@ public partial class PocketHealthPage : ContentPage
     }
 
     private async void OnBackClicked(object? sender, EventArgs e) => await AppNavigation.GoToAsync("..");
+    private async void OnCheckClicked(object? sender, EventArgs e) => await LoadReportAsync();
 }

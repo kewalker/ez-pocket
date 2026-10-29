@@ -9,13 +9,13 @@ public partial class MainPage : ContentPage
     private readonly PocketScanner scanner;
     private readonly PocketSelectionService selection;
     private readonly IFolderPickerService folderPicker;
-    private readonly FirmwareUpdateService firmware;
     private readonly FeaturedCoreSetService featuredCoreSets;
     private readonly CoreInventoryService inventory;
     private readonly CoreSelectionService coreSelection;
-    private readonly PocketHealthService health;
     private readonly IAppDiagnostics diagnostics;
     private bool preparingFeaturedSet;
+    private bool scanning;
+    private int appearance;
     private List<PocketDrive> candidates = [];
 
     public MainPage()
@@ -27,33 +27,59 @@ public partial class MainPage : ContentPage
         scanner = IPlatformApplication.Current?.Services.GetService<PocketScanner>() ?? new PocketScanner();
         selection = IPlatformApplication.Current?.Services.GetService<PocketSelectionService>() ?? new PocketSelectionService();
         folderPicker = IPlatformApplication.Current?.Services.GetService<IFolderPickerService>() ?? new UnsupportedFolderPickerService();
-        firmware = IPlatformApplication.Current?.Services.GetService<FirmwareUpdateService>() ?? new FirmwareUpdateService();
         featuredCoreSets = IPlatformApplication.Current?.Services.GetService<FeaturedCoreSetService>() ?? new FeaturedCoreSetService();
         inventory = IPlatformApplication.Current?.Services.GetService<CoreInventoryService>() ?? new CoreInventoryService();
         coreSelection = IPlatformApplication.Current?.Services.GetService<CoreSelectionService>() ?? new CoreSelectionService();
-        health = IPlatformApplication.Current?.Services.GetService<PocketHealthService>() ?? new PocketHealthService();
         diagnostics = IPlatformApplication.Current?.Services.GetService<IAppDiagnostics>() ?? NullAppDiagnostics.Instance;
     }
 
-    protected override void OnAppearing()
+    protected override async void OnAppearing()
     {
         base.OnAppearing();
         string? successMessage = coreSelection.ConsumeDashboardSuccessMessage();
         if (successMessage is not null) SuccessToast.ShowSuccess(successMessage);
-        PocketDrive? pocket = selection.Restore(scanner);
+        int currentAppearance = ++appearance;
+        PocketDrive? pocket = selection.Restore();
         if (pocket is not null) ShowPocket(pocket);
         else ShowNoPocket();
+        if (pocket is null) return;
+        bool available = await Task.Run(() => Directory.Exists(pocket.RootPath));
+        if (currentAppearance != appearance || !ReferenceEquals(selection.SelectedPocket, pocket)) return;
+        if (!available)
+        {
+            selection.Disconnect();
+            ShowNoPocket();
+            StatusDetail.Text = "The previous target is unavailable. Reconnect it and scan again.";
+        }
     }
 
     protected override void OnDisappearing()
     {
+        appearance++;
         SuccessToast.Hide();
         base.OnDisappearing();
     }
 
     private async void OnScanClicked(object? sender, EventArgs e)
     {
-        candidates = scanner.Scan().ToList();
+        if (scanning) return;
+        scanning = true;
+        ScanButton.IsEnabled = ChangeTargetButton.IsEnabled = false;
+        ScanButton.Text = "SCANNING…";
+        try { await ScanTargetAsync(); }
+        finally
+        {
+            scanning = false;
+            ScanButton.IsEnabled = ChangeTargetButton.IsEnabled = true;
+            ScanButton.Text = selection.SelectedPocket is null ? "SCAN TARGET" : "RESCAN";
+        }
+    }
+
+    private async Task ScanTargetAsync()
+    {
+        int currentAppearance = appearance;
+        candidates = (await Task.Run(scanner.Scan)).ToList();
+        if (currentAppearance != appearance) return;
         var pocket = candidates.Count == 1
             ? candidates[0]
             : candidates.FirstOrDefault(candidate => string.Equals(candidate.RootPath, selection.SelectedPocket?.RootPath, StringComparison.OrdinalIgnoreCase));
@@ -61,11 +87,13 @@ public partial class MainPage : ContentPage
         if (pocket is null && candidates.Count > 1)
         {
             string? choice = await DisplayActionSheet("Choose a Pocket", "Cancel", null, candidates.Select(candidate => candidate.DisplayName).ToArray());
+            if (currentAppearance != appearance) return;
             pocket = candidates.FirstOrDefault(candidate => candidate.DisplayName == choice);
         }
 
         if (pocket is null)
         {
+            selection.Disconnect();
             ShowNoPocket();
             string message = candidates.Count > 1
                 ? "More than one Pocket-like drive was found. Choose one from the list."
@@ -223,6 +251,15 @@ public partial class MainPage : ContentPage
         try
         {
             PocketDrive pocket = selection.SelectedPocket;
+            PocketDrive? refreshed = await Task.Run(() => scanner.ScanFolder(pocket.RootPath));
+            if (refreshed is null)
+            {
+                FeaturedSetupStatus.Text = "Target unavailable. Reconnect it and scan again.";
+                return;
+            }
+            if (!ReferenceEquals(selection.SelectedPocket, pocket)) return;
+            pocket = refreshed;
+            selection.Select(pocket);
             IReadOnlyList<AvailableCore> available = await inventory.GetAvailableAsync();
             IReadOnlyList<CoreComparison> comparison = await Task.Run(() => CoreInventoryService.Compare(pocket, available));
             FeaturedCoreSetSelection? featuredSelection = null;
@@ -277,7 +314,9 @@ public partial class MainPage : ContentPage
         string? path = await folderPicker.PickFolderAsync();
         if (string.IsNullOrWhiteSpace(path)) return;
 
-        PocketDrive? pocket = scanner.ScanFolder(path);
+        int currentAppearance = appearance;
+        PocketDrive? pocket = await Task.Run(() => scanner.ScanFolder(path));
+        if (currentAppearance != appearance) return;
         if (pocket is null)
         {
             await DisplayAlert("Folder unavailable", "The selected folder could not be opened.", "Got it");
@@ -300,35 +339,36 @@ public partial class MainPage : ContentPage
 
     private void ShowPocket(PocketDrive pocket)
     {
-        StatusTitle.Text = pocket.LooksLikePocket ? pocket.Name : "New Pocket target";
+        bool scanned = selection.LastScannedAt is not null;
+        StatusTitle.Text = !scanned || pocket.LooksLikePocket ? pocket.Name : "New Pocket target";
         StatusDetail.Text = pocket.LooksLikePocket
             ? $"{pocket.RootPath} \u00B7 {pocket.CapacitySummary}"
             : $"{pocket.RootPath} | Blank folder target | {pocket.CapacitySummary}";
-        ReadyBadgeText.Text = pocket.LooksLikePocket ? "CONNECTED" : "NEW TARGET";
+        if (!scanned) StatusDetail.Text = $"{pocket.RootPath} · Rescan to refresh target details.";
+        ReadyBadgeText.Text = "SELECTED";
         ScanButton.Text = "RESCAN";
         NextStepEyebrow.Text = "CORE INVENTORY";
         NextStepTitle.Text = "Review your cores";
         NextStepDetail.Text = "Compare this target with the live inventory. Nothing changes until you approve it.";
         NextStepButton.Text = "MANAGE CORES";
-        CoreCountValue.Text = pocket.CoreCount.ToString();
-        CoreCountDetail.Text = pocket.CoreCount == 1 ? "core installed" : "cores installed";
-        TargetValue.Text = pocket.LooksLikePocket ? pocket.Name : "New target";
+        CoreCountValue.Text = scanned ? pocket.CoreCount.ToString() : "—";
+        CoreCountDetail.Text = selection.LastScannedAt is { } scannedAt ? $"Last scanned {scannedAt.ToLocalTime():MMM d, h:mm tt}" : "Rescan to inspect cores";
+        TargetValue.Text = !scanned || pocket.LooksLikePocket ? pocket.Name : "New target";
         TargetDetail.Text = pocket.CapacitySummary;
         FirmwareButton.IsEnabled = true;
         AssetsButton.IsEnabled = true;
         SaveVaultButton.IsEnabled = true;
         HealthButton.IsEnabled = true;
-        PocketHealthReport healthReport = health.Inspect(pocket);
-        HealthStatusMarker.Color = healthReport.IsReady ? Color.FromArgb("#25B46B") : Color.FromArgb("#D2D2CC");
-        HealthStatusText.Text = healthReport.IsReady ? "HEALTH · READY" : $"HEALTH · {healthReport.AttentionCount} ATTENTION";
+        PocketHealthReport? healthReport = selection.LastHealthReport;
+        HealthStatusMarker.Color = healthReport?.IsReady == true ? Color.FromArgb("#25B46B") : Color.FromArgb("#D2D2CC");
+        HealthStatusText.Text = healthReport is null ? "HEALTH · NOT CHECKED" : $"HEALTH · {(healthReport.IsReady ? "READY" : $"{healthReport.AttentionCount} ATTENTION")} · Last checked {selection.LastHealthCheckedAt?.ToLocalTime():MMM d, h:mm tt}";
         SaveVaultActionTitle.Text = "Protect saves and memories";
         SaveVaultActionDetail.Text = "Create local snapshots and restore selected saves through a review.";
         AssetsActionTitle.Text = "Palettes and optional core files";
         AssetsActionDetail.Text = "Inspect and import shared Game Boy palettes now. Library art and other verified asset types stay opt-in.";
-        FirmwareActionTitle.Text = "Checking Pocket firmware\u2026";
-        FirmwareActionDetail.Text = "Checking the official release and this target's staged firmware.";
-        FirmwareButton.Text = "Checking\u2026";
-        _ = CheckFirmwareAsync(pocket);
+        FirmwareActionTitle.Text = "POCKETOS FIRMWARE";
+        FirmwareActionDetail.Text = "Open firmware and choose CHECK FIRMWARE to check the official release.";
+        FirmwareButton.Text = "VIEW FIRMWARE";
     }
 
     private void ShowNoPocket()
@@ -358,37 +398,6 @@ public partial class MainPage : ContentPage
         FirmwareActionTitle.Text = "POCKETOS FIRMWARE";
         FirmwareActionDetail.Text = "Select a target to check the latest official firmware.";
         FirmwareButton.Text = "VIEW FIRMWARE";
-    }
-
-    private async Task CheckFirmwareAsync(PocketDrive pocket)
-    {
-        try
-        {
-            FirmwareTargetCheck check = await firmware.CheckTargetAsync(pocket);
-            if (!string.Equals(selection.SelectedPocket?.RootPath, pocket.RootPath, StringComparison.OrdinalIgnoreCase)) return;
-
-            if (check.IsLatestFirmwareStaged)
-            {
-                FirmwareActionTitle.Text = $"FIRMWARE {check.Release.Version} IS STAGED";
-                FirmwareActionDetail.Text = "The latest official firmware is verified on this target. Installed PocketOS version cannot be read from storage.";
-                FirmwareButton.Text = "VIEW FIRMWARE";
-            }
-            else
-            {
-                FirmwareActionTitle.Text = $"FIRMWARE {check.Release.Version} IS AVAILABLE";
-                FirmwareActionDetail.Text = check.ExistingFirmwareFiles.Count == 0
-                    ? "No verified latest firmware is staged on this target."
-                    : "An older or unverified firmware file is staged and can be safely replaced.";
-                FirmwareButton.Text = "STAGE FIRMWARE";
-            }
-        }
-        catch (Exception exception) when (exception is HttpRequestException or IOException or InvalidDataException or OperationCanceledException)
-        {
-            if (!string.Equals(selection.SelectedPocket?.RootPath, pocket.RootPath, StringComparison.OrdinalIgnoreCase)) return;
-            FirmwareActionTitle.Text = "FIRMWARE CHECK UNAVAILABLE";
-            FirmwareActionDetail.Text = "Check your connection, then retry from the firmware page.";
-            FirmwareButton.Text = "CHECK FIRMWARE";
-        }
     }
 
     private async void OnManageCoresClicked(object? sender, EventArgs e)

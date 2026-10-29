@@ -70,7 +70,7 @@ The first version supports working copies up to 64 GiB / 200,000 files and requi
 
 Windows is the current supported development target. An experimental Linux desktop head in `Linux/` reuses the same MAUI pages and services through the GTK4 backend. The project also contains .NET MAUI targets for macOS (Mac Catalyst), iOS, and Android. Linux builds run an automated GTK4 smoke check; tagged builds remain technical previews for desktop testing.
 
-The application is currently version `0.1.15` and remains under active development. Open an issue to report a bug, discuss an improvement, or ask about planned work.
+The application is currently version `0.1.18` and remains under active development. Open an issue to report a bug, discuss an improvement, or ask about planned work.
 
 ## Requirements
 
@@ -132,8 +132,9 @@ Selecting a folder never writes to it by itself. Core and firmware writes requir
 ## Data and network behavior
 
 - Core metadata is read from the selected target. The available-core inventory is fetched live; if unavailable, the app retains the installed-core view and offers retry.
+- Startup restores saved target details and checks folder availability in the background. Use **RESCAN** to refresh inventory; the dashboard shows the last scan time. **CHECK HEALTH** opens a background inspection with progress feedback, and its last result stays visible on the dashboard for the session. Returning to the dashboard does not repeat a health inspection. Write workflows still validate the target before applying reviewed changes.
 - Core packages are downloaded only for a reviewed sync. Staging and backups live under the current user's local application-data directory (`EzPocket`).
-- Firmware metadata and the firmware download come from Analogue's Pocket firmware support pages. The downloaded file must match the MD5 published with the release before it can be staged.
+- Firmware checks run only when you choose **CHECK FIRMWARE** on the firmware page; startup, target scans, and returning to the dashboard do not check firmware. Firmware metadata and the firmware download come from Analogue's Pocket firmware support pages. The downloaded file must match the MD5 published with the release before it can be staged.
 - Diagnostics remain local until you explicitly export them, and intentionally omit target paths and exception messages.
 
 ## Releases

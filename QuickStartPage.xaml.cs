@@ -31,8 +31,7 @@ public partial class QuickStartPage : ContentPage
     {
         base.OnAppearing();
         isActive = true;
-        PocketDrive? saved = selection.Restore(scanner);
-        ShowTarget(saved is null ? null : scanner.ScanFolder(saved.RootPath));
+        ShowTarget(selection.Restore());
     }
 
     protected override void OnDisappearing()

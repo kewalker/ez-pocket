@@ -311,6 +311,18 @@ public partial class CorePage : ContentPage
 
         try
         {
+            PocketDrive? refreshed = await Task.Run(() => new PocketScanner().ScanFolder(pocket.RootPath), cancellation.Token);
+            cancellation.Token.ThrowIfCancellationRequested();
+            if (!ReferenceEquals(refreshCancellation, cancellation)) return;
+            if (refreshed is null)
+            {
+                Summary.Text = "Target unavailable · reconnect it and refresh.";
+                CoreList.ItemsSource = null;
+                InventoryState.Text = string.Empty;
+                return;
+            }
+            pocket = refreshed;
+            selection.Select(pocket);
             var available = await inventory.GetAvailableAsync(cancellation.Token);
             var comparison = await Task.Run(() => CoreInventoryService.Compare(pocket, available), cancellation.Token);
             await Dispatcher.DispatchAsync(() =>
