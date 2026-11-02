@@ -8,6 +8,57 @@ namespace EzPocket.Tests;
 public sealed class PocketPluginRuntimeTests
 {
     [Fact]
+    public async Task NativeRuntimeReadsWritesAndDeletesOnSelectedTarget()
+    {
+        var runtime = new PocketPluginRuntime();
+        using var files = new RuntimeFiles(Encoding.UTF8.GetBytes("""
+            (module
+              (import "wasi_snapshot_preview1" "path_open" (func $open (param i32 i32 i32 i32 i32 i64 i64 i32 i32) (result i32)))
+              (import "wasi_snapshot_preview1" "fd_read" (func $read (param i32 i32 i32 i32) (result i32)))
+              (import "wasi_snapshot_preview1" "fd_write" (func $write (param i32 i32 i32 i32) (result i32)))
+              (import "wasi_snapshot_preview1" "fd_close" (func $close (param i32) (result i32)))
+              (import "wasi_snapshot_preview1" "path_unlink_file" (func $unlink (param i32 i32 i32) (result i32)))
+              (import "extism:host/env" "alloc" (func $alloc (param i64) (result i64)))
+              (import "extism:host/env" "store_u8" (func $store (param i64 i32)))
+              (import "extism:host/env" "output_set" (func $output (param i64 i64)))
+              (memory (export "memory") 1)
+              (data (i32.const 0) "input.txt")
+              (data (i32.const 32) "output.json")
+              (data (i32.const 64) "new")
+              (func $check (param $e i32) local.get $e if unreachable end)
+              (func (export "start") (result i32) (local $fd i32) (local $p i64)
+                i32.const 4 i32.const 0 i32.const 0 i32.const 9 i32.const 0 i64.const 2 i64.const 0 i32.const 0 i32.const 128 call $open call $check
+                i32.const 128 i32.load local.set $fd
+                i32.const 160 i32.const 4096 i32.store i32.const 164 i32.const 3 i32.store
+                local.get $fd i32.const 160 i32.const 1 i32.const 168 call $read call $check
+                i32.const 4096 i32.load8_u i32.const 111 i32.ne if unreachable end
+                local.get $fd call $close call $check
+                i32.const 4 i32.const 0 i32.const 32 i32.const 11 i32.const 1 i64.const 64 i64.const 0 i32.const 0 i32.const 128 call $open call $check
+                i32.const 128 i32.load local.set $fd
+                i32.const 160 i32.const 64 i32.store
+                local.get $fd i32.const 160 i32.const 1 i32.const 168 call $write call $check
+                local.get $fd call $close call $check
+                i32.const 4 i32.const 0 i32.const 9 call $unlink call $check
+                i64.const 6 call $alloc local.set $p
+                local.get $p i32.const 34 call $store
+                local.get $p i64.const 1 i64.add i32.const 69 call $store
+                local.get $p i64.const 2 i64.add i32.const 120 call $store
+                local.get $p i64.const 3 i64.add i32.const 105 call $store
+                local.get $p i64.const 4 i64.add i32.const 116 call $store
+                local.get $p i64.const 5 i64.add i32.const 34 call $store
+                local.get $p i64.const 6 call $output i32.const 0)
+            )
+            """));
+        File.WriteAllText(Path.Combine(files.Pocket, "input.txt"), "old");
+        // Extism sorts mount keys: host is fd 3 and pocket is fd 4 in this fixture.
+        await runtime.RunAsync(files.Wasm, files.Plugin, files.Pocket, files.Host,
+            (_, _) => throw new Exception("Unexpected prompt"), _ => { }, _ => { }, CancellationToken.None);
+        Assert.False(File.Exists(Path.Combine(files.Pocket, "input.txt")));
+        Assert.Equal("new", File.ReadAllText(Path.Combine(files.Pocket, "output.json")));
+        Assert.Empty(Directory.EnumerateFileSystemEntries(files.Host));
+    }
+
+    [Fact]
     public async Task NativeRuntimeHandlesPromptsLogsAndBrowserRequests()
     {
         using var files = new RuntimeFiles(BuildModule("""{"Choice":{"name":"menu","query":"Generate files?","choices":["Build","Exit"]}}""", "https://example.com/setup"));

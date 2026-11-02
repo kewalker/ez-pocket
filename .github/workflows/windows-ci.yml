@@ -181,6 +181,8 @@ jobs:
           Extract into a new folder and launch EzPocket.exe. Keep all included files together.
           The .NET and Windows App SDK runtimes are included; no separate runtime installer is required.
 
+          RUN PLUGIN gives trusted plugins direct write access to the selected target, without staged review, automatic backup, or rollback. Cancellation does not undo completed writes.
+
           The preview remains unsigned. Windows may show a SmartScreen warning.
           "@ | Set-Content artifacts\ez-pocket-win-x64\README.txt
 
@@ -291,7 +293,7 @@ jobs:
           Extract the entire archive, then run ./EzPocket.Linux from this directory.
 
           This is an experimental build. Back up the Pocket SD card before testing.
-          Scan and review all changes before applying them.
+          Scan and review core and firmware changes before applying them. RUN PLUGIN gives trusted plugins direct target access without staged review, automatic backup, or rollback. Cancellation does not undo completed writes.
 
           ez-pocket is independent and is not affiliated with Analogue.
           EOF

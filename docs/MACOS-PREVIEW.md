@@ -38,13 +38,16 @@ version, Mac model, workflow run, and any error when reporting results.
   a folder. Confirm that selection and scanning do not change any files.
 - Insert a backed-up SD card. Try SCAN TARGET, then CHOOSE FOLDER if discovery
   does not find it. On macOS, mounted cards normally appear under `/Volumes`.
-- Browse inventory, Game Shelf, palettes, and core change previews without applying.
+- Browse inventory, palettes, and core change previews without applying.
 - On a spare or fully backed-up card, separately test a reviewed core update,
   Save Vault backup/restore, asset installation, and firmware staging. Each write
   must still require the normal explicit apply action. Verify the resulting files.
 - Test card removal and permission failures; confirm that errors remain readable.
-- Test Pocket Plugins separately: its native Extism runtime is not yet validated
-  on Mac Catalyst. Palette/image rendering also needs real-device validation.
+- Test Pocket Plugins separately on disposable content: **RUN PLUGIN** writes
+  directly to the selected target with no staged review, automatic backup, or
+  rollback. Cancellation does not undo completed writes. Its native Extism
+  runtime is not yet validated on Mac Catalyst. Palette/image rendering also
+  needs real-device validation.
 
 The preview runs without App Sandbox so it can manage selected mounted cards.
 macOS privacy permissions and filesystem permissions still apply. Selecting a

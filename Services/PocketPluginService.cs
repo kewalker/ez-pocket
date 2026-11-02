@@ -5,7 +5,7 @@ using EzPocket.Models;
 
 namespace EzPocket.Services;
 
-/// <summary>Installs plugins locally, stages runs, and applies only an unchanged, reviewed file diff.</summary>
+/// <summary>Installs trusted plugins and runs them directly on an explicitly selected target; legacy staged APIs remain available.</summary>
 public sealed class PocketPluginService
 {
     private const long MaximumWorkingBytes = 64L * 1024 * 1024 * 1024;
@@ -128,6 +128,32 @@ public sealed class PocketPluginService
         {
             ValidateInstalled(plugin);
             DeleteOwnedFolder(libraryRoot, SafePath(libraryRoot, plugin.Id));
+        }
+        finally { operation.Release(); }
+    }
+
+    /// <summary>Runs a trusted plugin directly on an explicitly selected target; no staging, scan, or backup is performed.</summary>
+    public async Task RunDirectAsync(PocketDrive pocket, PocketPlugin plugin,
+        Func<PocketPluginPrompt, CancellationToken, Task<string?>> prompt, Action<string> log,
+        Action<Uri> offerUrl, CancellationToken cancellationToken = default)
+    {
+        await operation.WaitAsync(cancellationToken);
+        try
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            string installed = ValidateInstalled(plugin);
+            string target = Path.GetFullPath(pocket.RootPath);
+            if (!pocket.LooksLikePocket || !Directory.Exists(target))
+                throw new IOException("Scan or choose a connected Pocket target before running a plugin.");
+            EnsureNoLinks(target);
+            EnsureSeparate(target, libraryRoot);
+            string host = SafePath(installed, "host");
+            Directory.CreateDirectory(host);
+            foreach (string _ in EnumerateTree(host)) cancellationToken.ThrowIfCancellationRequested();
+            log("Running directly on the selected target. Files may change immediately; no staging copy or automatic backup is made.\n");
+            await runtime.RunAsync(SafePath(installed, "plugin.wasm"), plugin, target, host,
+                prompt, log, offerUrl, cancellationToken);
+            cancellationToken.ThrowIfCancellationRequested();
         }
         finally { operation.Release(); }
     }

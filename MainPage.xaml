@@ -130,13 +130,13 @@
             </Grid>
             <HorizontalStackLayout Spacing="10">
                 <Label Text="TOOLS" FontSize="10" TextColor="#60605C" VerticalOptions="Center" />
-                <controls:EzButton Text="POCKET PLUGINS" Clicked="OnPocketPluginsClicked" FontSize="10" ButtonPadding="8,3" MinimumHeight="30" ButtonBackgroundColor="White" ButtonTextColor="#60605C" CornerRadius="0" SemanticProperties.Description="Install and run core setup plugins with staged change review" />
+                <controls:EzButton Text="POCKET PLUGINS" Clicked="OnPocketPluginsClicked" FontSize="10" ButtonPadding="8,3" MinimumHeight="30" ButtonBackgroundColor="White" ButtonTextColor="#60605C" CornerRadius="0" SemanticProperties.Description="Install trusted core setup plugins and run them directly on the selected target" />
             </HorizontalStackLayout>
             <Grid x:Name="DiagnosticsGrid" ColumnDefinitions="*,Auto" ColumnSpacing="12">
                 <Label x:Name="DiagnosticsStatus" Text="Need help? Local diagnostics exclude target paths and exception messages." FontSize="11" TextColor="#60605C" VerticalOptions="Center" LineBreakMode="TailTruncation" />
                 <controls:EzButton x:Name="ExportDiagnosticsButton" Grid.Column="1" Text="EXPORT DIAGNOSTICS" Clicked="OnExportDiagnosticsClicked" FontSize="10" ButtonPadding="8,3" ButtonBackgroundColor="White" ButtonTextColor="#60605C" CornerRadius="0" VerticalOptions="Center" />
             </Grid>
-            <Label Text="Changes are always reviewed before they are applied. ez-pocket is independent and not affiliated with, endorsed by, or sponsored by Analogue." FontSize="11" TextColor="#60605C" />
+            <Label Text="Core and firmware changes are reviewed before applying. Trusted plugins run directly on the target when you choose RUN PLUGIN. ez-pocket is independent and not affiliated with, endorsed by, or sponsored by Analogue." FontSize="11" TextColor="#60605C" />
         </VerticalStackLayout>
     </ScrollView>
     <controls:EzToast x:Name="SuccessToast" ZIndex="10" WidthRequest="440" HorizontalOptions="Center" VerticalOptions="Start" Margin="0,16,0,0" />

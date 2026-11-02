@@ -39,7 +39,13 @@ public sealed class EzDropdown : ContentView
             Padding = new Thickness(10, 0), Content = picker
         };
         Content = frame;
+#if WINDOWS
+        // Never set Picker.Title on Windows: Controls' title mapping can restore
+        // a header after the base handler mapping has run, clipping the selected item.
+        picker.HandlerChanged += (_, _) => UpdateWindowsPlaceholder();
+#else
         picker.SetBinding(Picker.TitleProperty, new Binding(nameof(Title), source: this));
+#endif
         picker.SetBinding(Picker.ItemsSourceProperty, new Binding(nameof(ItemsSource), source: this));
         picker.SetBinding(Picker.SelectedIndexProperty, new Binding(nameof(SelectedIndex), BindingMode.TwoWay, source: this));
         picker.SetBinding(Picker.SelectedItemProperty, new Binding(nameof(SelectedItem), BindingMode.TwoWay, source: this));
@@ -58,11 +64,24 @@ public sealed class EzDropdown : ContentView
         frame.GestureRecognizers.Add(pointer);
         PropertyChanged += (_, e) =>
         {
+#if WINDOWS
+            if (e.PropertyName == nameof(Title)) UpdateWindowsPlaceholder();
+#endif
             if (e.PropertyName == nameof(IsEnabled)) UpdateFeedback();
             if (e.PropertyName == SemanticProperties.DescriptionProperty.PropertyName)
                 SemanticProperties.SetDescription(picker, SemanticProperties.GetDescription(this));
         };
     }
+
+#if WINDOWS
+    private void UpdateWindowsPlaceholder()
+    {
+        if (picker.Handler?.PlatformView is not Microsoft.UI.Xaml.Controls.ComboBox combo) return;
+        combo.Header = null;
+        combo.HeaderTemplate = null;
+        combo.PlaceholderText = Title ?? string.Empty;
+    }
+#endif
 
     private void UpdateFeedback()
     {
