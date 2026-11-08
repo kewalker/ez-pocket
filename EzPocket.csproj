@@ -60,6 +60,7 @@
 		<Compile Remove="Tests\**" />
 		<Compile Remove="Linux\**" />
 		<Compile Remove="artifacts\**" />
+		<MauiXaml Remove="artifacts\**" />
 		<EmbeddedResource Remove="Tests\**" />
 		<None Remove="Tests\**" />
 	</ItemGroup>
