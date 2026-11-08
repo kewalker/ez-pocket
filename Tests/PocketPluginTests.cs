@@ -50,6 +50,71 @@ public sealed class PocketPluginTests
         Assert.Empty(test.Service.ListInstalled());
     }
 
+    [Fact]
+    public async Task DirectRunUsesSelectedTargetWithoutStagingOrBackups()
+    {
+        using var test = new Scenario();
+        var plugin = await test.Install();
+        test.Write("Assets/input.bin", "original");
+        test.Runtime.Action = (target, host) =>
+        {
+            Assert.Equal(Path.GetFullPath(test.Target), target);
+            Assert.False(Directory.Exists(test.Staging));
+            Assert.False(Directory.Exists(Path.Combine(test.Root, "backups")));
+            Assert.NotEqual(target, host);
+            File.WriteAllText(Path.Combine(target, "Assets/input.bin"), "changed directly");
+            File.WriteAllText(Path.Combine(host, "cache.txt"), "private cache");
+        };
+        await test.Service.RunDirectAsync(test.Pocket, plugin, (_, _) => Task.FromResult<string?>(null), _ => { }, _ => { });
+        Assert.Equal("changed directly", test.Read("Assets/input.bin"));
+        Assert.Equal(1, test.Runtime.Calls);
+        Assert.False(Directory.Exists(test.Staging));
+        Assert.False(Directory.Exists(Path.Combine(test.Root, "backups")));
+    }
+
+    [Fact]
+    public async Task DirectRunCancellationAndFailureDoNotClaimToUndoWrites()
+    {
+        using var test = new Scenario();
+        var plugin = await test.Install();
+        using var cancellation = new CancellationTokenSource();
+        test.Runtime.Action = (target, _) =>
+        {
+            File.WriteAllText(Path.Combine(target, "Assets/partial.json"), "written before stopping");
+            cancellation.Cancel();
+        };
+        await Assert.ThrowsAnyAsync<OperationCanceledException>(() => test.Service.RunDirectAsync(test.Pocket, plugin,
+            (_, _) => Task.FromResult<string?>(null), _ => { }, _ => { }, cancellation.Token));
+        Assert.Equal("written before stopping", test.Read("Assets/partial.json"));
+        test.Runtime.Action = (target, _) =>
+        {
+            File.Delete(Path.Combine(target, "Assets/partial.json"));
+            throw new IOException("generator failed after deleting a file");
+        };
+        await Assert.ThrowsAsync<IOException>(() => test.Service.RunDirectAsync(test.Pocket, plugin,
+            (_, _) => Task.FromResult<string?>(null), _ => { }, _ => { }));
+        Assert.False(File.Exists(Path.Combine(test.Target, "Assets/partial.json")));
+        test.Runtime.Action = null;
+        await test.Service.RunDirectAsync(test.Pocket, plugin, (_, _) => Task.FromResult<string?>(null), _ => { }, _ => { });
+    }
+
+    [Fact]
+    public async Task DirectRunRejectsMissingTargetOrAlreadyCancelledRequest()
+    {
+        using var test = new Scenario();
+        var plugin = await test.Install();
+        using var cancellation = new CancellationTokenSource();
+        cancellation.Cancel();
+        await Assert.ThrowsAnyAsync<OperationCanceledException>(() => test.Service.RunDirectAsync(test.Pocket, plugin,
+            (_, _) => Task.FromResult<string?>(null), _ => { }, _ => { }, cancellation.Token));
+        Directory.Delete(Path.Combine(test.Target, "Assets"));
+        Directory.Delete(Path.Combine(test.Target, "Cores"));
+        Directory.Delete(test.Target);
+        await Assert.ThrowsAsync<IOException>(() => test.Service.RunDirectAsync(test.Pocket, plugin,
+            (_, _) => Task.FromResult<string?>(null), _ => { }, _ => { }));
+        Assert.Equal(0, test.Runtime.Calls);
+    }
+
     [Theory]
     [InlineData("bad-wasm")]
     [InlineData("bad-manifest")]

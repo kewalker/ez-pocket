@@ -13,7 +13,7 @@ public interface IPocketPluginRuntime
         Action<string> log, Action<Uri> offerUrl, CancellationToken cancellationToken);
 }
 
-/// <summary>Implements pocket-plugin's Extism ABI. Only local working folders are mounted.</summary>
+/// <summary>Implements pocket-plugin's Extism ABI. Only the selected target and private plugin cache are mounted.</summary>
 public sealed class PocketPluginRuntime : IPocketPluginRuntime
 {
     public async Task RunAsync(string wasmPath, PocketPlugin descriptor, string pocketFolder, string hostFolder,

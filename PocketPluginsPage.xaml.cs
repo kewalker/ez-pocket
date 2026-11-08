@@ -11,15 +11,16 @@ public partial class PocketPluginsPage : ContentPage
     private readonly PocketSelectionService selection;
     private readonly StringBuilder logs = new();
     private readonly object logLock = new();
-    private PocketPluginPreview? preview;
     private CancellationTokenSource? cancellation;
     private TaskCompletionSource<string?>? answer;
-    private bool busy, applying, active;
+    private string? selectedAnswer;
+    private bool busy, active;
     private int offeredLinks;
 
     public PocketPluginsPage()
     {
         InitializeComponent();
+        PluginPicker.ItemDisplayBinding = new Binding(nameof(PocketPlugin.Name));
         service = IPlatformApplication.Current?.Services.GetService<PocketPluginService>() ?? new();
         selection = IPlatformApplication.Current?.Services.GetService<PocketSelectionService>() ?? new();
     }
@@ -35,8 +36,7 @@ public partial class PocketPluginsPage : ContentPage
     protected override void OnDisappearing()
     {
         active = false;
-        if (!applying) cancellation?.Cancel();
-        if (!busy) ClearPreview();
+        cancellation?.Cancel();
         base.OnDisappearing();
     }
 
@@ -53,7 +53,7 @@ public partial class PocketPluginsPage : ContentPage
         catch (Exception exception) { Status.Text = $"Could not read installed plugins: {exception.Message}"; }
     }
 
-    private void OnPluginChanged(object? sender, EventArgs e) { ClearPreview(); ShowPlugin(); }
+    private void OnPluginChanged(object? sender, EventArgs e) => ShowPlugin();
 
     private void ShowPlugin()
     {
@@ -68,7 +68,6 @@ public partial class PocketPluginsPage : ContentPage
     private async void OnInstallClicked(object? sender, EventArgs e)
     {
         if (busy) return;
-        ClearPreview();
         SetBusy(true, "Downloading the latest plugin release…");
         try
         {
@@ -86,7 +85,6 @@ public partial class PocketPluginsPage : ContentPage
         if (busy || PluginPicker.SelectedItem is not PocketPlugin plugin) return;
         try
         {
-            ClearPreview();
             service.Uninstall(plugin);
             RefreshPlugins();
             Status.Text = $"Removed {plugin.Name} and its private local cache.";
@@ -97,46 +95,64 @@ public partial class PocketPluginsPage : ContentPage
     private async void OnRunClicked(object? sender, EventArgs e)
     {
         if (busy || PluginPicker.SelectedItem is not PocketPlugin plugin || selection.SelectedPocket is not { } pocket) return;
-        ClearPreview();
         lock (logLock) logs.Clear();
         RunLog.Text = string.Empty;
         PluginLinks.Children.Clear();
         offeredLinks = 0;
-        BackupSummary.Text = string.Empty;
-        SetBusy(true, "Preparing the local working copy…");
+        SetBusy(true, "Starting plugin directly on the selected target…");
         CancelRunButton.IsVisible = true;
         Dispatcher.StartTimer(TimeSpan.FromMilliseconds(300), () => { FlushLog(); return busy && active; });
         try
         {
-            preview = await service.PrepareAsync(pocket, plugin, AskAsync, AppendLog, OfferUrl, cancellation!.Token);
-            if (!active) { ClearPreview(); return; }
-            ReviewPanel.IsVisible = true;
-            ChangeList.ItemsSource = preview.Changes;
-            ReviewSummary.Text = $"{preview.Changes.Count(change => change.Action == "ADD"):N0} additions · {preview.Changes.Count(change => change.Action == "REPLACE"):N0} replacements · {preview.Changes.Count(change => change.Action == "DELETE"):N0} deletions";
-            Blockers.Text = string.Join(Environment.NewLine, preview.Blockers);
-            ApplyButton.IsEnabled = preview.CanApply;
-            Status.Text = preview.Changes.Count == 0 ? "Plugin finished. No target file changes were generated." : "Plugin finished. Review the proposed changes below.";
+            await service.RunDirectAsync(pocket, plugin, AskAsync, AppendLog, OfferUrl, cancellation!.Token);
+            Status.Text = "Plugin finished. Check its log for the completed operations.";
         }
-        catch (OperationCanceledException) { Status.Text = "Run cancelled. No target files were changed."; }
-        catch (Exception exception) { Status.Text = $"Plugin run failed. No target files were changed. {exception.Message}"; }
-        finally { answer = null; PromptText.Text = string.Empty; PromptPanel.IsVisible = false; SetBusy(false); FlushLog(); }
+        catch (OperationCanceledException) { Status.Text = "Plugin stopped. Changes already made to the target were not undone."; }
+        catch (Exception exception) { Status.Text = $"Plugin failed. Target files may have changed; check the log before running again. {exception.Message}"; }
+        finally { answer = null; selectedAnswer = null; PromptChoices.Children.Clear(); ContinueButton.IsEnabled = false; PromptText.Text = string.Empty; PromptPanel.IsVisible = false; SetBusy(false); FlushLog(); }
     }
 
     private async Task<string?> AskAsync(PocketPluginPrompt question, CancellationToken token)
     {
         var response = new TaskCompletionSource<string?>(TaskCreationOptions.RunContinuationsAsynchronously);
-        await MainThread.InvokeOnMainThreadAsync(() =>
+        await MainThread.InvokeOnMainThreadAsync(async () =>
         {
             token.ThrowIfCancellationRequested();
             answer = response;
             PromptQuery.Text = question.Query;
+            selectedAnswer = null;
             PromptChoices.IsVisible = question.Choices is not null;
-            PromptChoices.ItemsSource = question.Choices?.ToList();
-            PromptChoices.SelectedIndex = -1;
+            PromptChoices.Children.Clear();
+            ContinueButton.IsEnabled = question.Choices is null;
+            string group = Guid.NewGuid().ToString("N");
+            foreach (string choice in question.Choices ?? [])
+            {
+                var option = new RadioButton
+                {
+                    Content = choice,
+                    GroupName = group,
+                    FontSize = 14,
+                    TextColor = Color.FromArgb("#151515"),
+                    MinimumHeightRequest = 44,
+                    HorizontalOptions = LayoutOptions.Fill
+                };
+                SemanticProperties.SetDescription(option, choice);
+                option.CheckedChanged += (_, args) =>
+                {
+                    if (!args.Value) return;
+                    selectedAnswer = choice;
+                    ContinueButton.IsEnabled = true;
+                };
+                PromptChoices.Children.Add(option);
+            }
             PromptText.IsVisible = question.Choices is null;
             PromptText.Text = string.Empty;
             PromptPanel.IsVisible = true;
             Status.Text = "The plugin needs an answer to continue.";
+            // Let the newly visible prompt take its space before bringing it into view.
+            await Task.Yield();
+            if (active && !token.IsCancellationRequested)
+                await PageScroll.ScrollToAsync(PromptPanel, ScrollToPosition.MakeVisible, true);
         });
         return await response.Task.WaitAsync(token);
     }
@@ -144,11 +160,12 @@ public partial class PocketPluginsPage : ContentPage
     private void OnAnswerClicked(object? sender, EventArgs e)
     {
         if (answer is null) return;
-        string? value = PromptChoices.IsVisible ? PromptChoices.SelectedItem as string : PromptText.Text ?? string.Empty;
+        string? value = PromptChoices.IsVisible ? selectedAnswer : PromptText.Text ?? string.Empty;
         if (value is null) return;
         PromptPanel.IsVisible = false;
+        ContinueButton.IsEnabled = false;
         PromptText.Text = string.Empty;
-        Status.Text = "Running plugin against the local copy…";
+        Status.Text = "Running plugin directly on the selected target…";
         answer.TrySetResult(value);
         answer = null;
     }
@@ -183,45 +200,13 @@ public partial class PocketPluginsPage : ContentPage
         });
     }
 
-    private async void OnApplyClicked(object? sender, EventArgs e)
-    {
-        if (busy || preview is null || !preview.CanApply) return;
-        if (!TargetPaths.Equal(selection.SelectedPocket?.RootPath, preview.TargetPath))
-        {
-            Status.Text = "The selected target changed. Discard this review and run again.";
-            return;
-        }
-        applying = true;
-        SetBusy(true, "Checking the target, backing up originals, and applying reviewed changes…");
-        try
-        {
-            PocketPluginResult result = await service.ApplyAsync(preview, cancellation!.Token);
-            Status.Text = result.Message;
-            BackupSummary.Text = result.BackupPath is null ? string.Empty : $"LOCAL BACKUP · {result.BackupPath}";
-            // Any apply attempt requires a fresh run; never encourage retrying a stale review.
-            ClearPreview();
-        }
-        catch (Exception exception) { Status.Text = $"Could not apply plugin changes: {exception.Message}"; ClearPreview(); }
-        finally { applying = false; SetBusy(false); }
-    }
-
     private void OnCancelRunClicked(object? sender, EventArgs e) { cancellation?.Cancel(); Status.Text = "Cancelling the plugin run…"; }
-    private void OnDiscardClicked(object? sender, EventArgs e) { if (!busy) { ClearPreview(); Status.Text = "Discarded staged changes. No target files were changed."; } }
-
-    private void ClearPreview()
-    {
-        if (preview is not null) service.Discard(preview);
-        preview = null;
-        ReviewPanel.IsVisible = false;
-        ChangeList.ItemsSource = null;
-    }
 
     private void SetBusy(bool value, string? status = null)
     {
         busy = value;
         InstallPanel.IsEnabled = SelectionPanel.IsEnabled = !value;
-        BackButton.IsEnabled = DiscardButton.IsEnabled = !value;
-        ApplyButton.IsEnabled = !value && preview?.CanApply == true;
+        BackButton.IsEnabled = !value;
         Activity.IsVisible = Activity.IsRunning = value;
         if (status is not null) Status.Text = status;
         if (value) cancellation = new CancellationTokenSource();
@@ -231,15 +216,13 @@ public partial class PocketPluginsPage : ContentPage
 
     protected override bool OnBackButtonPressed()
     {
-        if (busy) { if (!applying) cancellation?.Cancel(); return true; }
-        ClearPreview();
+        if (busy) { cancellation?.Cancel(); return true; }
         return base.OnBackButtonPressed();
     }
 
     private async void OnBackClicked(object? sender, EventArgs e)
     {
         if (busy) return;
-        ClearPreview();
         await AppNavigation.GoToAsync("..");
     }
 }

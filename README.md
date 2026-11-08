@@ -60,11 +60,17 @@ Open **PALETTE STUDIO** from the dashboard or Asset Library to browse color swat
 
 Open your own screenshot for a side-by-side four-shade preview, then export a palette to a local folder or choose **REVIEW INSTALL**. Export preserves existing files; writing to the selected Pocket uses the asset review workflow. Screenshot previews approximate brightness and cannot identify separate sprite or window layers. APGB edits preserve the other color groups and LCD-off color. No game images are bundled.
 
+### Game Shelf (in development)
+
+Select a Pocket from the dashboard, then open **OPEN GAME SHELF** to discover its games automatically. Installed cores become shelves with friendly system names, game counts, and secondary core identifiers. Shared ROMs appear once in All shelves. Search, system filters, local favorites, title corrections, and your own artwork remain available.
+
+Discovery reads core metadata and supported game folders for GB/GBC/GBA/NES/SNES/Mega Drive and PlayStation launch files/CUE/M3U entries. Fixed BIOS/support files are excluded; unsupported cores show an explanation. There is no local-folder setup, ROM copying, or native Pocket Library database decoding. Scans are read-only, and local metadata for other targets stays hidden. See [Game Shelf workflow and limits](docs/GAME-SHELF.md).
+
 ### Pocket Plugins (initial support)
 
-Open **POCKET PLUGINS** to install a plugin from a GitHub release and manually run core setup tools or file generators using the format shared by Pocket Sync and pupdate. Review the plugin's source, version, and network access first. Runs use a full local copy of the target; additions, replacements, and deletions require review and an explicit apply action. Replaced and deleted files are backed up, with recovery attempted if an apply fails.
+Open **POCKET PLUGINS** to install a plugin from a GitHub release and manually run core setup tools or file generators using the format shared by Pocket Sync and pupdate. Review the plugin's source, version, and network access first. **RUN PLUGIN** gives the plugin direct read/write access to the selected target. It starts without copying or hashing the whole card and uses the same standard runtime on supported desktop platforms.
 
-The first version supports working copies up to 64 GiB / 200,000 files and requires space for the copy and generated output. Plugins cannot apply save, Memory, or root firmware file changes. There is no automatic execution. See [Pocket Plugin workflow, storage, and limits](docs/POCKET-PLUGINS.md).
+There is no full-card staging copy, change preview, automatic backup, or rollback for plugin runs. Plugins can modify any target file, including saves and firmware. Cancellation stops further execution but does not undo completed writes. Installation never runs a plugin automatically. See [Pocket Plugin workflow, storage, and limits](docs/POCKET-PLUGINS.md).
 
 ## Platforms and status
 
