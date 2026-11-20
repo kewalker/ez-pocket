@@ -6,6 +6,7 @@ public enum PocketHealthAction
     InitializeTarget,
     ManageCores,
     ManageAssets,
+    CoreReadiness,
     ReturnToTarget
 }
 

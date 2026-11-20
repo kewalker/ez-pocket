@@ -40,18 +40,24 @@ public static class MauiProgram
         builder.Services.AddSingleton<SaveVaultService>();
         builder.Services.AddSingleton<PocketHealthService>();
         builder.Services.AddSingleton<PocketPluginService>();
+        builder.Services.AddSingleton<CoreReadinessService>();
+        builder.Services.AddSingleton<CardCleanupService>();
 #if WINDOWS
         builder.Services.AddSingleton<IColorPickerService, WindowsColorPickerService>();
         builder.Services.AddSingleton<IFolderPickerService, WindowsFolderPickerService>();
+        builder.Services.AddSingleton<IEjectService, WindowsEjectService>();
 #elif MACCATALYST
         builder.Services.AddSingleton<IColorPickerService, MauiColorPickerService>();
         builder.Services.AddSingleton<IFolderPickerService, MacFolderPickerService>();
+        builder.Services.AddSingleton<IEjectService, UnixEjectService>();
 #elif LINUX
         builder.Services.AddSingleton<IColorPickerService, MauiColorPickerService>();
         builder.Services.AddSingleton<IFolderPickerService, LinuxFolderPickerService>();
+        builder.Services.AddSingleton<IEjectService, UnixEjectService>();
 #else
         builder.Services.AddSingleton<IColorPickerService, MauiColorPickerService>();
         builder.Services.AddSingleton<IFolderPickerService, UnsupportedFolderPickerService>();
+        builder.Services.AddSingleton<IEjectService, UnsupportedEjectService>();
 #endif
 
 #if DEBUG

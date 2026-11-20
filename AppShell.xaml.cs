@@ -19,5 +19,7 @@ public partial class AppShell : Shell
 		Routing.RegisterRoute("SaveVaultPage", typeof(SaveVaultPage));
 		Routing.RegisterRoute("PocketHealthPage", typeof(PocketHealthPage));
 		Routing.RegisterRoute("QuickStartPage", typeof(QuickStartPage));
+		Routing.RegisterRoute("CoreReadinessPage", typeof(CoreReadinessPage));
+		Routing.RegisterRoute("CardCleanupPage", typeof(CardCleanupPage));
 	}
 }

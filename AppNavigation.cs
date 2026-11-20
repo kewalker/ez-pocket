@@ -38,6 +38,8 @@ internal static class AppNavigation
             "SaveVaultPage" => new SaveVaultPage(),
             "PocketHealthPage" => new PocketHealthPage(),
             "QuickStartPage" => new QuickStartPage(),
+            "CoreReadinessPage" => new CoreReadinessPage(),
+            "CardCleanupPage" => new CardCleanupPage(),
             _ => throw new ArgumentOutOfRangeException(nameof(route), route, "Unknown page route.")
         };
         NavigationPage.SetHasNavigationBar(page, false);

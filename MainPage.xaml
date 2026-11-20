@@ -32,6 +32,7 @@
                     <HorizontalStackLayout Grid.Row="3" Spacing="6">
                         <BoxView x:Name="HealthStatusMarker" Color="#AFAFAA" WidthRequest="7" HeightRequest="7" CornerRadius="0" VerticalOptions="Center" />
                         <Label x:Name="HealthStatusText" Text="HEALTH · UNAVAILABLE" TextColor="#D2D2CC" FontSize="11" FontAttributes="Bold" VerticalOptions="Center" />
+                        <controls:EzButton x:Name="EjectButton" Text="EJECT CARD" IsVisible="False" Clicked="OnEjectClicked" FontSize="10" FontAttributes="Bold" ButtonPadding="8,2" MinimumHeight="24" CornerRadius="2" ButtonBackgroundColor="#343434" ButtonTextColor="White" BusyIndicatorColor="White" Margin="8,0,0,0" SemanticProperties.Description="Safely eject the selected Pocket card" />
                     </HorizontalStackLayout>
                     <controls:EzButton x:Name="ScanButton" Grid.Column="1" Grid.RowSpan="4" Text="SCAN TARGET" Clicked="OnScanClicked" FontAttributes="Bold" CornerRadius="2" ButtonPadding="18,10" ButtonBackgroundColor="#FFFFFF" ButtonTextColor="#151515" VerticalOptions="Center" />
                     <controls:EzButton x:Name="ChangeTargetButton" Grid.Column="2" Grid.RowSpan="4" Text="CHANGE TARGET" Clicked="OnChooseFolderClicked" FontAttributes="Bold" CornerRadius="2" ButtonPadding="16,10" ButtonBackgroundColor="#343434" ButtonTextColor="White" VerticalOptions="Center" />
@@ -130,6 +131,8 @@
             </Grid>
             <HorizontalStackLayout Spacing="10">
                 <Label Text="TOOLS" FontSize="10" TextColor="#60605C" VerticalOptions="Center" />
+                <controls:EzButton x:Name="ReadinessButton" Text="CORE READINESS" IsEnabled="False" Clicked="OnReadinessClicked" FontSize="10" ButtonPadding="8,3" MinimumHeight="30" ButtonBackgroundColor="White" ButtonTextColor="#60605C" CornerRadius="0" SemanticProperties.Description="Check that installed cores have the BIOS and other fixed files they need" />
+                <controls:EzButton x:Name="CleanupButton" Text="CARD CLEANUP" IsEnabled="False" Clicked="OnCleanupClicked" FontSize="10" ButtonPadding="8,3" MinimumHeight="30" ButtonBackgroundColor="White" ButtonTextColor="#60605C" CornerRadius="0" SemanticProperties.Description="Find and remove macOS metadata files from the card after review" />
                 <controls:EzButton Text="POCKET PLUGINS" Clicked="OnPocketPluginsClicked" FontSize="10" ButtonPadding="8,3" MinimumHeight="30" ButtonBackgroundColor="White" ButtonTextColor="#60605C" CornerRadius="0" SemanticProperties.Description="Install trusted core setup plugins and run them directly on the selected target" />
             </HorizontalStackLayout>
             <Grid x:Name="DiagnosticsGrid" ColumnDefinitions="*,Auto" ColumnSpacing="12">
