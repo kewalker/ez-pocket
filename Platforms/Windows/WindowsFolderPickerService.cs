@@ -21,7 +21,10 @@ public sealed class WindowsFolderPickerService : IFolderPickerService
         picker.FileTypeFilter.Add("*");
         InitializeWithWindow.Initialize(picker, WindowNative.GetWindowHandle(nativeWindow));
 
-        var folder = await picker.PickSingleFolderAsync();
+        Windows.Storage.StorageFolder? folder;
+        // The system picker can fail (E_FAIL) for some locations or dialog states; treat that as no selection rather than crashing.
+        try { folder = await picker.PickSingleFolderAsync(); }
+        catch (System.Runtime.InteropServices.COMException) { return null; }
         return folder?.Path;
     }
 }
