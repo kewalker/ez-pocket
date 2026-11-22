@@ -94,7 +94,7 @@ public partial class PocketHealthPage : ContentPage
         }
         Summary.Text = activeAttentionCount == 0
             ? ignoredCount == 0 ? "Ready for reviewed maintenance" : $"No active findings · {ignoredCount} ignored locally"
-            : $"{activeAttentionCount} active item{(activeAttentionCount == 1 ? string.Empty : "s")} need attention{(ignoredCount == 0 ? string.Empty : $" · {ignoredCount} ignored locally")}";
+            : $"{activeAttentionCount} active item{(activeAttentionCount == 1 ? " needs" : "s need")} attention{(ignoredCount == 0 ? string.Empty : $" · {ignoredCount} ignored locally")}";
     }
 
     private Border CreateFindingCard(PocketDrive pocket, PocketHealthFinding finding, bool ignored)
@@ -148,6 +148,7 @@ public partial class PocketHealthPage : ContentPage
         PocketHealthAction.InitializeTarget => "INITIALIZE TARGET",
         PocketHealthAction.ManageCores => "MANAGE CORES",
         PocketHealthAction.ManageAssets => "MANAGE ASSETS",
+        PocketHealthAction.CoreReadiness => "VIEW CORE READINESS",
         PocketHealthAction.ReturnToTarget => "RETURN TO TARGET",
         _ => null
     };
@@ -164,6 +165,9 @@ public partial class PocketHealthPage : ContentPage
                 break;
             case PocketHealthAction.ManageAssets:
                 await AppNavigation.GoToAsync("AssetsPage");
+                break;
+            case PocketHealthAction.CoreReadiness:
+                await AppNavigation.GoToAsync("CoreReadinessPage");
                 break;
             case PocketHealthAction.ReturnToTarget:
                 await AppNavigation.GoToAsync("..");

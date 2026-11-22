@@ -66,5 +66,6 @@ to read, write, and delete on a disposable target through the same standard
 runtime used by the app, and exercise prompts, logs, links, and interruption.
 No tests execute plugins against a connected device.
 
-The legacy staging APIs remain in source but are not used by **RUN PLUGIN**.
-The UI does not promise their preview, backup, or rollback guarantees.
+The older staging/overlay APIs and isolated research harness remain in source
+for future development, but are not used by **RUN PLUGIN** or required by release
+builds. The UI does not promise their preview, backup, or rollback guarantees.

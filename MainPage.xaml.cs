@@ -13,9 +13,11 @@ public partial class MainPage : ContentPage
     private readonly CoreInventoryService inventory;
     private readonly CoreSelectionService coreSelection;
     private readonly IAppDiagnostics diagnostics;
+    private readonly IEjectService eject;
     private bool preparingFeaturedSet;
     private bool scanning;
     private int appearance;
+    private bool visible;
     private List<PocketDrive> candidates = [];
 
     public MainPage()
@@ -31,6 +33,7 @@ public partial class MainPage : ContentPage
         inventory = IPlatformApplication.Current?.Services.GetService<CoreInventoryService>() ?? new CoreInventoryService();
         coreSelection = IPlatformApplication.Current?.Services.GetService<CoreSelectionService>() ?? new CoreSelectionService();
         diagnostics = IPlatformApplication.Current?.Services.GetService<IAppDiagnostics>() ?? NullAppDiagnostics.Instance;
+        eject = IPlatformApplication.Current?.Services.GetService<IEjectService>() ?? new UnsupportedEjectService();
     }
 
     protected override async void OnAppearing()
@@ -38,6 +41,7 @@ public partial class MainPage : ContentPage
         base.OnAppearing();
         string? successMessage = coreSelection.ConsumeDashboardSuccessMessage();
         if (successMessage is not null) SuccessToast.ShowSuccess(successMessage);
+        visible = true;
         int currentAppearance = ++appearance;
         PocketDrive? pocket = selection.Restore();
         if (pocket is not null) ShowPocket(pocket);
@@ -55,6 +59,7 @@ public partial class MainPage : ContentPage
 
     protected override void OnDisappearing()
     {
+        visible = false;
         appearance++;
         SuccessToast.Hide();
         base.OnDisappearing();
@@ -111,6 +116,34 @@ public partial class MainPage : ContentPage
     private async void OnQuickStartClicked(object? sender, EventArgs e) => await AppNavigation.GoToAsync("QuickStartPage");
     private async void OnPaletteStudioClicked(object? sender, EventArgs e) => await AppNavigation.GoToAsync("PaletteStudioPage");
     private async void OnPocketPluginsClicked(object? sender, EventArgs e) => await AppNavigation.GoToAsync("PocketPluginsPage");
+    private async void OnReadinessClicked(object? sender, EventArgs e) { if (selection.SelectedPocket is not null) await AppNavigation.GoToAsync("CoreReadinessPage"); }
+    private async void OnCleanupClicked(object? sender, EventArgs e) { if (selection.SelectedPocket is not null) await AppNavigation.GoToAsync("CardCleanupPage"); }
+
+    private async void OnEjectClicked(object? sender, EventArgs e)
+    {
+        PocketDrive? pocket = selection.SelectedPocket;
+        if (pocket is null || scanning) return;
+        EjectButton.IsBusy = true;
+        EjectButton.IsEnabled = false;
+        ScanButton.IsEnabled = ChangeTargetButton.IsEnabled = false;
+        EjectResult result;
+        try { result = await eject.EjectAsync(pocket); }
+        finally
+        {
+            EjectButton.IsBusy = false;
+            EjectButton.IsEnabled = ScanButton.IsEnabled = ChangeTargetButton.IsEnabled = true;
+        }
+        if (!ReferenceEquals(selection.SelectedPocket, pocket)) return;
+        if (!result.Succeeded)
+        {
+            await DisplayAlertAsync("Card not ejected", result.Message, "OK");
+            return;
+        }
+        selection.Disconnect();
+        ShowNoPocket();
+        StatusTitle.Text = "Card ejected";
+        StatusDetail.Text = result.Message;
+    }
 
     private async void OnNextStepClicked(object? sender, EventArgs e)
     {
@@ -314,9 +347,9 @@ public partial class MainPage : ContentPage
         string? path = await folderPicker.PickFolderAsync();
         if (string.IsNullOrWhiteSpace(path)) return;
 
-        int currentAppearance = appearance;
+        // The system folder dialog reactivates the window, which re-runs OnAppearing; only abandon the pick if the dashboard was left.
         PocketDrive? pocket = await Task.Run(() => scanner.ScanFolder(path));
-        if (currentAppearance != appearance) return;
+        if (!visible) return;
         if (pocket is null)
         {
             await DisplayAlert("Folder unavailable", "The selected folder could not be opened.", "Got it");
@@ -359,6 +392,9 @@ public partial class MainPage : ContentPage
         AssetsButton.IsEnabled = true;
         SaveVaultButton.IsEnabled = true;
         HealthButton.IsEnabled = true;
+        ReadinessButton.IsEnabled = CleanupButton.IsEnabled = true;
+        EjectButton.IsVisible = eject.CanEject(pocket);
+        EjectButton.IsEnabled = true;
         PocketHealthReport? healthReport = selection.LastHealthReport;
         HealthStatusMarker.Color = healthReport?.IsReady == true ? Color.FromArgb("#25B46B") : Color.FromArgb("#D2D2CC");
         HealthStatusText.Text = healthReport is null ? "HEALTH · NOT CHECKED" : $"HEALTH · {(healthReport.IsReady ? "READY" : $"{healthReport.AttentionCount} ATTENTION")} · Last checked {selection.LastHealthCheckedAt?.ToLocalTime():MMM d, h:mm tt}";
@@ -389,6 +425,8 @@ public partial class MainPage : ContentPage
         AssetsButton.IsEnabled = false;
         SaveVaultButton.IsEnabled = false;
         HealthButton.IsEnabled = false;
+        ReadinessButton.IsEnabled = CleanupButton.IsEnabled = false;
+        EjectButton.IsVisible = false;
         HealthStatusMarker.Color = Color.FromArgb("#AFAFAA");
         HealthStatusText.Text = "HEALTH · UNAVAILABLE";
         SaveVaultActionTitle.Text = "Protect saves and memories";

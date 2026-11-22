@@ -10,6 +10,7 @@ public partial class CoreReviewPage : ContentPage
     private readonly PocketScanner scanner;
     private readonly CoreSyncService coreSync;
     private readonly PocketHealthService health;
+    private readonly IAppDiagnostics diagnostics;
     private CoreSyncPreview? preview;
     private bool hasPrepared;
     private bool returnsToDashboard;
@@ -23,6 +24,7 @@ public partial class CoreReviewPage : ContentPage
         scanner = IPlatformApplication.Current?.Services.GetService<PocketScanner>() ?? new PocketScanner();
         coreSync = IPlatformApplication.Current?.Services.GetService<CoreSyncService>() ?? new CoreSyncService();
         health = IPlatformApplication.Current?.Services.GetService<PocketHealthService>() ?? new PocketHealthService();
+        diagnostics = IPlatformApplication.Current?.Services.GetService<IAppDiagnostics>() ?? NullAppDiagnostics.Instance;
     }
 
     protected override async void OnAppearing()
@@ -121,9 +123,10 @@ public partial class CoreReviewPage : ContentPage
         }
         catch (Exception exception)
         {
+            diagnostics.Error("CoreSyncPreparePageFailed", exception);
             await Dispatcher.DispatchAsync(() =>
             {
-                SyncStatus.Text = $"Could not prepare sync: {exception.Message}";
+                SyncStatus.Text = "Could not prepare the sync. Check the target and try again. If this continues, export diagnostics.";
                 PrepareButton.IsVisible = true;
             });
         }
@@ -190,7 +193,8 @@ public partial class CoreReviewPage : ContentPage
         }
         catch (Exception exception)
         {
-            SyncStatus.Text = $"Could not finish applying changes: {exception.Message}. Scan the target and prepare a new review before trying again.";
+            diagnostics.Error("CoreSyncApplyPageFailed", exception);
+            SyncStatus.Text = "Could not finish applying changes. Scan the target and prepare a new review before trying again. If this continues, export diagnostics.";
             SyncButton.IsVisible = false;
             PrepareButton.IsVisible = true;
         }

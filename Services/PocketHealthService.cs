@@ -26,6 +26,7 @@ public sealed class PocketHealthService
             findings.Add(new("BLOCKED", "Pocket folders are incomplete", $"Missing: {string.Join(", ", missingFolders)}. Initialize the target before syncing so PocketOS and core files have their required structure.", "folders-incomplete", PocketHealthAction.InitializeTarget));
 
         InspectCoreMetadata(pocket, findings);
+        InspectCoreReadiness(pocket, findings);
         if (pocket.TotalBytes > 0 && pocket.FreeBytes < Math.Max(512L * 1024 * 1024, pocket.TotalBytes / 10))
             findings.Add(new("ATTENTION", "Storage is running low", $"{pocket.CapacitySummary}. Free space may not be sufficient for staging and backups.", "storage-low", PocketHealthAction.ManageAssets));
 
@@ -38,6 +39,19 @@ public sealed class PocketHealthService
             ["AttentionCount"] = findings.Count(finding => finding.RequiresAttention).ToString()
         });
         return new PocketHealthReport(pocket, findings);
+    }
+
+    private static void InspectCoreReadiness(PocketDrive pocket, ICollection<PocketHealthFinding> findings)
+    {
+        CoreReadinessReport readiness;
+        try { readiness = new CoreReadinessService().Inspect(pocket); }
+        catch (Exception exception) when (exception is IOException or UnauthorizedAccessException) { return; }
+        // Unreadable definitions are already reported by the metadata check above.
+        CoreReadiness[] needsFiles = readiness.Cores.Where(core => core.State is CoreReadinessState.Missing or CoreReadinessState.Attention).ToArray();
+        if (needsFiles.Length == 0) return;
+        string names = string.Join(", ", needsFiles.Take(3).Select(core => core.Name)) + (needsFiles.Length > 3 ? $", and {needsFiles.Length - 3} more" : "");
+        findings.Add(new("ATTENTION", $"{needsFiles.Length} core{(needsFiles.Length == 1 ? "" : "s")} may not start",
+            $"{names}. A required file such as a BIOS is missing, misplaced, or the wrong size, or core files are incomplete.", "core-readiness", PocketHealthAction.CoreReadiness));
     }
 
     private static void InspectCoreMetadata(PocketDrive pocket, ICollection<PocketHealthFinding> findings)

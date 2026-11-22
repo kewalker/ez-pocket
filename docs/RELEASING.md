@@ -48,4 +48,4 @@ If trusted MSIX distribution is pursued later, SignPath Foundation is a possible
 
 ## Package identity
 
-The Windows package identity is `Bitbird.EzPocket`, with publisher `CN=Bitbird`. The package publisher must remain aligned with the eventual trusted signing identity for upgrades to work correctly.
+The Windows package identity is `Bitbird.EzPocket`, with publisher `CN=BitBird`. The package publisher must remain aligned with the eventual trusted signing identity for upgrades to work correctly.

@@ -47,7 +47,10 @@ It is an independent project and is not affiliated with, endorsed by, or sponsor
 - Downloads and stages selected core packages, reports package conflicts or blockers, backs up replaced/removed core content, and restores changed files if a core sync fails.
 - Provides curated featured core sets as a starting point for the normal review workflow.
 - Creates local Save Vault snapshots of saves and Memories, with selected restores reviewed before writing.
-- Checks target health without writing: required folders, installed core metadata, and available space.
+- Checks target health without writing: required folders, installed core metadata, required core files, and available space.
+- Shows core readiness: which installed cores are missing a fixed file they load by themselves (such as a BIOS), have it in the wrong folder, or have the wrong size, using each core's own `data.json`. ez-pocket never supplies BIOS files.
+- Cleans up macOS metadata (`._*` resource files and `.DS_Store`) that appears as clutter in Pocket menus, after a review. Each file is re-verified before removal; the card's macOS Trash is opt-in, and leftover asset folders from removed cores are reported but never deleted.
+- Ejects a removable card safely from the dashboard or after cleanup (Windows volume dismount; `diskutil` on macOS; `gio` on Linux).
 - Manages opt-in palettes and supported library/platform image assets through scoped previews.
 - Checks the official Pocket firmware source, verifies the published MD5 checksum, and stages firmware separately from core updates.
 - Exports local diagnostics that deliberately exclude target paths and exception messages.

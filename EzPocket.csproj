@@ -1,8 +1,9 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<TargetFrameworks>net10.0-android;net10.0-ios;net10.0-maccatalyst</TargetFrameworks>
-		<TargetFrameworks Condition="$([MSBuild]::IsOSPlatform('windows'))">$(TargetFrameworks);net10.0-windows10.0.19041.0</TargetFrameworks>
+		<!-- Desktop only. Android/iOS template targets forced restore to require their workloads on Windows CI. -->
+		<TargetFrameworks>net10.0-maccatalyst</TargetFrameworks>
+		<TargetFrameworks Condition="$([MSBuild]::IsOSPlatform('windows'))">net10.0-windows10.0.19041.0</TargetFrameworks>
 		<!-- Uncomment to also build the tizen app. You will need to install tizen by following this: https://github.com/Samsung/Tizen.NET -->
 		<!-- <TargetFrameworks>$(TargetFrameworks);net10.0-tizen</TargetFrameworks> -->
 
@@ -28,8 +29,8 @@
 		<ApplicationId>com.bitbird.ezpocket</ApplicationId>
 
 		<!-- Versions -->
-		<ApplicationDisplayVersion>0.1.19</ApplicationDisplayVersion>
-		<ApplicationVersion>20</ApplicationVersion>
+		<ApplicationDisplayVersion>0.1.22</ApplicationDisplayVersion>
+		<ApplicationVersion>23</ApplicationVersion>
 		<Version>$(ApplicationDisplayVersion)</Version>
 
 		<!-- To develop, package, and publish an app to the Microsoft Store, see: https://aka.ms/MauiTemplateUnpackaged -->
@@ -60,6 +61,7 @@
 		<Compile Remove="Tests\**" />
 		<Compile Remove="Linux\**" />
 		<Compile Remove="artifacts\**" />
+		<MauiXaml Remove="artifacts\**" />
 		<EmbeddedResource Remove="Tests\**" />
 		<None Remove="Tests\**" />
 	</ItemGroup>
